@@ -1,6 +1,7 @@
 from mlvc.ml_model import MlModel
 import pytest
 class TestIntegration:
+
     def test_init(self):
         model = MlModel('test')
         assert model.__name__ == 'test'
@@ -13,17 +14,19 @@ class TestIntegration:
         with pytest.raises(FileNotFoundError):
             model = MlModel('test')
             model.load_data('tests/extra/data.csv')
-
     def test_statistics(self):
         model = MlModel('test')
         model.load_data('tests/data.csv')
-        assert model.df_statistics()
-    
-    def test_df_histogram(self):
+        assert model.df_statistics()   
+    def test_df_hist(self):
         model = MlModel('test')
         model.load_data('tests/data.csv')
         assert model.df_hist_plot('x')
-
+    def test_df_hist_exception(self):
+        with pytest.raises(BaseException):
+            model = MlModel('test')
+            model.load_data('tests/data.csv')
+            model.df_bar_plot('z')
     def test_df_bar_plot(self):
         model = MlModel('test')
         model.load_data('tests/data.csv')
@@ -31,18 +34,23 @@ class TestIntegration:
             col_name = 'x', 
             plot_type = 'bar'
         )
-    def test_df_bar_plot(self):
-        model = MlModel('test')
-        model.load_data('tests/data.csv')
-        assert model.df_bar_plot(
-            col_name = 'x', 
-            plot_type = 'bar'
-        )
-    
+    def test_df_bar_plot_exception(self):
+        with pytest.raises(BaseException):
+            model = MlModel('test')
+            model.load_data('tests/data.csv')
+            model.df_bar_plot(
+                col_name = 'z', 
+                plot_type = 'bar'
+            )    
     def test_df_heatmap_plot(self):
         model = MlModel('test')
         model.load_data('tests/data.csv')
         assert model.df_heatmap_plot()
+    def test_df_heatmap_plot_exception(self):
+        with pytest.raises(BaseException):
+            model = MlModel('test')
+            model.load_data('tests/data_empty.csv')
+            model.df_heatmap_plot()
 
 
 #     def test_load_data_valid_path(self):
