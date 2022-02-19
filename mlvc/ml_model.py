@@ -12,6 +12,7 @@ date: February 2022
 # import logging as log
 # from winreg import REG_RESOURCE_REQUIREMENTS_LIST
 import pandas as pd
+from typing import List
 from loguru import logger
 import matplotlib.pyplot as plt
 import seaborn as sns; sns.set()
@@ -68,6 +69,33 @@ class MlModel:
     def __init__(self, name):
         self.__name__ = name
         
+
+    def eda(self, df_path:str, target_name:str, col_name:List, condition: str, plot_type:List) -> None:
+
+        self.load_data(
+            df_path= df_path
+        )
+        # import pdb;pdb.set_trace()
+        self.df_statistics()
+        self.df_col_categoric_to_binary(
+            target_name= target_name,
+            col_name = col_name[1],
+            condition=condition
+        )
+        self.df_hist_plot(
+            col_name= col_name[0]
+        )
+        self.df_hist_plot(
+            col_name= col_name[1]
+        )
+        self.df_bar_plot(
+            col_name= col_name[1],
+            plot_type= plot_type[0]
+        )
+        self.df_dist_plot(
+            col_name= col_name[0]
+        )
+        self.df_heatmap_plot()
 
     # OK
     def load_data(self, df_path: str) -> pd.DataFrame:
@@ -142,6 +170,8 @@ class MlModel:
 
         try:
             fig = self.df[col_name].hist()
+            fig = fig.get_figure()
+            fig.savefig(f'plots/hist_plot_{col_name}.pdf')
             logger.info(
                 f'SUCCESS: df_hist_plot(col_name={col_name}) ->'
                 f'msg : dataframe histogram created'
@@ -169,7 +199,23 @@ class MlModel:
                 f'ERROR: df_hist_plot(col_name={col_name}) -> Exception: {exc}'
                 )
             raise
-    
+
+    def df_dist_plot(self,col_name:str) -> None:
+        #sns.heatmap(self.df.corr(), annot=False, cmap='Dark2_r', linewidths = 2)
+        try:
+            fig = sns.distplot(self.df[col_name])
+            logger.info(
+                f'SUCCESS: df_dist_plot(col_name= {col_name}) ->'
+                f'msg : dataframe histogram created'
+                f'output -> {fig}'
+                )
+            return fig
+        except BaseException as exc:
+            logger.error(
+                f'ERROR: df_dist_plot(col_name= {col_name}) -> Exception: {exc}'
+                )
+            raise
+
     # OK
     def df_heatmap_plot(self) -> None:
         #sns.heatmap(self.df.corr(), annot=False, cmap='Dark2_r', linewidths = 2)

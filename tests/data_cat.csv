@@ -1,4 +1,4 @@
-user,height
-1,taller
-2,short
-3,short
+user,height,weight
+1,taller,79
+2,short,80
+3,short,50
