@@ -169,7 +169,8 @@ class MlModel:
                 f'ERROR: df_hist_plot(col_name={col_name}) -> Exception: {exc}'
                 )
             raise
-
+    
+    # OK
     def df_heatmap_plot(self) -> None:
         #sns.heatmap(self.df.corr(), annot=False, cmap='Dark2_r', linewidths = 2)
         try:
@@ -185,6 +186,8 @@ class MlModel:
                 f'ERROR: df_hist_plot() -> Exception: {exc}'
                 )
             raise
+    
+    
     # def encode_col(self, target_name: str, col_name: str,condition: str) -> None:
     #     """
     #     Perform eda pipeline on df and save figures to images folder
