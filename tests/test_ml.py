@@ -52,6 +52,16 @@ class TestIntegration:
             model.load_data('tests/data_empty.csv')
             model.df_heatmap_plot()
 
+    def test_df_col_categoric_to_binary(self):
+        model = MlModel('test')
+        model.load_data('tests/data_cat.csv')
+        df = model.df_col_categoric_to_binary(
+           target_name ='is_short',
+           col_name = 'height',
+           condition = 'short'
+        )
+        #import pdb;pdb.set_trace()
+        assert df.is_short.to_list() == [1, 0, 0]
 
 #     def test_load_data_valid_path(self):
 # model = MlModel('test')

@@ -188,30 +188,37 @@ class MlModel:
             raise
     
     
-    # def encode_col(self, target_name: str, col_name: str,condition: str) -> None:
-    #     """
-    #     Perform eda pipeline on df and save figures to images folder
+    def df_col_categoric_to_binary(self, target_name: str, col_name: str,condition: str) -> None:
+        """
+        Perform eda pipeline on df and save figures to images folder
 
-    #     Parameters
-    #     ----------
-    #     df: pd.DataFrame
-    #         Dataframe to be used in ml project
+        Parameters
+        ----------
+        df: pd.DataFrame
+            Dataframe to be used in ml project
 
-    #     Returns:
-    #     --------
-    #     None
+        Returns:
+        --------
+        None
 
-    #     Examples:
-    #     ---------
-    #         >>> perform_eda(df)
-    #     """
-    #     #self.df['Churn'] = df['Attrition_Flag'].apply(lambda val: 0 if val == "Existing Customer" else 1)
-    #     try:
-    #         self.df[target_name] = self.df[col_name].apply(lambda val: 0 if val == condition else 1)
-    #         log.info('')
-    #     except:
-    #         log.error('')
-    #         raise
+        Examples:
+        ---------
+            >>> perform_eda(df)
+        """
+        #self.df['Churn'] = df['Attrition_Flag'].apply(lambda val: 0 if val == "Existing Customer" else 1)
+        try:
+            self.df[target_name] = self.df[col_name].apply(lambda val: 0 if val == condition else 1)
+            logger.info(
+                f'SUCCESS: df_hist_plot() ->'
+                f'msg : dataframe histogram created'
+                f'output -> {self.df.columns.to_list()}'
+                )
+            return self.df
+        except BaseException as exc:
+            logger.error(
+                f'ERROR: df_hist_plot() -> Exception: {exc}'
+                )
+            raise
 
 
 
