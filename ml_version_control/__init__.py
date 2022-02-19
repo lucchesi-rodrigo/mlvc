@@ -64,6 +64,11 @@ class MLVersionControl:
 
     def __init__(self, name):
         self.__name__ = name
+        self.eda = self.perform_eda_pipeline(self)
+
+    
+    def perform_eda_pipeline(self):
+        pass
 
     def load_data(self, df_path: str) -> pd.DataFrame:
         """
@@ -92,12 +97,11 @@ class MLVersionControl:
         except FileNotFoundError as exc:
             print(f'ERROR: import_data({df_path}) -> Exception: {exc}')
             raise
-    # def perform_eda_pipeline(self):
-    #     pass
 
     def df_statistics(self):
         """
-        Perform eda pipeline on df and save figures to images folder
+        Perform data analysis with pandas methods like describe,
+        isnull and shape
 
         Parameters
         ----------
@@ -106,11 +110,13 @@ class MLVersionControl:
 
         Returns:
         --------
-        None
+        self.stats_data: Dict
+            Dictionary containing the statistics info
 
         Examples:
         ---------
-            >>> perform_eda(df)
+            >>> model = mlvc.MLVersionControl('test')
+            >>> stats = model.df_statistics()
         """
         try:
             self.stats_data = {
@@ -119,12 +125,14 @@ class MLVersionControl:
                 'numeric_stats': self.df.describe()
             }
             print(
-                f'x'
+                f'SUCCESS: df_statistics() ->'
+                f'msg : dataframe statistics callculated successfully'
+                f'output -> stats_data : {self.stats_data} '
                 )
             return self.stats_data
-        except:
+        except BaseException as exc:
             print(
-                f'x'
+                f'ERROR: df_statistics() -> Exception: {exc}'
                 )
             raise
 
