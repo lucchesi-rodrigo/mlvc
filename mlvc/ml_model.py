@@ -12,6 +12,9 @@ date: February 2022
 # import logging as log
 # from winreg import REG_RESOURCE_REQUIREMENTS_LIST
 import pandas as pd
+from loguru import logger
+import matplotlib.pyplot as plt
+import seaborn as sns; sns.set()
 # import churn_library_solution as cls
 # import matplotlib.pyplot as plt
 # import seaborn as sns
@@ -53,7 +56,7 @@ Instance methods to be created to this lib:
 #     filemode='w',
 #     format='%(name)s - %(levelname)s - %(message)s')
 # #Add log external call config
-class MLVersionControl:
+class MlModel:
     keep_cols = ['Customer_Age', 'Dependent_count', 'Months_on_book',
             'Total_Relationship_Count', 'Months_Inactive_12_mon',
             'Contacts_Count_12_mon', 'Credit_Limit', 'Total_Revolving_Bal',
@@ -64,20 +67,17 @@ class MLVersionControl:
 
     def __init__(self, name):
         self.__name__ = name
-        self.eda = self.perform_eda_pipeline(self)
+        
 
-    
-    def perform_eda_pipeline(self):
-        pass
-
+    # OK
     def load_data(self, df_path: str) -> pd.DataFrame:
         """
-        Returns dataframe for the csv file at the input path
+        Returns from a valid path a dataframe from a csv file
 
         Parameters
         ----------
         df_path: str
-            A path to the csv file
+            Path to the csv file
 
         Returns:
         --------
@@ -90,14 +90,15 @@ class MLVersionControl:
         """
         try:
             self.df = pd.read_csv(df_path)
-            print(
+            logger.info(
                 f'SUCCESS: import_data({df_path}) -> msg: dataframe read successfully -> df:' f'{self.df.head().to_dict()}'
                 )
             return self.df
         except FileNotFoundError as exc:
-            print(f'ERROR: import_data({df_path}) -> Exception: {exc}')
+            logger.error(f'ERROR: import_data({df_path}) -> Exception: {exc}')
             raise
-
+    
+    # OK
     def df_statistics(self):
         """
         Perform data analysis with pandas methods like describe,
@@ -124,15 +125,31 @@ class MLVersionControl:
                 'null_values': self.df.isnull().sum(),
                 'numeric_stats': self.df.describe()
             }
-            print(
+            logger.info(
                 f'SUCCESS: df_statistics() ->'
                 f'msg : dataframe statistics callculated successfully'
                 f'output -> stats_data : {self.stats_data} '
                 )
             return self.stats_data
         except BaseException as exc:
-            print(
+            logger.error(
                 f'ERROR: df_statistics() -> Exception: {exc}'
+                )
+            raise
+
+    def df_hist_plot(self,col_name: str) -> None:
+
+        try:
+            fig = self.df[col_name].hist()
+            logger.info(
+                f'SUCCESS: df_hist_plot(col_name={col_name}) ->'
+                f'msg : dataframe histogram created'
+                f'output -> None'
+                )
+            return fig
+        except BaseException as exc:
+            logger.error(
+                f'ERROR: df_hist_plot(col_name={col_name}) -> Exception: {exc}'
                 )
             raise
 
@@ -161,15 +178,7 @@ class MLVersionControl:
     #         log.error('')
     #         raise
 
-    # def df_hist_plot(self,col_name: str) -> None:
-    #     #self.df['Churn'].hist();
-    #     #self.df['Customer_Age'].hist();
-    #     try:
-    #         self.df[col_name].hist();
-    #         log.info('')
-    #     except:
-    #         log.error('')
-    #         raise
+
 
     # def df_bar_plot(self,col_name: str, plot_type: str) -> None:
     #     #df.Marital_Status.value_counts('normalize').plot(kind='bar');
