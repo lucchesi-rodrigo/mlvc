@@ -136,7 +136,8 @@ class MlModel:
                 f'ERROR: df_statistics() -> Exception: {exc}'
                 )
             raise
-
+    
+    # OK
     def df_hist_plot(self,col_name: str) -> None:
 
         try:
@@ -144,7 +145,23 @@ class MlModel:
             logger.info(
                 f'SUCCESS: df_hist_plot(col_name={col_name}) ->'
                 f'msg : dataframe histogram created'
-                f'output -> None'
+                f'output -> {fig}'
+                )
+            return fig
+        except BaseException as exc:
+            logger.error(
+                f'ERROR: df_hist_plot(col_name={col_name}) -> Exception: {exc}'
+                )
+            raise
+    
+    # OK
+    def df_bar_plot(self,col_name: str, plot_type: str) -> None:
+        try:
+            fig = self.df[col_name].value_counts('normalize').plot(kind=plot_type);
+            logger.info(
+                f'SUCCESS: df_hist_plot(col_name={col_name}) ->'
+                f'msg : dataframe histogram created'
+                f'output -> {fig}'
                 )
             return fig
         except BaseException as exc:
@@ -153,6 +170,21 @@ class MlModel:
                 )
             raise
 
+    def df_heatmap_plot(self) -> None:
+        #sns.heatmap(self.df.corr(), annot=False, cmap='Dark2_r', linewidths = 2)
+        try:
+            fig = sns.heatmap(self.df.corr(), annot=False, cmap='Dark2_r', linewidths = 2)
+            logger.info(
+                f'SUCCESS: df_hist_plot() ->'
+                f'msg : dataframe histogram created'
+                f'output -> {fig}'
+                )
+            return fig
+        except BaseException as exc:
+            logger.error(
+                f'ERROR: df_hist_plot() -> Exception: {exc}'
+                )
+            raise
     # def encode_col(self, target_name: str, col_name: str,condition: str) -> None:
     #     """
     #     Perform eda pipeline on df and save figures to images folder
@@ -180,23 +212,8 @@ class MlModel:
 
 
 
-    # def df_bar_plot(self,col_name: str, plot_type: str) -> None:
-    #     #df.Marital_Status.value_counts('normalize').plot(kind='bar');
-    #     try:
-    #         self.df[col_name].value_counts('normalize').plot(kind=plot_type);
-    #         log.info('')
-    #     except:
-    #         log.error('')
-    #         raise
 
-    # def df_heatmap_plot(self,col_name: str) -> None:
-    #     #sns.heatmap(self.df.corr(), annot=False, cmap='Dark2_r', linewidths = 2)
-    #     try:
-    #         sns.heatmap(self.df.corr(), annot=False, cmap='Dark2_r', linewidths = 2)
-    #         log.info('')
-    #     except:
-    #         log.error('')
-    #         raise
+
 
     # def encoder_helper(self, category, target_col, response):
     #     """

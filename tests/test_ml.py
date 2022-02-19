@@ -24,6 +24,26 @@ class TestIntegration:
         model.load_data('tests/data.csv')
         assert model.df_hist_plot('x')
 
+    def test_df_bar_plot(self):
+        model = MlModel('test')
+        model.load_data('tests/data.csv')
+        assert model.df_bar_plot(
+            col_name = 'x', 
+            plot_type = 'bar'
+        )
+    def test_df_bar_plot(self):
+        model = MlModel('test')
+        model.load_data('tests/data.csv')
+        assert model.df_bar_plot(
+            col_name = 'x', 
+            plot_type = 'bar'
+        )
+    
+    def test_df_heatmap_plot(self):
+        model = MlModel('test')
+        model.load_data('tests/data.csv')
+        assert model.df_heatmap_plot()
+
 
 #     def test_load_data_valid_path(self):
 # model = MlModel('test')
