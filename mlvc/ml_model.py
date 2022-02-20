@@ -5,20 +5,22 @@ date: February 2022
 """
 # library doc string
 
-
-# import libraries
-# from operator import methodcaller
-# import os
-# import logging as log
-# from winreg import REG_RESOURCE_REQUIREMENTS_LIST
+import shap
+import joblib
 import pandas as pd
-from typing import List
-from loguru import logger
+import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns; sns.set()
-# import churn_library_solution as cls
-# import matplotlib.pyplot as plt
-# import seaborn as sns
+
+from loguru import logger
+from sklearn.preprocessing import normalize
+from sklearn.model_selection import train_test_split
+
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import GridSearchCV
+
+from sklearn.metrics import plot_roc_curve, classification_report
 
 """
 # TODO: 
@@ -27,78 +29,21 @@ import seaborn as sns; sns.set()
 
 Instance methods to be created to this lib:
 
-1. read_csv
-2. statistics
-3. encode to binary categorical
-4. histogram target, column
-5. bar_plot df col normalized
-6. dist_plot col
-7. heatmap sns correlation matrix
-8. define hypothesy matrix and target matrix
-9. encode columns with groupby ... understand groupby
-10. train_test_split
-11. model tunning with GridSearch -> get params and model
-12  plot_roc_curve ?
-13. save best model with joblib
-14. open and test model
-15. shap.TreeExplainer(cv_rfc.best_estimator_)
-16. feature importance with bar plot  
-17. Report model tunning
+1. REDO
 
 
 - Write the code with the test and document function by function
 - Each method
   - pep8 and pylint -> Friday first working version
 """
-
-# log.basicConfig(
-#     filename='./logs/churn_library.log',
-#     level = logging.INFO,
-#     filemode='w',
-#     format='%(name)s - %(levelname)s - %(message)s')
-# #Add log external call config
+# SET constants in different value
 class MlModel:
-    keep_cols = ['Customer_Age', 'Dependent_count', 'Months_on_book',
-            'Total_Relationship_Count', 'Months_Inactive_12_mon',
-            'Contacts_Count_12_mon', 'Credit_Limit', 'Total_Revolving_Bal',
-            'Avg_Open_To_Buy', 'Total_Amt_Chng_Q4_Q1', 'Total_Trans_Amt',
-            'Total_Trans_Ct', 'Total_Ct_Chng_Q4_Q1', 'Avg_Utilization_Ratio',
-            'Gender_Churn', 'Education_Level_Churn', 'Marital_Status_Churn',
-            'Income_Category_Churn', 'Card_Category_Churn']
 
     def __init__(self, name):
         self.__name__ = name
-        
 
-    def eda(self, df_path:str, target_name:str, col_name:List, condition: str, plot_type:List) -> None:
-
-        self.load_data(
-            df_path= df_path
-        )
-        # import pdb;pdb.set_trace()
-        self.df_statistics()
-        self.df_col_categoric_to_binary(
-            target_name= target_name,
-            col_name = col_name[1],
-            condition=condition
-        )
-        self.df_hist_plot(
-            col_name= col_name[0]
-        )
-        self.df_hist_plot(
-            col_name= col_name[1]
-        )
-        self.df_bar_plot(
-            col_name= col_name[1],
-            plot_type= plot_type[0]
-        )
-        self.df_dist_plot(
-            col_name= col_name[0]
-        )
-        self.df_heatmap_plot()
-
-    # OK
-    def load_data(self, df_path: str) -> pd.DataFrame:
+    #  OK TESTED 
+    def data_loading(self, df_path: str) -> pd.DataFrame:
         """
         Returns from a valid path a dataframe from a csv file
 
@@ -126,8 +71,8 @@ class MlModel:
             logger.error(f'ERROR: import_data({df_path}) -> Exception: {exc}')
             raise
     
-    # OK
-    def df_statistics(self):
+    #  OK TESTED 
+    def data_statistics(self):
         """
         Perform data analysis with pandas methods like describe,
         isnull and shape
@@ -165,8 +110,8 @@ class MlModel:
                 )
             raise
     
-    # OK
-    def df_hist_plot(self,col_name: str) -> None:
+    #   OK TESTED
+    def data_hist_plot(self,col_name: str) -> None:
 
         try:
             fig = self.df[col_name].hist()
@@ -184,8 +129,8 @@ class MlModel:
                 )
             raise
     
-    # OK
-    def df_bar_plot(self,col_name: str, plot_type: str) -> None:
+    #  OK TESTED
+    def data_bar_plot(self,col_name: str, plot_type: str) -> None:
         try:
             fig = self.df[col_name].value_counts('normalize').plot(kind=plot_type);
             logger.info(
@@ -200,7 +145,7 @@ class MlModel:
                 )
             raise
 
-    def df_dist_plot(self,col_name:str) -> None:
+    def data_dist_plot(self,col_name:str) -> None:
         #sns.heatmap(self.df.corr(), annot=False, cmap='Dark2_r', linewidths = 2)
         try:
             fig = sns.distplot(self.df[col_name])
@@ -216,8 +161,8 @@ class MlModel:
                 )
             raise
 
-    # OK
-    def df_heatmap_plot(self) -> None:
+    #  OK TESTED
+    def data_heatmap_plot(self) -> None:
         #sns.heatmap(self.df.corr(), annot=False, cmap='Dark2_r', linewidths = 2)
         try:
             fig = sns.heatmap(self.df.corr(), annot=False, cmap='Dark2_r', linewidths = 2)
@@ -233,8 +178,7 @@ class MlModel:
                 )
             raise
     
-    
-    def df_col_categoric_to_binary(self, target_name: str, col_name: str,condition: str) -> None:
+    def data_col_categoric_to_binary(self, target_name: str, col_name: str,condition: str) -> None:
         """
         Perform eda pipeline on df and save figures to images folder
 
@@ -265,133 +209,184 @@ class MlModel:
                 f'ERROR: df_hist_plot() -> Exception: {exc}'
                 )
             raise
-
-
-
-
-
-
-    # def encoder_helper(self, category, target_col, response):
-    #     """
-    #     """
-    #     category_lst = []
-    #     try:
-    #         category_groups = self.df.groupby(category).mean()[target_col]
-
-    #         for val in self.df[category]:
-    #             category_lst.append(category_groups.loc[val])
-
-    #         self.df[f'{category}_{target_col}'] = category_lst
-    #         log.info('')
-    #     except:
-    #         log.error('')
-    #         raise
     
-    # def target_instance_matrix(self, target_col:str, states: list()):
-    #     try:
-    #         self.y = self.df[target_col]
-    #         self.X = pd.DataFrame()
-    #         self.X[states] = self.df[states]
-    #         self.ml_data = {'X':self.X,'y':self.y}
-    #         log.info('')
-    #         return self.ml_data
-    #     except:
-    #         log.error('')
-    #         raise
+    #  OK  but no unit-test
+    def feature_encoder(self, category, target_col, response):
+        """
+        """
+        category_lst = []
+        try:
+            category_groups = self.df.groupby(category).mean()[target_col]
 
-    # def train_test_split(self,test_size: float, random_state:int)):
-    #     """
-    #     """
-    #     try:
-    #         self.data_processed = train_test_split(
-    #             self.X,
-    #             self.y,
-    #             test_size= 0.3,
-    #             random_state=42)
+            for val in self.df[category]:
+                category_lst.append(category_groups.loc[val])
 
-    #         self.X_train, self.X_test, self.y_train, self.y_test = self.data_processed
-    #         log.info('')
-    #         return self.data_processed
-    #     except:
-    #         log.error('')
-    #         raise
-
-    # def best_models(self,model_algorithm: dict, param_grid: dict, folds:int):
-        
-    #     try:
-    #         model = model_algorithm.value()
-
-    #         cv_model = GridSearchCV(estimator=model, param_grid=param_grid, cv=folds)
-    #         cv_model.fit(self.X_train, self.y_train)
-
-    #         y_train_preds = cv_model.best_estimator_.predict(self.X_train)
-    #         y_test_preds = cv_model.best_estimator_.predict(self.X_test)
-        
-    #         self.test_report = classification_report(self.y_test, y_test_preds)
-    #         self.train_report = classification_report(self.y_train, y_train_preds)
-    #         log.info('')
-    #         return self.test_report, self.train_report
-    #     except:
-    #         log.error('')
-    #         raise
-
-    # def model_performance(self):
-    #     # Check book pipeline names
-    #     # scores
-
-
-    #     print('logistic regression results')
-    #     print('test results')
-    #     print(classification_report(y_test, y_test_preds_lr))
-    #     print('train results')
-    #     print(classification_report(y_train, y_train_preds_lr))
-
-    # def classification_report_image(
-    #     self,y_train,
-    #     y_test,
-    #     y_train_preds_lr,
-    #     y_train_preds_rf,
-    #     y_test_preds_lr,
-    #     y_test_preds_rf):
-    #     """
-    #     produces classification report for training and testing results and stores report as image
-    #     in images folder
-    #     input:
-    #             y_train: training response values
-    #             y_test:  test response values
-    #             y_train_preds_lr: training predictions from logistic regression
-    #             y_train_preds_rf: training predictions from random forest
-    #             y_test_preds_lr: test predictions from logistic regression
-    #             y_test_preds_rf: test predictions from random forest
-
-    #     output:
-    #             None
-    #     """
-    #     pass
+            self.df[f'{category}_{target_col}'] = category_lst
+            logger.info(
+                f''
+                )
+        except:
+            logger.error(
+                f''
+                )
+            raise
     
-    # def feature_importance_plot(self,model, X_data, output_pth):
-    #     '''
-    #     creates and stores the feature importances in pth
-    #     input:
-    #             model: model object containing feature_importances_
-    #             X_data: pandas dataframe of X values
-    #             output_pth: path to store the figure
+    #  OK  but no unit-test
+    def build_ml_matrix(self, target_col:str, states: List):
+        try:
+            self.y = self.df[target_col]
+            self.X = pd.DataFrame()
+            self.X[states] = self.df[states]
+            self.ml_data = {'X':self.X,'y':self.y}
+            logger.info(
+                f' SUCCESS ->'
+                )
+            return self.ml_data
+        except:
+            logger.error(
+                f'ERROR ->'
+                )
+            raise
+    
+    # TODO : Test in workspace! -> Working?
+    def test_train_data_dev(self, test_size: float, random_state: int):
+        """
+        """
+        try:
+            self.data_processed = train_test_split(
+                self.X,
+                self.y,
+                test_size= test_size,
+                random_state= random_state)
 
-    #     output:
-    #             None
-    #     '''
-    #     pass
+            self.X_train, self.X_test, self.y_train, self.y_test = self.data_processed
+            logger.info(
+                f' SUCCESS ->'
+                )
+            return self.data_processed
+        except BaseException as exc:
+            logger.error(f' ERROR -> {exc}')
+            raise
+    
+    # TODO : Test in workspace! NOT working logistic regression
+    def best_params(
+        self,
+        model_algorithm: Tuple, 
+        param_grid: Dict, 
+        folds: int, 
+        grid_search: bool,
+        best_estimator: bool
+        ):
+        """
+        DOCS
+        """
+        try:
 
-    # def train_models(self,X_train, X_test, y_train, y_test):
-    #     '''
-    #     train, store model results: images + scores, and store models
-    #     input:
-    #             X_train: X training data
-    #             X_test: X testing data
-    #             y_train: y training data
-    #             y_test: y testing data
-    #     output:
-    #             None
-    #     '''
-    #     pass
+            model_algorithm = model_algorithm
+            
+            if grid_search:
+                cv_model = GridSearchCV(
+                    estimator=model_algorithm, 
+                    param_grid=param_grid, 
+                    cv= folds
+                )
+
+            cv_model.fit(self.X_train, self.y_train)
+
+            if best_estimator:
+                y_train_preds_cv_model = cv_model.best_estimator_.predict(self.X_train)
+                y_test_preds_cv_model = cv_model.best_estimator_.predict(self.X_test)
+
+            y_train_preds_cv_model = cv_model.predict(self.X_train)
+            y_test_preds_cv_model = cv_model.predict(self.X_test)
+
+            logger.info(classification_report(self.y_test, y_test_preds_cv_model))
+            logger.info(classification_report(self.y_train, y_train_preds_cv_model))
+        except BaseException as exc:
+            logger.error('ERROR -> {exc}')
+            raise
+
+    # TODO : Test in workspace!      
+    def tp_rate(self,model_1,model_2):
+        try:
+            # plots
+            lrc_plot = plot_roc_curve(model_1, self.X_test, self.y_test)
+            plt.figure(figsize=(15, 8))
+            ax = plt.gca()
+            rfc_disp = plot_roc_curve(model_2.best_estimator_, X_test, y_test, ax=ax, alpha=0.8)
+            lrc_plot.plot(ax=ax, alpha=0.8)
+            plt.show()
+            logger.info('SUCCESS -> ')
+        except BaseException as exc:
+            logger.error(f'ERROR -> {exc}')
+
+    # TODO : Test in workspace!
+    def saving(model_name,model):
+        try:
+            joblib.dump(model.best_estimator_, f'./models/{model_name}.pkl')
+            logger.info(f'SUCCESS -> ')
+        except BaseException as exc:
+            logger.error(f'Error -> {exc}')
+
+    # TODO : Test in workspace!
+    def loading(model_name):
+        try:
+            joblib.load(f'./models/{model_name}.pkl')
+            logger.info(f'SUCCESS -> ')
+        except BaseException as exc:
+            logger.error(f'Error -> {exc}')
+
+    # TODO : Test in workspace!
+    def output_explanation(self):
+        try:
+            explainer = shap.TreeExplainer(cv_rfc.best_estimator_)
+            shap_values = explainer.shap_values(X_test)
+            shap.summary_plot(shap_values, X_test, plot_type="bar")
+            logger.info('SUCCESS -> ')
+        except BaseException as exc:
+            logger.error(f'ERROR -> {exc}')
+
+    # TODO : Test in workspace!
+    def feature_importance(self):
+        try:
+            # Calculate feature importances
+            importances = cv_rfc.best_estimator_.feature_importances_
+            # Sort feature importances in descending order
+            indices = np.argsort(importances)[::-1]
+
+            # Rearrange feature names so they match the sorted feature importances
+            names = [X.columns[i] for i in indices]
+
+            # Create plot
+            plt.figure(figsize=(20,5))
+
+            # Create plot title
+            plt.title("Feature Importance")
+            plt.ylabel('Importance')
+
+            # Add bars
+            plt.bar(range(X.shape[1]), importances[indices])
+
+            # Add feature names as x-axis labels
+            plt.xticks(range(X.shape[1]), names, rotation=90);
+            logger.info('SUCCESS -> ')
+        except BaseException as exc:
+            logger.error(f'ERROR -> {exc}')
+
+    # TODO : Test in workspace!
+    def report(self):
+        try:
+            fig = plt.rc('figure', figsize=(5, 5))
+            #plt.text(0.01, 0.05, str(model.summary()), {'fontsize': 12}) old approach
+            fig.text(0.01, 1.25, str('Random Forest Train'), {'fontsize': 10}, fontproperties = 'monospace')
+            fig.text(0.01, 0.05, str(classification_report(self.y_test, self.y_test_preds_rf)), {'fontsize': 10}, fontproperties = 'monospace') # approach improved by OP -> monospace!
+            fig.text(0.01, 0.6, str('Random Forest Test'), {'fontsize': 10}, fontproperties = 'monospace')
+            fig.text(0.01, 0.7, str(classification_report(self.y_train, self.y_train_preds_rf)), {'fontsize': 10}, fontproperties = 'monospace') # approach improved by OP -> monospace!
+            fig.axis('off');
+            fig.savefig(f'plots/model_report.pdf')
+            logger.info('SUCCESS -> ')
+        except BaseException as exc:
+            logger(f'ERROR -> {exc}')
+            raise
+
 
