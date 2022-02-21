@@ -45,7 +45,7 @@ class MlModel:
     #  OK TESTED 
     def data_loading(self, df_path: str) -> pd.DataFrame:
         """
-        Returns from a valid path a dataframe from a csv file
+        Converts a csv file into a dataframe
 
         Parameters
         ----------
@@ -59,16 +59,21 @@ class MlModel:
 
         Examples:
         ---------
-            >>> df = load_data('path/file.csv')
+            >>> df = load_data(df_path= 'path/file.csv')
         """
         try:
             self.df = pd.read_csv(df_path)
             logger.info(
-                f'SUCCESS: import_data({df_path}) -> msg: dataframe read successfully -> df:' f'{self.df.head().to_dict()}'
+                f'SUCCESS -> import_data({df_path}) -> '
+                f'MSG -> Dataframe read successfully -> '
+                f'OUTPUT -> df.head(): {self.df.head().to_dict()} .'
                 )
             return self.df
         except FileNotFoundError as exc:
-            logger.error(f'ERROR: import_data({df_path}) -> Exception: {exc}')
+            logger.error(
+                f'ERROR -> import_data({df_path}) -> '
+                f'MSG -> Could not import data object! -> '
+                f'EXCEPTION -> {exc} .')
             raise
     
     #  OK TESTED 
