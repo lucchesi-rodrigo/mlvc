@@ -72,29 +72,27 @@ class MlModel:
         except FileNotFoundError as exc:
             logger.error(
                 f'ERROR -> import_data({df_path}) -> '
-                f'MSG -> Could not import data object! -> '
+                f'MSG -> Could not import data object ! -> '
                 f'EXCEPTION -> {exc} .')
             raise
     
     #  OK TESTED 
     def data_statistics(self):
         """
-        Perform data analysis with pandas methods like describe,
-        isnull and shape
+        Perform data analysis into a data file
 
         Parameters
         ----------
-        df: pd.DataFrame
-            Dataframe to be used in ml project
+        None
 
         Returns:
         --------
-        self.stats_data: Dict
-            Dictionary containing the statistics info
+        stats_data: Dict
+            Dictionary containing the data analysis information
 
         Examples:
         ---------
-            >>> model = mlvc.MLVersionControl('test')
+            >>> model = mlvc.MlModel('test')
             >>> stats = model.df_statistics()
         """
         try:
@@ -104,14 +102,16 @@ class MlModel:
                 'numeric_stats': self.df.describe()
             }
             logger.info(
-                f'SUCCESS: df_statistics() ->'
-                f'msg : dataframe statistics callculated successfully'
-                f'output -> stats_data : {self.stats_data} '
+                f'SUCCESS -> df_statistics() -> '
+                f'MSG -> dataframe statistics callculated successfully -> '
+                f'OUTPUT -> stats_data: {self.stats_data} .'
                 )
             return self.stats_data
         except BaseException as exc:
             logger.error(
-                f'ERROR: df_statistics() -> Exception: {exc}'
+                f'ERROR: df_statistics() -> '
+                f'MSG -> Could not perform data analysis process ! -> '
+                f'EXCEPTION -> {exc} .'
                 )
             raise
     
