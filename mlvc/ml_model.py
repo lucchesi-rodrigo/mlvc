@@ -117,20 +117,39 @@ class MlModel:
     
     #   OK TESTED
     def data_hist_plot(self,col_name: str) -> None:
+        """
+        Create a histogram plot from a dataframe
 
+        Parameters
+        ----------
+        col_name: str
+            Column name to generate the histogram plot from
+
+        Returns:
+        --------
+        stats_data: Dict
+            Dictionary containing the data analysis information
+
+        Examples:
+        ---------
+            >>> model = mlvc.MlModel('test')
+            >>> model.data_hist_plot(col_name= 'X')
+        """
         try:
-            fig = self.df[col_name].hist()
+            fig = self.df[col_name].hist();
             fig = fig.get_figure()
             fig.savefig(f'plots/hist_plot_{col_name}.pdf')
             logger.info(
-                f'SUCCESS: df_hist_plot(col_name={col_name}) ->'
-                f'msg : dataframe histogram created'
-                f'output -> {fig}'
+                f'SUCCESS -> df_hist_plot(col_name={col_name}) -> '
+                f'MSG -> Dataframe histogram plot created ! -> '
+                f'OUTPUT -> {fig} .'
                 )
-            return fig
+            return
         except BaseException as exc:
             logger.error(
-                f'ERROR: df_hist_plot(col_name={col_name}) -> Exception: {exc}'
+                f'ERROR -> df_hist_plot(col_name={col_name}) ->'
+                f'MSG -> Could not create dataframe histogram ! ->'
+                f'Exception -> {exc} .'
                 )
             raise
     
