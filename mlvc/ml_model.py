@@ -228,7 +228,7 @@ class MlModel:
                 )
             raise
 
-    #  OK TESTED
+    #  OK 
     def data_heatmap_plot(self, color_pallete:str ='Dark2_r') -> None:
         """
         Create a heatmap plot from a pandas correlation matrix 
@@ -265,35 +265,43 @@ class MlModel:
                 )
             raise
     
-    def data_col_categoric_to_binary(self, target_name: str, col_name: str,condition: str) -> None:
+    #  OK
+    def data_categoric_to_binary(self, target_name: str ,col_name: str ,base_value: str) -> None:
         """
-        Perform eda pipeline on df and save figures to images folder
+        Convert a categorical (eg.: 2 value options: [high,low]) to binary
 
         Parameters
         ----------
-        df: pd.DataFrame
-            Dataframe to be used in ml project
-
+        target_name: str
+            New column name created from this process
+        col_name: str
+            Column name to be transformed to binary values
+        base_value: str
+            Value from categorical data to be converted to False -> 0
+            
         Returns:
         --------
-        None
+        df: pd.DataFrame
+            New dataframe pre-processed
 
         Examples:
         ---------
-            >>> perform_eda(df)
+            >>> model = mlvc.MlModel('test')
+            >>> model.data_categoric_to_binary(target_name= 'z' ,col_name= 'X1' ,base_value= 'low')
         """
-        #self.df['Churn'] = df['Attrition_Flag'].apply(lambda val: 0 if val == "Existing Customer" else 1)
         try:
-            self.df[target_name] = self.df[col_name].apply(lambda val: 0 if val == condition else 1)
+            self.df[target_name] = self.df[col_name].apply(lambda val: 0 if val == base_value else 1)
             logger.info(
-                f'SUCCESS: df_hist_plot() ->'
-                f'msg : dataframe histogram created'
-                f'output -> {self.df.columns.to_list()}'
+                f'SUCCESS -> data_categoric_to_binary(target_name= {target_name} ,col_name= {col_name} ,base_value= {base_value}) -> '
+                f'MSG -> Dataframe pre-processed succesfully ! -> '
+                f'OUTPUT -> df cols: {self.df.columns.to_list()} .'
                 )
             return self.df
         except BaseException as exc:
             logger.error(
-                f'ERROR: df_hist_plot() -> Exception: {exc}'
+                f'ERROR  -> data_categoric_to_binary(target_name= {target_name} ,col_name= {col_name} ,base_value= {base_value}) -> '
+                f'MSG -> Dataframe could not be pre-processed ! ->'
+                f'Exception -> {exc} .'
                 )
             raise
     
