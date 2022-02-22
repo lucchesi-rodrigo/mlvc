@@ -127,8 +127,7 @@ class MlModel:
 
         Returns:
         --------
-        stats_data: Dict
-            Dictionary containing the data analysis information
+        None
 
         Examples:
         ---------
@@ -154,18 +153,41 @@ class MlModel:
             raise
     
     #  OK TESTED
-    def data_bar_plot(self,col_name: str, plot_type: str) -> None:
+    def normalized_data_plot(self,col_name: str, plot_type: str) -> None:
+        """
+        Create a specific plot from a pandas series normalized
+
+        Parameters
+        ----------
+        col_name: str
+            Column name to generate the histogram plot from
+        plot_type: str
+            Plot type
+
+        Returns:
+        --------
+        None
+
+        Examples:
+        ---------
+            >>> model = mlvc.MlModel('test')
+            >>> model.normalized_data_plot(col_name= 'X', plot_type= 'bar')
+        """
         try:
             fig = self.df[col_name].value_counts('normalize').plot(kind=plot_type);
+            fig = fig.get_figure()
+            fig.savefig(f'plots/{plot_type}_plot_{col_name}.pdf')
             logger.info(
-                f'SUCCESS: df_hist_plot(col_name={col_name}) ->'
-                f'msg : dataframe histogram created'
-                f'output -> {fig}'
+                f'SUCCESS -> normalized_data_plot(col_name={col_name} ,plot_type= {plot_type}) -> '
+                f'MSG -> Created Pandas series plot {plot_type} ! -> '
+                f'OUTPUT -> {fig} .'
                 )
-            return fig
+            return
         except BaseException as exc:
             logger.error(
-                f'ERROR: df_hist_plot(col_name={col_name}) -> Exception: {exc}'
+                f'ERROR -> normalized_data_plot(col_name={col_name} ,plot_type= {plot_type}) -> '
+                f'MSG -> Could not create Pandas series plot {plot_type} ! ->'
+                f'Exception -> {exc} .'
                 )
             raise
 
