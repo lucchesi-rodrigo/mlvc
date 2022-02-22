@@ -305,24 +305,49 @@ class MlModel:
                 )
             raise
     
-    #  OK  but no unit-test
-    def feature_encoder(self, category, target_col, response):
+    #  OK
+    def data_feature_encoder(self, col_name: str, target_col: str) -> pd.DataFrame:
         """
+        Creates a new dataframe column grouping by col_name and target_name
+        ... feature_encoder -> Info:
+        https://towardsdatascience.com/categorical-feature-encoding
+
+        Parameters
+        ----------
+        col_name: str
+            Column name to be transformed to binary values
+        target_col: str
+            Column to be compared? TODO: What is groupby??
+            
+        Returns:
+        --------
+        df: pd.DataFrame
+            New dataframe pre-processed
+
+        Examples:
+        ---------
+            >>> model = mlvc.MlModel('test')
+            >>> model.data_feature_encoder(col_name= 'X1', target_col= 'X3')
         """
         category_lst = []
         try:
-            category_groups = self.df.groupby(category).mean()[target_col]
+            category_groups = self.df.groupby(col_name).mean()[target_col]
 
-            for val in self.df[category]:
+            for val in self.df[col_name]:
                 category_lst.append(category_groups.loc[val])
 
-            self.df[f'{category}_{target_col}'] = category_lst
+            self.df[f'{col_name}_{target_col}'] = category_lst
             logger.info(
-                f''
+                f'SUCCESS -> data_feature_encoder(col_name= {col_name}, target_col= {target_col} ) -> '
+                f'MSG -> Dataframe pre-processed succesfully ! -> '
+                f'OUTPUT -> df cols: {self.df.columns.to_list()} .'
                 )
-        except:
+            return self.df
+        except BaseException as exc:
             logger.error(
-                f''
+                f'ERROR  -> data_feature_encoder(col_name= {col_name}, target_col= {target_col} ) -> '
+                f'MSG -> Dataframe could not be pre-processed ! ->'
+                f'Exception -> {exc} .'
                 )
             raise
     
