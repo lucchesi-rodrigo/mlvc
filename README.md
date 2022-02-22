@@ -22,3 +22,15 @@ Instance methods to be created to this lib:
 16. feature importance with bar plot  
 17. Report model tunning
 
+---
+
+# To-Do -> Finish ...
+1. Unit-test until data_build_ml_matrix
+2. Docstring and logging rest
+3. Unit-test until the end
+4. Review algorithm process
+5. TDD
+6. Test-hml with solution
+7. PEP and Pylint
+8. Git clone repo with lib
+
