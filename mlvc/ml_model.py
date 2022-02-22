@@ -190,7 +190,8 @@ class MlModel:
                 f'Exception -> {exc} .'
                 )
             raise
-
+    
+    # OK
     def data_dist_plot(self,col_name:str) -> None:
         """
         Create a dist plot from a pandas series using seaborn backend
@@ -228,19 +229,39 @@ class MlModel:
             raise
 
     #  OK TESTED
-    def data_heatmap_plot(self) -> None:
-        #sns.heatmap(self.df.corr(), annot=False, cmap='Dark2_r', linewidths = 2)
+    def data_heatmap_plot(self, color_pallete:str ='Dark2_r') -> None:
+        """
+        Create a heatmap plot from a pandas correlation matrix 
+        using seaborn backend
+
+        Parameters
+        ----------
+        None
+
+        Returns:
+        --------
+        None
+
+        Examples:
+        ---------
+            >>> model = mlvc.MlModel('test')
+            >>> model.data_heatmap_plot()
+        """
         try:
-            fig = sns.heatmap(self.df.corr(), annot=False, cmap='Dark2_r', linewidths = 2)
+            fig = sns.heatmap(self.df.corr(), annot=True, cmap=color_pallete, linewidths = 2)
+            fig = fig.get_figure()
+            fig.savefig(f'plots/heatmap_{self.__name__}.pdf')
             logger.info(
-                f'SUCCESS: df_hist_plot() ->'
-                f'msg : dataframe histogram created'
-                f'output -> {fig}'
+                f'SUCCESS -> data_heatmap_plot() -> '
+                f'MSG -> Created heatmap plot ! -> '
+                f'OUTPUT -> {fig} .'
                 )
-            return fig
+            return
         except BaseException as exc:
             logger.error(
-                f'ERROR: df_hist_plot() -> Exception: {exc}'
+                f'ERROR  -> data_heatmap_plot() -> '
+                f'MSG -> Could not create heatmap plot ! ->'
+                f'Exception -> {exc} .'
                 )
             raise
     
