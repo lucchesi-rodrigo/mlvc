@@ -266,7 +266,7 @@ class MlModel:
             raise
     
     #  OK
-    def data_categoric_to_binary(self, target_name: str ,col_name: str ,base_value: str) -> None:
+    def data_categoric_to_binary(self, target_name: str ,col_name: str ,base_value: str) -> pd.DataFrame:
         """
         Convert a categorical (eg.: 2 value options: [high,low]) to binary
 
