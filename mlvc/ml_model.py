@@ -11,6 +11,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns; sns.set()
+from typing import Dict,List,Tuple
 
 from loguru import logger
 from sklearn.preprocessing import normalize
@@ -352,19 +353,43 @@ class MlModel:
             raise
     
     #  OK  but no unit-test
-    def build_ml_matrix(self, target_col:str, states: List):
+    def data_build_ml_matrix(self, target_col:str, states_key: List):
+        """
+        Builds a Machine learning matrix X(y)
+
+        Parameters
+        ----------
+        target_col: str
+            Target column
+        states_key: List
+            List of columns to be keeped in the ML matrix
+            
+        Returns:
+        --------
+        ml_data: Dict
+            Dictionary grouping X(y): {'X':self.X,'y':self.y}
+
+        Examples:
+        ---------
+            >>> model = mlvc.MlModel('test')
+            >>> model.data_build_ml_matrix(target_col= 'y', states_key= ['x1','x2',...]) 
+        """
         try:
             self.y = self.df[target_col]
             self.X = pd.DataFrame()
-            self.X[states] = self.df[states]
+            self.X[states_key] = self.df[states_key]
             self.ml_data = {'X':self.X,'y':self.y}
             logger.info(
-                f' SUCCESS ->'
+                f'SUCCESS -> data_build_ml_matrix(target_col= {target_col}, states_key= {states_key}) -> '
+                f'MSG -> Machine learning matrix is created ! -> '
+                f'OUTPUT -> y: {self.y.columns.to_list()} , X: {self.X.columns.to_list()} .'
                 )
             return self.ml_data
-        except:
+        except BaseException as exc:
             logger.error(
-                f'ERROR ->'
+                f'ERROR  -> data_build_ml_matrix(target_col= {target_col}, states_key= {states_key}) -> '
+                f'MSG -> Machine learning matrix could not be created ! ->'
+                f'Exception -> {exc} .'
                 )
             raise
     
