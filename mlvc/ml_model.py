@@ -192,18 +192,38 @@ class MlModel:
             raise
 
     def data_dist_plot(self,col_name:str) -> None:
-        #sns.heatmap(self.df.corr(), annot=False, cmap='Dark2_r', linewidths = 2)
+        """
+        Create a dist plot from a pandas series using seaborn backend
+
+        Parameters
+        ----------
+        col_name: str
+            Column name to generate the dist plot from
+
+        Returns:
+        --------
+        None
+
+        Examples:
+        ---------
+            >>> model = mlvc.MlModel('test')
+            >>> model.data_dist_plot(col_name= 'X')
+        """
         try:
-            fig = sns.distplot(self.df[col_name])
+            fig = sns.distplot(self.df[col_name]);
+            fig = fig.get_figure()
+            fig.savefig(f'plots/distplot_plot_{col_name}.pdf')
             logger.info(
-                f'SUCCESS: df_dist_plot(col_name= {col_name}) ->'
-                f'msg : dataframe histogram created'
-                f'output -> {fig}'
+                f'SUCCESS -> normalized_data_plot(col_name={col_name}) -> '
+                f'MSG -> Created Pandas series dist plot ! -> '
+                f'OUTPUT -> {fig} .'
                 )
-            return fig
+            return
         except BaseException as exc:
             logger.error(
-                f'ERROR: df_dist_plot(col_name= {col_name}) -> Exception: {exc}'
+                f'ERROR  -> normalized_data_plot(col_name={col_name}) -> '
+                f'MSG -> Could not create Pandas series dist plot ! ->'
+                f'Exception -> {exc} .'
                 )
             raise
 
