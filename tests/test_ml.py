@@ -1,6 +1,8 @@
 from lib2to3.pytree import Base
 from mlvc.ml_model import MlModel
 import pytest
+import pandas as pd
+import numpy as np
 class TestIntegration:
 
     def test_init(self):
@@ -80,13 +82,64 @@ class TestIntegration:
                 base_value = 1
                 )
 
+    def test_data_feature_encoder(self):
+        df = pd.DataFrame(
+            [
+                ("bird", "Falconiformes", 389.0),
+                ("bird", "Psittaciformes", 24.0),
+                ("mammal", "Carnivora", 80.2),
+                ("mammal", "Primates", np.nan),
+                ("mammal", "Carnivora", 58),
+            ],
+            index=["falcon", "parrot", "lion", "monkey", "leopard"],
+            columns=("class", "order", "max_speed"),
+        )
+        col_name='order'
+        target_col='max_speed'
+
+        model = MlModel('test')
+        model.df = df
+        model.data_feature_encoder(col_name=col_name, target_col=target_col)
+        assert sorted(model.df.columns.tolist()) == sorted(["class", "order", "max_speed",f"{col_name}_{target_col}"])
 
     def test_data_build_ml_matrix(self):
-        model = MlModel('test')
-        model.data_loading('tests/data_mix.csv')
-        ml_data = model.data_build_ml_matrix(
-           target_col ='height',
-           states_key = ['weight'],
+        df = pd.DataFrame(
+            [
+                ("bird", "Falconiformes", 389.0),
+                ("bird", "Psittaciformes", 24.0),
+                ("mammal", "Carnivora", 80.2),
+                ("mammal", "Primates", 0),
+                ("mammal", "Carnivora", 58),
+            ],
+            index=["falcon", "parrot", "lion", "monkey", "leopard"],
+            columns=("class", "order", "max_speed"),
         )
-        #import pdb;pdb.set_trace()
-        assert list(ml_data.keys()) == ['height', 'weight']
+        states_key=["class", "order"]
+        target_col='max_speed'
+
+        model = MlModel('test')
+        model.df = df
+        ml_data = model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
+        assert model.y.to_list() == [389.0, 24.0, 80.2, 0, 58.0]
+        assert model.X.columns.to_list() == ["class", "order"]
+
+    def test_data_build_ml_matrix(self):
+        with pytest.raises(BaseException):
+            df = pd.DataFrame(
+                [
+                    ("bird", "Falconiformes", 389.0),
+                    ("bird", "Psittaciformes", 24.0),
+                    ("mammal", "Carnivora", 80.2),
+                    ("mammal", "Primates", 0),
+                    ("mammal", "Carnivora", 58),
+                ],
+                index=["falcon", "parrot", "lion", "monkey", "leopard"],
+                columns=("class", "order", "max_speed"),
+            )
+            states_key=["z", "x"]
+            target_col='y'
+
+            model = MlModel('test')
+            model.df = df
+            model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
+        

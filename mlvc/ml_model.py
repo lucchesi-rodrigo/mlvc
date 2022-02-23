@@ -300,7 +300,7 @@ class MlModel:
                 )
             raise
     
-    #  TODO: Everything
+    #   TODO: Unit-tested -> Integration-Tested -> Exception case not done
     def data_feature_encoder(self, col_name: str, target_col: str) -> pd.DataFrame:
         """
         Creates a new dataframe column grouping by col_name and target_name
@@ -346,7 +346,7 @@ class MlModel:
                 )
             raise
     
-    #  TODO: Everything
+    #  Unit-tested -> ...
     def data_build_ml_matrix(self, target_col:str, states_key: List):
         """
         Builds a Machine learning matrix X(y)
@@ -371,12 +371,12 @@ class MlModel:
         try:
             self.y = self.df[target_col]
             self.X = pd.DataFrame()
-            self.X[states_key] = self.df[states_key]
+            self.X = self.df.filter(items=states_key)
             self.ml_data = {'X':self.X,'y':self.y}
             logger.info(
                 f'SUCCESS -> data_build_ml_matrix(target_col= {target_col}, states_key= {states_key}) -> '
                 f'MSG -> Machine learning matrix is created ! -> '
-                f'OUTPUT -> y: {self.y.to_list()} , X: {self.X.columns.to_list()} .'
+                f'OUTPUT -> y: {self.y.to_list()} , \nX: {self.X} .'
                 )
             return self.ml_data
         except BaseException as exc:
