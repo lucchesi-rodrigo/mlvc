@@ -25,7 +25,7 @@ Instance methods to be created to this lib:
 ---
 
 # To-Do -> Finish ...
-1. Unit-test until data_build_ml_matrix
+1. Unit-test until data_build_ml_matrix 80% Check for TODO:
 2. Docstring and logging rest
 3. Unit-test until the end
 4. Review algorithm process

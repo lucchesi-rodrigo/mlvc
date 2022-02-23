@@ -9,6 +9,7 @@ pandas = "*"
 loguru = "*"
 matplotlib = "*"
 seaborn = "*"
+shap = "*"
 
 [dev-packages]
 

@@ -4,7 +4,7 @@ author: Rodrigo Lucchesi
 date: February 2022
 """
 # library doc string
-
+import json
 import shap
 import joblib
 import pandas as pd
@@ -43,7 +43,7 @@ class MlModel:
     def __init__(self, name):
         self.__name__ = name
 
-    #  OK TESTED 
+    #   Unit-tested -> Integration-Tested
     def data_loading(self, df_path: str) -> pd.DataFrame:
         """
         Converts a csv file into a dataframe
@@ -77,7 +77,7 @@ class MlModel:
                 f'EXCEPTION -> {exc} .')
             raise
     
-    #  OK TESTED 
+    #   Unit-tested -> Integration-Tested
     def data_statistics(self):
         """
         Perform data analysis into a data file
@@ -96,27 +96,21 @@ class MlModel:
             >>> model = mlvc.MlModel('test')
             >>> stats = model.df_statistics()
         """
-        try:
-            self.stats_data = {
-                'shape': self.df.shape,
-                'null_values': self.df.isnull().sum(),
-                'numeric_stats': self.df.describe()
-            }
-            logger.info(
-                f'SUCCESS -> df_statistics() -> '
-                f'MSG -> dataframe statistics callculated successfully -> '
-                f'OUTPUT -> stats_data: {self.stats_data} .'
-                )
-            return self.stats_data
-        except BaseException as exc:
-            logger.error(
-                f'ERROR: df_statistics() -> '
-                f'MSG -> Could not perform data analysis process ! -> '
-                f'EXCEPTION -> {exc} .'
-                )
-            raise
+        
+        self.stats_data = {
+            'shape': self.df.shape,
+            'null_values': self.df.isnull().sum(),
+            'numeric_stats': self.df.describe()
+        }
+        logger.info(
+            f'SUCCESS -> df_statistics() -> '
+            f'MSG -> dataframe statistics callculated successfully -> '
+            f'OUTPUT -> stats_data: {self.stats_data} .'
+            )
+        return self.stats_data
+
     
-    #   OK TESTED
+    #   TODO: Unit-tested -> Integration-Tested -> Exception case not done
     def data_hist_plot(self,col_name: str) -> None:
         """
         Create a histogram plot from a dataframe
@@ -142,9 +136,9 @@ class MlModel:
             logger.info(
                 f'SUCCESS -> df_hist_plot(col_name={col_name}) -> '
                 f'MSG -> Dataframe histogram plot created ! -> '
-                f'OUTPUT -> {fig} .'
+                f'OUTPUT -> {fig.__dict__} .'
                 )
-            return
+            return fig.__module__
         except BaseException as exc:
             logger.error(
                 f'ERROR -> df_hist_plot(col_name={col_name}) ->'
@@ -153,7 +147,7 @@ class MlModel:
                 )
             raise
     
-    #  OK TESTED
+    #   TODO: Unit-tested -> Integration-Tested -> Exception case not done
     def normalized_data_plot(self,col_name: str, plot_type: str) -> None:
         """
         Create a specific plot from a pandas series normalized
@@ -181,9 +175,9 @@ class MlModel:
             logger.info(
                 f'SUCCESS -> normalized_data_plot(col_name={col_name} ,plot_type= {plot_type}) -> '
                 f'MSG -> Created Pandas series plot {plot_type} ! -> '
-                f'OUTPUT -> {fig} .'
+                f'OUTPUT -> {fig.__dict__} .'
                 )
-            return
+            return fig
         except BaseException as exc:
             logger.error(
                 f'ERROR -> normalized_data_plot(col_name={col_name} ,plot_type= {plot_type}) -> '
@@ -192,7 +186,7 @@ class MlModel:
                 )
             raise
     
-    # OK
+    #   TODO: Unit-tested -> Integration-Tested -> Exception case not done
     def data_dist_plot(self,col_name:str) -> None:
         """
         Create a dist plot from a pandas series using seaborn backend
@@ -218,9 +212,9 @@ class MlModel:
             logger.info(
                 f'SUCCESS -> normalized_data_plot(col_name={col_name}) -> '
                 f'MSG -> Created Pandas series dist plot ! -> '
-                f'OUTPUT -> {fig} .'
+                f'OUTPUT -> {fig.__dict__} .'
                 )
-            return
+            return fig
         except BaseException as exc:
             logger.error(
                 f'ERROR  -> normalized_data_plot(col_name={col_name}) -> '
@@ -229,7 +223,7 @@ class MlModel:
                 )
             raise
 
-    #  OK 
+    #   TODO: Unit-tested -> Integration-Tested -> Exception case not done
     def data_heatmap_plot(self, color_pallete:str ='Dark2_r') -> None:
         """
         Create a heatmap plot from a pandas correlation matrix 
@@ -255,9 +249,9 @@ class MlModel:
             logger.info(
                 f'SUCCESS -> data_heatmap_plot() -> '
                 f'MSG -> Created heatmap plot ! -> '
-                f'OUTPUT -> {fig} .'
+                f'OUTPUT -> {fig.__dict__} .'
                 )
-            return
+            return fig
         except BaseException as exc:
             logger.error(
                 f'ERROR  -> data_heatmap_plot() -> '
@@ -266,7 +260,7 @@ class MlModel:
                 )
             raise
     
-    #  OK
+    #   Unit-tested -> Integration-Tested 
     def data_categoric_to_binary(self, target_name: str ,col_name: str ,base_value: str) -> pd.DataFrame:
         """
         Convert a categorical (eg.: 2 value options: [high,low]) to binary
@@ -295,7 +289,7 @@ class MlModel:
             logger.info(
                 f'SUCCESS -> data_categoric_to_binary(target_name= {target_name} ,col_name= {col_name} ,base_value= {base_value}) -> '
                 f'MSG -> Dataframe pre-processed succesfully ! -> '
-                f'OUTPUT -> df cols: {self.df.columns.to_list()} .'
+                f'OUTPUT -> df cols: {self.df} .'
                 )
             return self.df
         except BaseException as exc:
@@ -306,7 +300,7 @@ class MlModel:
                 )
             raise
     
-    #  OK
+    #  TODO: Everything
     def data_feature_encoder(self, col_name: str, target_col: str) -> pd.DataFrame:
         """
         Creates a new dataframe column grouping by col_name and target_name
@@ -352,7 +346,7 @@ class MlModel:
                 )
             raise
     
-    #  OK  but no unit-test
+    #  TODO: Everything
     def data_build_ml_matrix(self, target_col:str, states_key: List):
         """
         Builds a Machine learning matrix X(y)
@@ -382,7 +376,7 @@ class MlModel:
             logger.info(
                 f'SUCCESS -> data_build_ml_matrix(target_col= {target_col}, states_key= {states_key}) -> '
                 f'MSG -> Machine learning matrix is created ! -> '
-                f'OUTPUT -> y: {self.y.columns.to_list()} , X: {self.X.columns.to_list()} .'
+                f'OUTPUT -> y: {self.y.to_list()} , X: {self.X.columns.to_list()} .'
                 )
             return self.ml_data
         except BaseException as exc:
