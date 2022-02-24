@@ -385,7 +385,7 @@ class MlModel:
             raise
     
     # TODO: Test in workspace! -> Working?
-    def split_test_train_data(self, test_size: float, random_state: int):
+    def split_test_train_data(self, test_size: float, random_state: int) -> Tuple:
         """
         Split test and train data for machine learning task
 
@@ -398,14 +398,14 @@ class MlModel:
             
         Returns:
         --------
-        ml_data: Dict
-            Dictionary grouping X(y): {'X':self.X,'y':self.y}
+        data_processed: Dict
+            Tuple conatining: X_train, X_test, y_train, y_test
 
         Examples:
         ---------
             >>> model = mlvc.MlModel('test')
             >>> model.data_loading('db/data.csv')
-            >>> data_processed = model.test_train_data_split(test_size= 0.3,random_state= 11) 
+            >>> data_processed = model.split_test_train_data(test_size= 0.3,random_state= 11) 
         """
         try:
             self.data_processed = train_test_split(
@@ -416,7 +416,7 @@ class MlModel:
 
             self.X_train, self.X_test, self.y_train, self.y_test = self.data_processed
             logger.info(
-                f'SUCCESS -> test_train_data_split(test_size= {test_size} ,random_state= {random_state} ) -> '
+                f'SUCCESS -> split_test_train_data(test_size= {test_size} ,random_state= {random_state} ) -> '
                 f'MSG -> Train and test data created ! -> '
                 f'OUTPUT \n-> X_train: {self.X_train.head(n=2)} \n-> X_test: {self.X_test.head(n=2)} '
                 f'\n-> y_train: {self.y_train.head(n=2)} \n-> y_test: {self.y_test.head(n=2)}'
@@ -424,7 +424,7 @@ class MlModel:
             return self.data_processed
         except BaseException as exc:
             logger.error(
-                f'ERROR  -> test_train_data_split(test_size= {test_size} ,random_state= {random_state} ) -> '
+                f'ERROR  -> split_test_train_data(test_size= {test_size} ,random_state= {random_state} ) -> '
                 f'MSG -> Train and test data not created ! ->'
                 f'Exception -> {exc} .'
                 )

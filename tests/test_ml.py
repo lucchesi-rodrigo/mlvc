@@ -30,7 +30,6 @@ class TestIntegration:
         model.data_loading('tests/data_cat.csv')
         assert model.data_statistics()
 
-
     def test_data_hist_plot(self):
         model = MlModel('test')
         model.data_loading('tests/data.csv')
@@ -59,7 +58,6 @@ class TestIntegration:
         model.data_loading('tests/data.csv')
         fig = model.data_heatmap_plot()
         assert fig
-
 
     def test_data_categoric_to_binary(self):
         model = MlModel('test')
@@ -123,7 +121,7 @@ class TestIntegration:
         assert model.y.to_list() == [389.0, 24.0, 80.2, 0, 58.0]
         assert model.X.columns.to_list() == ["class", "order"]
 
-    def test_data_build_ml_matrix(self):
+    def test_data_build_ml_matrix_exception(self):
         with pytest.raises(BaseException):
             df = pd.DataFrame(
                 [
@@ -142,4 +140,29 @@ class TestIntegration:
             model = MlModel('test')
             model.df = df
             model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
-        
+    
+    def test_split_test_train_data(self):
+
+        df = pd.DataFrame(
+            [
+                ("bird", "Falconiformes", 389.0),
+                ("bird", "Psittaciformes", 24.0),
+                ("mammal", "Carnivora", 80.2),
+                ("mammal", "Primates", 0),
+                ("mammal", "Carnivora", 58),
+            ],
+            index=["falcon", "parrot", "lion", "monkey", "leopard"],
+            columns=("class", "order", "max_speed"),
+        )
+        states_key=["class", "order"]
+        target_col='max_speed'
+
+        model = MlModel('test')
+        model.df = df
+        model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
+        data_processed = model.split_test_train_data(test_size=0.3, random_state=11)
+        X_train, X_test, y_train, y_test = data_processed
+        assert X_train.shape[0] > 1
+        assert X_test.shape[0] > 1
+        assert y_train.shape[0] > 1
+        assert y_test.shape[0] > 1
