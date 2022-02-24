@@ -26,11 +26,13 @@ Instance methods to be created to this lib:
 
 # To-Do -> Finish ...
 1. ~Unit-test until data_build_ml_matrix 95%~
-2. TODO: Docstring and logging rest 
-3. Unit-test until the end
-4. Review algorithm process
-5. TDD
-6. Test-hml with solution
-7. PEP and Pylint
-8. Git clone repo with lib
+  1.1. Unit-test until loading
+2. Test inside project
+3. TODO: Docstring and logging rest 
+4. Unit-test until the end
+5. Review algorithm process
+6. TDD
+7. Test-hml with solution
+8. PEP and Pylint
+9. Git clone repo with lib
 
