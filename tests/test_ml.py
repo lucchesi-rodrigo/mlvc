@@ -166,3 +166,24 @@ class TestIntegration:
         assert X_test.shape[0] > 1
         assert y_train.shape[0] > 1
         assert y_test.shape[0] > 1
+
+    def test_split_test_train_data_exception(self):
+        with pytest.raises(BaseException):
+            df = pd.DataFrame(
+                [
+                    ("bird", "Falconiformes", 389.0),
+                    ("bird", "Psittaciformes", 24.0),
+                    ("mammal", "Carnivora", 80.2),
+                    ("mammal", "Primates", 0),
+                    ("mammal", "Carnivora", 58),
+                ],
+                index=["falcon", "parrot", "lion", "monkey", "leopard"],
+                columns=("class", "order", "max_speed"),
+            )
+            states_key=["class", "order"]
+            target_col='max_speed'
+
+            model = MlModel('test')
+            model.df = df
+            model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
+            data_processed = model.split_test_train_data(test_size=0.9, random_state=11)
