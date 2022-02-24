@@ -1,9 +1,16 @@
 from lib2to3.pytree import Base
 from mlvc.ml_model import MlModel
+import os
 import pytest
 import pandas as pd
 import numpy as np
+from sklearn.linear_model import LogisticRegression
+
 class TestIntegration:
+
+    @classmethod
+    def set_up(cls):
+        os.system('clear')
 
     def test_init(self):
         model = MlModel('test')
@@ -187,3 +194,55 @@ class TestIntegration:
             model.df = df
             model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
             data_processed = model.split_test_train_data(test_size=0.9, random_state=11)
+
+    def test_tuning(self):
+
+        df = pd.DataFrame(
+            [
+                (100, 188, 38),
+                (70, 170, 18),
+                (60, 170, 22),
+                (80, 188, 60),
+                (67, 166, 80),
+                (66, 166, 40),
+            ],
+            index=["vitor", "rita", "victoria", "preta", "ana", "mel"],
+            columns=("weight", "height", "age"),
+        )
+        states_key=["weight", "age"]
+        target_col='weight'
+
+        model = MlModel('test')
+        model.df = df
+        model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
+        model.split_test_train_data(test_size=0.3, random_state=11)
+        model_data = model.tuning(
+            model_algorithm=LogisticRegression()
+        )
+        assert model_data
+
+    def test_tuning_exception(self):
+        with pytest.raises(BaseException):
+            df = pd.DataFrame(
+                [
+                    (100, 188, 38),
+                    (70, 170, 18),
+                    (60, 170, 22),
+                    (80, 188, 60),
+                    (67, 166, 80),
+                    (66, 166, 40),
+                ],
+                index=["vitor", "rita", "victoria", "preta", "ana", "mel"],
+                columns=("weight", "height", "age"),
+            )
+            states_key=["weight", "age"]
+            target_col='weight'
+
+            model = MlModel('test')
+            model.df = df
+            model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
+            model.split_test_train_data(test_size=0.3, random_state=11)
+            model.tuning(
+                model_algorithm=LogisticRegression(),
+                grid_search=True
+            )

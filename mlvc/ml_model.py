@@ -5,6 +5,7 @@ date: February 2022
 """
 # library doc string
 import json
+import os
 import shap
 import joblib
 import pandas as pd
@@ -39,6 +40,7 @@ Instance methods to be created to this lib:
 """
 # SET constants in different value
 class MlModel:
+    
 
     def __init__(self, name):
         self.__name__ = name
@@ -384,7 +386,7 @@ class MlModel:
                 )
             raise
     
-    # TODO: Test in workspace! -> Working?
+    #  Unit-tested -> ...
     def split_test_train_data(self, test_size: float, random_state: int) -> Tuple:
         """
         Split test and train data for machine learning task
@@ -474,12 +476,12 @@ class MlModel:
 
             if grid_search:
                 cv_model = GridSearchCV(
-                    estimator=model_algorithm[-1], 
+                    estimator=model_algorithm, 
                     param_grid=param_grid, 
                     cv= folds
                 )
             else:
-               cv_model = model_algorithm[-1]
+               cv_model = model_algorithm
 
             cv_model.fit(self.X_train, self.y_train)
 
@@ -498,9 +500,9 @@ class MlModel:
 
             logger.info(
                 f'SUCCESS -> model_tuning(model_algorithm= {model_algorithm},param_grid= {param_grid},folds= {folds},grid_search= {grid_search},best_estimator= {best_estimator}) -> '
-                f'MSG -> Model parameters generated ! -> '
-                f'OUTPUT \n-> y_train_preds_cv_model: {y_train_preds_cv_model} \n-> y_test_preds_cv_model: {y_test_preds_cv_model} '
-                f'\n-> model_data: {self.model_data }'
+                f'MSG -> Model parameters generated ! \n-> '
+                f'OUTPUT \n\t-> y_train_preds_cv_model: {y_train_preds_cv_model} \n\t-> y_test_preds_cv_model: {y_test_preds_cv_model} '
+                f'\n\t-> model_data: {self.model_data }'
                 )
             return self.model_data 
         except BaseException as exc:
