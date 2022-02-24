@@ -109,7 +109,6 @@ class MlModel:
             )
         return self.stats_data
 
-    
     #   TODO: Unit-tested -> Integration-Tested -> Exception case not done
     def data_hist_plot(self,col_name: str) -> None:
         """
@@ -386,7 +385,7 @@ class MlModel:
             raise
     
     # TODO: Test in workspace! -> Working?
-    def test_train_data_split(self, test_size: float, random_state: int):
+    def split_test_train_data(self, test_size: float, random_state: int):
         """
         Split test and train data for machine learning task
 
@@ -431,8 +430,8 @@ class MlModel:
                 )
             raise
     
-    # TODO : Test in workspace! NOT working logistic regression
-    def model_tuning(
+    # TODO: Test in workspace! NOT working logistic regression
+    def tuning(
         self,
         model_algorithm: Tuple = None, 
         param_grid: Dict = None, 
@@ -468,8 +467,8 @@ class MlModel:
         ---------
             >>> model = mlvc.MlModel('test')
             >>> model.data_loading('db/data.csv')
-            >>> model.test_train_data_split(test_size= 0.3,random_state= 11) 
-            >>> model.model_tuning(model_algorithm=('LR,'LinearRegression()),param_grid= None,folds= None,grid_search= False,best_estimator= False) 
+            >>> model.split_test_train_data(test_size= 0.3,random_state= 11) 
+            >>> model.tuning(model_algorithm=('LR,'LinearRegression()),param_grid= None,folds= None,grid_search= False,best_estimator= False) 
         """
         try:
 
@@ -501,6 +500,7 @@ class MlModel:
                 f'SUCCESS -> model_tuning(model_algorithm= {model_algorithm},param_grid= {param_grid},folds= {folds},grid_search= {grid_search},best_estimator= {best_estimator}) -> '
                 f'MSG -> Model parameters generated ! -> '
                 f'OUTPUT \n-> y_train_preds_cv_model: {y_train_preds_cv_model} \n-> y_test_preds_cv_model: {y_test_preds_cv_model} '
+                f'\n-> model_data: {self.model_data }'
                 )
             return self.model_data 
         except BaseException as exc:
@@ -512,18 +512,52 @@ class MlModel:
             raise
 
     # TODO : Test in workspace!      
-    def tp_rate(self,model_1,model_2):
+    def tp_rate_analysis(self,model_1,model_2):
+        """
+        Method to create insights from visual inspection of roc curve
+        analysing true positives rate on classifier
+
+        Parameters
+        ----------
+        model_1:
+            Model 1 to be analyzed
+        model_2: int
+            Model 2 to be analyzed
+            
+        Returns:
+        --------
+        None
+
+        Examples:
+        ---------
+            >>> model = mlvc.MlModel('test')
+            >>> model.data_loading('db/data.csv')
+            >>> model.test_train_data_split(test_size= 0.3,random_state= 11)
+            >>> model_1 = model.tuning(model_algorithm=('LR,'LinearRegression()),param_grid= None,folds= None,grid_search= False,best_estimator= False) 
+            >>> model_2 = model.tuning(model_algorithm=('LR,'LogisticRegression()),param_grid= None,folds= None,grid_search= False,best_estimator= False) 
+            >>> model.tp_rate_analysis(model_1,model_2)
+        """
         try:
-            # plots
+            
             lrc_plot = plot_roc_curve(model_1, self.X_test, self.y_test)
             plt.figure(figsize=(15, 8))
             ax = plt.gca()
-            rfc_disp = plot_roc_curve(model_2.best_estimator_, X_test, y_test, ax=ax, alpha=0.8)
+            rfc_disp = plot_roc_curve(model_2.best_estimator_, self.X_test, self.y_test, ax=ax, alpha=0.8)
             lrc_plot.plot(ax=ax, alpha=0.8)
             plt.show()
-            logger.info('SUCCESS -> ')
+            logger.info(
+                f'SUCCESS -> model_tuning(model_algorithm= {model_algorithm},param_grid= {param_grid},folds= {folds},grid_search= {grid_search},best_estimator= {best_estimator}) -> '
+                f'MSG -> Model parameters generated ! -> '
+                f'OUTPUT -> None .'
+                )
+            return  
         except BaseException as exc:
-            logger.error(f'ERROR -> {exc}')
+            logger.error(
+                f'ERROR  -> model_tuning(model_algorithm= {model_algorithm},param_grid= {param_grid},folds= {folds},grid_search= {grid_search},best_estimator= {best_estimator}) -> '
+                f'MSG -> Model parameters not generated ! ->'
+                f'Exception -> {exc} .'
+                )
+            raise
 
     # TODO : Test in workspace!
     def saving(model_name,model):
