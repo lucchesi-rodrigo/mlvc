@@ -5,6 +5,7 @@ import pytest
 import pandas as pd
 import numpy as np
 from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
 
 class TestIntegration:
 
@@ -218,6 +219,53 @@ class TestIntegration:
         model.split_test_train_data(test_size=0.3, random_state=11)
         model_data = model.tuning(
             model_algorithm=LogisticRegression()
+        )
+        assert model_data
+
+    def test_tuning_grid_search(self):
+
+        df = pd.DataFrame(
+            [
+                (100, 188, 38),
+                (70, 170, 18),
+                (60, 170, 22),
+                (80, 188, 60),
+                (67, 166, 80),
+                (66, 166, 40),
+                (100, 188, 38),
+                (70, 170, 18),
+                (60, 170, 22),
+                (80, 188, 60),
+                (67, 166, 80),
+                (66, 166, 40),
+                (100, 188, 38),
+                (70, 170, 18),
+                (60, 170, 22),
+                (80, 188, 60),
+                (67, 166, 80),
+                (66, 166, 40),
+            ],
+            columns=("weight", "height", "age"),
+        )
+        states_key=["weight", "age"]
+        target_col='weight'
+        param_grid = { 
+            'n_estimators': [200, 500],
+            'max_features': ['auto', 'sqrt'],
+            'max_depth' : [4,5,100],
+            'criterion' :['gini', 'entropy']
+        }
+
+        model = MlModel('test')
+        model.df = df
+        model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
+        model.split_test_train_data(test_size=0.3, random_state=11)
+        model_data = model.tuning(
+            model_algorithm= RandomForestClassifier(random_state=42), 
+            param_grid= param_grid, 
+            folds= 2, 
+            grid_search= True, 
+            best_estimator= True
         )
         assert model_data
 
