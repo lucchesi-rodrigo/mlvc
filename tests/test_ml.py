@@ -294,3 +294,55 @@ class TestIntegration:
                 model_algorithm=LogisticRegression(),
                 grid_search=True
             )
+
+    def test_tp_rate_analysis(self):
+        df = pd.DataFrame(
+            [
+                (100, 188, 38),
+                (70, 170, 18),
+                (60, 170, 22),
+                (80, 188, 60),
+                (67, 166, 80),
+                (66, 166, 40),
+                (100, 188, 38),
+                (70, 170, 18),
+                (60, 170, 22),
+                (80, 188, 60),
+                (67, 166, 80),
+                (66, 166, 40),
+                (100, 188, 38),
+                (70, 170, 18),
+                (60, 170, 22),
+                (80, 188, 60),
+                (67, 166, 80),
+                (66, 166, 40),
+            ],
+            columns=("weight", "height", "age"),
+        )
+        states_key=["weight", "age"]
+        target_col='weight'
+        param_grid = { 
+            'n_estimators': [200, 500],
+            'max_features': ['auto', 'sqrt'],
+            'max_depth' : [4,5,100],
+            'criterion' :['gini', 'entropy']
+        }
+
+        model = MlModel('test')
+        model.df = df
+        model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
+        model.split_test_train_data(test_size=0.3, random_state=11)
+        model_1 = model.tuning(
+            model_algorithm=LogisticRegression()
+        )
+        model_2 = model.tuning(
+            model_algorithm= RandomForestClassifier(random_state=42), 
+            param_grid= param_grid, 
+            folds= 2, 
+            grid_search= True, 
+            best_estimator= True
+        )
+        clf1 = model_1['model']
+        clf2 = model_2['model']
+        model.tp_rate_analysis(clf1,clf2)
+        

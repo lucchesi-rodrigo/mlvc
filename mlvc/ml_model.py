@@ -432,7 +432,7 @@ class MlModel:
                 )
             raise
     
-    # TODO: Test in workspace! NOT working logistic regression
+    #  Unit-tested -> ...
     def tuning(
         self,
         model_algorithm: Tuple = None, 
@@ -548,14 +548,14 @@ class MlModel:
             lrc_plot.plot(ax=ax, alpha=0.8)
             plt.show()
             logger.info(
-                f'SUCCESS -> model_tuning(model_algorithm= {model_algorithm},param_grid= {param_grid},folds= {folds},grid_search= {grid_search},best_estimator= {best_estimator}) -> '
+                f'SUCCESS -> tp_rate_analysis(model_1= {model_1},model_2= {model_2})-> '
                 f'MSG -> Model parameters generated ! -> '
                 f'OUTPUT -> None .'
                 )
             return  
         except BaseException as exc:
             logger.error(
-                f'ERROR  -> model_tuning(model_algorithm= {model_algorithm},param_grid= {param_grid},folds= {folds},grid_search= {grid_search},best_estimator= {best_estimator}) -> '
+                f'ERROR  -> tp_rate_analysis(model_1= {model_1},model_2= {model_2})-> '
                 f'MSG -> Model parameters not generated ! ->'
                 f'Exception -> {exc} .'
                 )
