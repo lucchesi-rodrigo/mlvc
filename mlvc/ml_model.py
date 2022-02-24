@@ -560,21 +560,91 @@ class MlModel:
             raise
 
     # TODO : Test in workspace!
-    def saving(model_name,model):
+    @staticmethod
+    def saving(model_name:str,model):
+        """
+        Save model at models folder in pickle format to use it later on experiments
+
+        Parameters
+        ----------
+        model_name: str
+            Model name
+        model: 
+            Model itself
+            
+        Returns:
+        --------
+        None
+
+        Examples:
+        ---------
+            >>> model = mlvc.MlModel('test')
+            >>> model.data_loading('db/data.csv')
+            >>> model.test_train_data_split(test_size= 0.3,random_state= 11)
+            >>> model_1 = model.tuning(model_algorithm=('LR,'LinearRegression()),param_grid= None,folds= None,grid_search= False,best_estimator= False) 
+            >>> model_2 = model.tuning(model_algorithm=('LR,'LogisticRegression()),param_grid= None,folds= None,grid_search= False,best_estimator= False) 
+            >>> model.tp_rate_analysis(model_1,model_2)
+            >>> saving(model_name= 'LR', model= model_1)
+        """
         try:
             joblib.dump(model.best_estimator_, f'./models/{model_name}.pkl')
-            logger.info(f'SUCCESS -> ')
+            logger.info(
+                f'SUCCESS -> saving(model_name= {model_name}, model= {model}) -> '
+                f'MSG -> Model saved as pickle file ! -> '
+                f'OUTPUT -> None .'
+                )
+            return  
         except BaseException as exc:
-            logger.error(f'Error -> {exc}')
+            logger.error(
+                f'ERROR  -> saving(model_name= {model_name}, model= {model}) -> '
+                f'MSG -> Model not saved ! ->'
+                f'Exception -> {exc} .'
+                )
+            raise
 
     # TODO : Test in workspace!
-    def loading(model_name):
-        try:
-            joblib.load(f'./models/{model_name}.pkl')
-            logger.info(f'SUCCESS -> ')
-        except BaseException as exc:
-            logger.error(f'Error -> {exc}')
+    @staticmethod
+    def loading(model_name:str):
+        """
+        Load model at models folder to use it on experiments
 
+        Parameters
+        ----------
+        model_name: str
+            Model name
+            
+        Returns:
+        --------
+        None
+
+        Examples:
+        ---------
+            >>> model = mlvc.MlModel('test')
+            >>> model.data_loading('db/data.csv')
+            >>> model.test_train_data_split(test_size= 0.3,random_state= 11)
+            >>> model_1 = model.tuning(model_algorithm=('LR,'LinearRegression()),param_grid= None,folds= None,grid_search= False,best_estimator= False) 
+            >>> model_2 = model.tuning(model_algorithm=('LR,'LogisticRegression()),param_grid= None,folds= None,grid_search= False,best_estimator= False) 
+            >>> model.tp_rate_analysis(model_1,model_2)
+            >>> saving(model_name= 'LR', model= model_1)
+            >>> model_1 = loading(model_name= 'LR')
+        """
+        try:
+            model = joblib.load(f'./models/{model_name}.pkl')
+            logger.info(
+                f'SUCCESS -> loading(model_name= {model_name}) -> '
+                f'MSG -> Model loaded ! -> '
+                f'OUTPUT -> model: {model} .'
+                )
+            return  
+        except BaseException as exc:
+            logger.error(
+                f'ERROR  -> loading(model_name= {model_name}) -> '
+                f'MSG -> Model not loaded ! ->'
+                f'Exception -> {exc} .'
+                )
+            raise
+    
+    
     # TODO : Test in workspace!
     def output_explanation(self):
         try:
