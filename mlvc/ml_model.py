@@ -303,9 +303,7 @@ class MlModel:
     #   TODO: Unit-tested -> Integration-Tested -> Exception case not done
     def data_feature_encoder(self, col_name: str, target_col: str) -> pd.DataFrame:
         """
-        Creates a new dataframe column grouping by col_name and target_name
-        ... feature_encoder -> Info:
-        https://towardsdatascience.com/categorical-feature-encoding
+        Groupby a feature to create a new dataframe collumn?
 
         Parameters
         ----------
@@ -387,9 +385,28 @@ class MlModel:
                 )
             raise
     
-    # TODO : Test in workspace! -> Working?
-    def test_train_data_dev(self, test_size: float, random_state: int):
+    # TODO: Test in workspace! -> Working?
+    def test_train_data_split(self, test_size: float, random_state: int):
         """
+        Split test and train data for machine learning task
+
+        Parameters
+        ----------
+        test_size: float
+            Ratio of whole database to be used on test
+        random_state: int
+            Seed to avoid random test and train split
+            
+        Returns:
+        --------
+        ml_data: Dict
+            Dictionary grouping X(y): {'X':self.X,'y':self.y}
+
+        Examples:
+        ---------
+            >>> model = mlvc.MlModel('test')
+            >>> model.data_loading('db/data.csv')
+            >>> data_processed = model.test_train_data_split(test_size= 0.3,random_state= 11) 
         """
         try:
             self.data_processed = train_test_split(
@@ -400,49 +417,98 @@ class MlModel:
 
             self.X_train, self.X_test, self.y_train, self.y_test = self.data_processed
             logger.info(
-                f' SUCCESS ->'
+                f'SUCCESS -> test_train_data_split(test_size= {test_size} ,random_state= {random_state} ) -> '
+                f'MSG -> Train and test data created ! -> '
+                f'OUTPUT \n-> X_train: {self.X_train.head(n=2)} \n-> X_test: {self.X_test.head(n=2)} '
+                f'\n-> y_train: {self.y_train.head(n=2)} \n-> y_test: {self.y_test.head(n=2)}'
                 )
             return self.data_processed
         except BaseException as exc:
-            logger.error(f' ERROR -> {exc}')
+            logger.error(
+                f'ERROR  -> test_train_data_split(test_size= {test_size} ,random_state= {random_state} ) -> '
+                f'MSG -> Train and test data not created ! ->'
+                f'Exception -> {exc} .'
+                )
             raise
     
     # TODO : Test in workspace! NOT working logistic regression
-    def best_params(
+    def model_tuning(
         self,
-        model_algorithm: Tuple, 
-        param_grid: Dict, 
-        folds: int, 
-        grid_search: bool,
-        best_estimator: bool
-        ):
+        model_algorithm: Tuple = None, 
+        param_grid: Dict = None, 
+        folds: int = None, 
+        grid_search: bool = False,
+        best_estimator: bool = False
+    ):
         """
-        DOCS
+        Find the best parameters for the machine learning algorithm choosen
+
+        Parameters
+        ----------
+        model_algorithm: Tuple
+            Model algorithm and some extra info
+        param_grid: Dict
+            List of pre-set parameters to use with GridSearch
+        folds: int
+            Number of folds to perform cross-validation
+        grid_search: bool
+            Boolean value to tag if model_tuning will use GridSearch to
+            find the best parameter combination
+        best_estimator: bool
+            Boolean value to tag if model_tuning will use best_estimator_
+            method from best params on GridSearch
+
+        Returns:
+        --------
+        model_data: Dict
+            Dictionary containing the fitted model and its estimation using test
+            and train data 
+
+        Examples:
+        ---------
+            >>> model = mlvc.MlModel('test')
+            >>> model.data_loading('db/data.csv')
+            >>> model.test_train_data_split(test_size= 0.3,random_state= 11) 
+            >>> model.model_tuning(model_algorithm=('LR,'LinearRegression()),param_grid= None,folds= None,grid_search= False,best_estimator= False) 
         """
         try:
 
-            model_algorithm = model_algorithm
-            
             if grid_search:
                 cv_model = GridSearchCV(
-                    estimator=model_algorithm, 
+                    estimator=model_algorithm[-1], 
                     param_grid=param_grid, 
                     cv= folds
                 )
+            else:
+               cv_model = model_algorithm[-1]
 
             cv_model.fit(self.X_train, self.y_train)
 
             if best_estimator:
                 y_train_preds_cv_model = cv_model.best_estimator_.predict(self.X_train)
                 y_test_preds_cv_model = cv_model.best_estimator_.predict(self.X_test)
+            else:
+                y_train_preds_cv_model = cv_model.predict(self.X_train)
+                y_test_preds_cv_model = cv_model.predict(self.X_test)
 
-            y_train_preds_cv_model = cv_model.predict(self.X_train)
-            y_test_preds_cv_model = cv_model.predict(self.X_test)
+            self.model_data ={
+                'model': cv_model,
+                'y_train_preds_cv_model': y_train_preds_cv_model,
+                'y_test_preds_cv_model': y_test_preds_cv_model
+            }
 
-            logger.info(classification_report(self.y_test, y_test_preds_cv_model))
-            logger.info(classification_report(self.y_train, y_train_preds_cv_model))
+            logger.info(
+                f'SUCCESS -> model_tuning(model_algorithm= {model_algorithm},param_grid= {param_grid},folds= {folds},grid_search= {grid_search},best_estimator= {best_estimator}) -> '
+                f'MSG -> Model parameters generated ! -> '
+                f'OUTPUT \n-> y_train_preds_cv_model: {y_train_preds_cv_model} \n-> y_test_preds_cv_model: {y_test_preds_cv_model} '
+                )
+            return self.model_data 
         except BaseException as exc:
-            logger.error('ERROR -> {exc}')
+            logger.error(
+                f'ERROR  -> model_tuning(model_algorithm= {model_algorithm},param_grid= {param_grid},folds= {folds},grid_search= {grid_search},best_estimator= {best_estimator}) -> '
+                f'MSG -> Model parameters not generated ! ->'
+                f'Exception -> {exc} .'
+                )
             raise
 
     # TODO : Test in workspace!      
