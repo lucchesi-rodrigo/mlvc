@@ -4,6 +4,8 @@ import os
 import pytest
 import pandas as pd
 import numpy as np
+
+from datetime import datetime,date
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 
@@ -295,32 +297,82 @@ class TestIntegration:
                 grid_search=True
             )
 
-    def test_tp_rate_analysis(self):
+    # def test_tp_rate_analysis(self):
+    #     df = pd.DataFrame(
+    #         [
+    #             (100, 188, 0),
+    #             (70, 170, 1),
+    #             (60, 170, 0),
+    #             (80, 188, 1),
+    #             (67, 166, 0),
+    #             (66, 166, 1),
+    #             (100, 188, 1),
+    #             (70, 170, 0),
+    #             (60, 170, 1),
+    #             (80, 188, 0),
+    #             (67, 166, 1),
+    #             (66, 166, 0),
+    #             (100, 188, 1),
+    #             (70, 170, 0),
+    #             (60, 170, 1),
+    #             (80, 188, 0),
+    #             (67, 166, 1),
+    #             (66, 166, 0),
+    #         ],
+    #         columns=("over_weight", "height", "age"),
+    #     )
+    #     states_key=["height", "age"]
+    #     target_col='over_weight'
+    #     param_grid = { 
+    #         'n_estimators': [200, 500],
+    #         'max_features': ['auto', 'sqrt'],
+    #         'max_depth' : [4,5,100],
+    #         'criterion' :['gini', 'entropy']
+    #     }
+
+    #     model = MlModel('test')
+    #     model.df = df
+    #     model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
+    #     model.split_test_train_data(test_size=0.3, random_state=11)
+    #     model_1 = model.tuning(
+    #         model_algorithm=LogisticRegression()
+    #     )
+    #     model_2 = model.tuning(
+    #         model_algorithm= RandomForestClassifier(random_state=42), 
+    #         param_grid= param_grid, 
+    #         folds= 2, 
+    #         grid_search= True, 
+    #         best_estimator= True
+    #     )
+    #     clf1 = model_1.get('estimator')
+    #     clf2 = model_2.get('estimator')
+    #     model.tp_rate_analysis([(clf1,False),(clf2,True)])
+    def test_saving(self):
         df = pd.DataFrame(
             [
-                (100, 188, 38),
-                (70, 170, 18),
-                (60, 170, 22),
-                (80, 188, 60),
-                (67, 166, 80),
-                (66, 166, 40),
-                (100, 188, 38),
-                (70, 170, 18),
-                (60, 170, 22),
-                (80, 188, 60),
-                (67, 166, 80),
-                (66, 166, 40),
-                (100, 188, 38),
-                (70, 170, 18),
-                (60, 170, 22),
-                (80, 188, 60),
-                (67, 166, 80),
-                (66, 166, 40),
+                (100, 188, 0),
+                (70, 170, 1),
+                (60, 170, 0),
+                (80, 188, 1),
+                (67, 166, 0),
+                (66, 166, 1),
+                (100, 188, 1),
+                (70, 170, 0),
+                (60, 170, 1),
+                (80, 188, 0),
+                (67, 166, 1),
+                (66, 166, 0),
+                (100, 188, 1),
+                (70, 170, 0),
+                (60, 170, 1),
+                (80, 188, 0),
+                (67, 166, 1),
+                (66, 166, 0),
             ],
-            columns=("weight", "height", "age"),
+            columns=("over_weight", "height", "age"),
         )
-        states_key=["weight", "age"]
-        target_col='weight'
+        states_key=["height", "age"]
+        target_col='over_weight'
         param_grid = { 
             'n_estimators': [200, 500],
             'max_features': ['auto', 'sqrt'],
@@ -332,17 +384,20 @@ class TestIntegration:
         model.df = df
         model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
         model.split_test_train_data(test_size=0.3, random_state=11)
-        model_1 = model.tuning(
-            model_algorithm=LogisticRegression()
-        )
-        model_2 = model.tuning(
+        model_data = model.tuning(
             model_algorithm= RandomForestClassifier(random_state=42), 
             param_grid= param_grid, 
             folds= 2, 
             grid_search= True, 
             best_estimator= True
         )
-        clf1 = model_1['model']
-        clf2 = model_2['model']
-        model.tp_rate_analysis(clf1,clf2)
-        
+        model_data['name'] = 'random_forest_classifier'
+        model.saving(model_data)
+
+    def test_loading(self):
+        timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M")
+        name = 'random_forest_classifier'
+        path_to_model=f'./models/{name}_{timestamp}'
+        model = MlModel.loading(path_to_model=path_to_model)
+        assert model
+        os.system('rm -R ./models/*.pkl')

@@ -6,6 +6,7 @@ date: February 2022
 # library doc string
 import json
 import os
+from datetime import datetime,date
 import shap
 import joblib
 import pandas as pd
@@ -475,25 +476,25 @@ class MlModel:
         try:
 
             if grid_search:
-                cv_model = GridSearchCV(
+                model = GridSearchCV(
                     estimator=model_algorithm, 
                     param_grid=param_grid, 
                     cv= folds
                 )
             else:
-               cv_model = model_algorithm
+               model = model_algorithm
 
-            cv_model.fit(self.X_train, self.y_train)
+            model.fit(self.X_train, self.y_train)
 
             if best_estimator:
-                y_train_preds_cv_model = cv_model.best_estimator_.predict(self.X_train)
-                y_test_preds_cv_model = cv_model.best_estimator_.predict(self.X_test)
+                y_train_preds_cv_model = model.best_estimator_.predict(self.X_train)
+                y_test_preds_cv_model = model.best_estimator_.predict(self.X_test)
             else:
-                y_train_preds_cv_model = cv_model.predict(self.X_train)
-                y_test_preds_cv_model = cv_model.predict(self.X_test)
+                y_train_preds_cv_model = model.predict(self.X_train)
+                y_test_preds_cv_model = model.predict(self.X_test)
 
-            self.model_data ={
-                'model': cv_model,
+            model_data ={
+                'estimator': model,
                 'y_train_preds_cv_model': y_train_preds_cv_model,
                 'y_test_preds_cv_model': y_test_preds_cv_model
             }
@@ -502,9 +503,9 @@ class MlModel:
                 f'SUCCESS -> model_tuning(model_algorithm= {model_algorithm},param_grid= {param_grid},folds= {folds},grid_search= {grid_search},best_estimator= {best_estimator}) -> '
                 f'MSG -> Model parameters generated ! \n-> '
                 f'OUTPUT \n\t-> y_train_preds_cv_model: {y_train_preds_cv_model} \n\t-> y_test_preds_cv_model: {y_test_preds_cv_model} '
-                f'\n\t-> model_data: {self.model_data }'
+                f'\n\t-> model_data: {model_data }'
                 )
-            return self.model_data 
+            return model_data 
         except BaseException as exc:
             logger.error(
                 f'ERROR  -> model_tuning(model_algorithm= {model_algorithm},param_grid= {param_grid},folds= {folds},grid_search= {grid_search},best_estimator= {best_estimator}) -> '
@@ -514,7 +515,7 @@ class MlModel:
             raise
 
     # TODO : Test in workspace!      
-    def tp_rate_analysis(self,model_1,model_2):
+    def tp_rate_analysis(self,ml_models: List[Tuple]=(None,False)):
         """
         Method to create insights from visual inspection of roc curve
         analysing true positives rate on classifier
@@ -540,22 +541,24 @@ class MlModel:
             >>> model.tp_rate_analysis(model_1,model_2)
         """
         try:
-            
-            lrc_plot = plot_roc_curve(model_1, self.X_test, self.y_test)
             plt.figure(figsize=(15, 8))
             ax = plt.gca()
-            rfc_disp = plot_roc_curve(model_2.best_estimator_, self.X_test, self.y_test, ax=ax, alpha=0.8)
-            lrc_plot.plot(ax=ax, alpha=0.8)
+            for model,grid_search in ml_models:
+                if grid_search:
+                    model_plot_1 = plot_roc_curve(model.best_estimator_, self.X_test, self.y_test, ax=ax, alpha=0.8)
+                else:
+                    model_plot_2 = plot_roc_curve(model, self.X_test, self.y_test)
+                    model_plot_2.plot(ax=ax, alpha=0.8)
             plt.show()
             logger.info(
-                f'SUCCESS -> tp_rate_analysis(model_1= {model_1},model_2= {model_2})-> '
+                f'SUCCESS -> tp_rate_analysis(ml_models= {ml_models})-> '
                 f'MSG -> Model parameters generated ! -> '
                 f'OUTPUT -> None .'
                 )
             return  
         except BaseException as exc:
             logger.error(
-                f'ERROR  -> tp_rate_analysis(model_1= {model_1},model_2= {model_2})-> '
+                f'ERROR  -> tp_rate_analysis(ml_models= {ml_models})-> '
                 f'MSG -> Model parameters not generated ! ->'
                 f'Exception -> {exc} .'
                 )
@@ -563,7 +566,7 @@ class MlModel:
 
     # TODO : Test in workspace!
     @staticmethod
-    def saving(model_name:str,model):
+    def saving(model: Dict=None):
         """
         Save model at models folder in pickle format to use it later on experiments
 
@@ -589,16 +592,19 @@ class MlModel:
             >>> saving(model_name= 'LR', model= model_1)
         """
         try:
-            joblib.dump(model.best_estimator_, f'./models/{model_name}.pkl')
+            timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M")
+            model['timestamp'] = timestamp
+            name = model['name']
+            joblib.dump(model, f'./models/{name}_{timestamp}.pkl')
             logger.info(
-                f'SUCCESS -> saving(model_name= {model_name}, model= {model}) -> '
+                f'SUCCESS -> saving(model= {model}) -> '
                 f'MSG -> Model saved as pickle file ! -> '
                 f'OUTPUT -> None .'
                 )
             return  
         except BaseException as exc:
             logger.error(
-                f'ERROR  -> saving(model_name= {model_name}, model= {model}) -> '
+                f'ERROR  -> saving(model= {model})  -> '
                 f'MSG -> Model not saved ! ->'
                 f'Exception -> {exc} .'
                 )
@@ -606,13 +612,13 @@ class MlModel:
 
     # TODO : Test in workspace!
     @staticmethod
-    def loading(model_name:str):
+    def loading(path_to_model:str):
         """
         Load model at models folder to use it on experiments
 
         Parameters
         ----------
-        model_name: str
+        path_to_model: str
             Model name
             
         Returns:
@@ -631,16 +637,16 @@ class MlModel:
             >>> model_1 = loading(model_name= 'LR')
         """
         try:
-            model = joblib.load(f'./models/{model_name}.pkl')
+            model = joblib.load(f'{path_to_model}.pkl')
             logger.info(
-                f'SUCCESS -> loading(model_name= {model_name}) -> '
+                f'SUCCESS -> loading(path_to_model= {path_to_model}) -> '
                 f'MSG -> Model loaded ! -> '
                 f'OUTPUT -> model: {model} .'
                 )
-            return  
+            return model
         except BaseException as exc:
             logger.error(
-                f'ERROR  -> loading(model_name= {model_name}) -> '
+                f'ERROR  -> loading(path_to_model= {path_to_model}) -> '
                 f'MSG -> Model not loaded ! ->'
                 f'Exception -> {exc} .'
                 )
