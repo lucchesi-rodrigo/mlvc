@@ -14,6 +14,8 @@ Automatic machine learning tool
 
 ## Contact
 
+http://www.linkedin.com/in/rodrigo-lucchesi/
+
 
 
 
