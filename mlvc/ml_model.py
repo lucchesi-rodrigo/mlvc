@@ -25,21 +25,8 @@ from sklearn.model_selection import GridSearchCV
 
 from sklearn.metrics import plot_roc_curve, classification_report
 
-"""
-# TODO: 
-
-- Review Project Code and map the instance methods with the project requirements 
-
-Instance methods to be created to this lib:
-
-1. REDO
 
 
-- Write the code with the test and document function by function
-- Each method
-  - pep8 and pylint -> Friday first working version
-"""
-# SET constants in different value
 class MlModel:
     
 

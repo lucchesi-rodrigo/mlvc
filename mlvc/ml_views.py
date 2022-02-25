@@ -27,8 +27,7 @@ from sklearn.metrics import plot_roc_curve, classification_report
 
 
 
-class MlController:
+class MlViews:
     
-
     def __init__(self, name):
         self.__name__ = name

@@ -401,3 +401,4 @@ class TestIntegration:
         model = MlModel.loading(path_to_model=path_to_model)
         assert model
         os.system('rm -R ./models/*.pkl')
+        os.system('rm -R ./plots/*.pdf')
