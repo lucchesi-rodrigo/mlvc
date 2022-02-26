@@ -423,6 +423,7 @@ class MlModel:
     #  Unit-tested -> ...
     def tuning(
         self,
+        model_name: str = None,
         model_algorithm: Tuple = None, 
         param_grid: Dict = None, 
         folds: int = None, 
@@ -481,6 +482,7 @@ class MlModel:
                 y_test_preds_cv_model = model.predict(self.X_test)
 
             model_data ={
+                'name':model_name,
                 'estimator': model,
                 'y_train_preds_cv_model': y_train_preds_cv_model,
                 'y_test_preds_cv_model': y_test_preds_cv_model
