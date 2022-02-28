@@ -418,8 +418,102 @@ class MlModel:
                 f'MSG -> Train and test data not created ! ->'
                 f'Exception -> {exc} .'
                 )
-            raise
+            raise exc
     
+    # TODO: -> Unit-test-> Test
+    def fit_predict(self,model_data: Dict=None,model_algorithm=None):
+        """
+        Fit and predict with choosen model
+
+        Parameters
+        ----------
+        model_algorithm: Tuple
+            Model algorithm and some extra info
+        model_data: Dict
+            Object to store model information to experiments monitoring
+        
+        Returns:
+        --------
+        model_data: Dict
+            Object to store model information to experiments monitoring
+
+        Examples:
+        ---------
+            >>> model = mlvc.MlModel('test')
+            >>> model.data_loading('db/data.csv')
+            >>> model.split_test_train_data(test_size= 0.3,random_state= 11) 
+            >>> model.fit_predict(model_data={'name':'lrc'},model_algorithm=('LR,'LinearRegression())) 
+        """
+        try:
+            model_algorithm.fit(self.X_train, self.y_train)
+            model_data['y_train_predicted'] = model_algorithm.predict(self.X_train)
+            model_data['y_test_predicted'] = model_algorithm.predict(self.X_test)
+            logger.info(
+                f'SUCCESS -> fit_predict(model_data={model_data},model_algorithm={model_algorithm}) -> '
+                f'MSG -> Fitted & Predicted model ! -> '
+                f'OUTPUT \n-> model_data: {model_data} .'
+                )
+            return model_data
+        except BaseException as exc:
+            logger.error(
+                f'ERROR  -> fit_predict(model_data={model_data},model_algorithm={model_algorithm}) -> '
+                f'MSG -> Fit-Predict not worked ! ->'
+                f'Exception -> {exc} .'
+                )
+            raise exc
+    
+    @staticmethod
+    def best_estimator(
+        model_name: str = None,
+        model_algorithm: Tuple = None,
+        param_grid: Dict = None, 
+        folds: int = None, 
+    ):
+        """
+        Find the best parameters for the machine learning algorithm choosen
+
+        Parameters
+        ----------
+        model_algorithm: Tuple
+            Model algorithm and some extra info
+        param_grid: Dict
+            List of pre-set parameters to use with GridSearch
+        folds: int
+            Number of folds to perform cross-validation
+        grid_search: bool
+            Boolean value to tag if model_tuning will use GridSearch to
+            find the best parameter combination
+        best_estimator: bool
+            Boolean value to tag if model_tuning will use best_estimator_
+            method from best params on GridSearch
+
+        Returns:
+        --------
+        model_data: Dict
+            Dictionary containing the fitted model and its estimation using test
+            and train data 
+
+        Examples:
+        ---------
+            >>> model = mlvc.MlModel('test')
+            >>> model.data_loading('db/data.csv')
+            >>> model.split_test_train_data(test_size= 0.3,random_state= 11) 
+            >>> model.tuning(model_algorithm=('LR,'LinearRegression()),param_grid= None,folds= None,grid_search= False,best_estimator= False) 
+        """
+        try:
+            model = GridSearchCV(
+                estimator=model_algorithm, 
+                param_grid=param_grid, 
+                cv= folds
+            )
+            model_data ={
+                'name':model_name,
+                'estimator': model
+            }
+            return 
+        except:
+            raise
+
     #  Unit-tested -> ...
     def tuning(
         self,
