@@ -462,6 +462,7 @@ class MlModel:
                 )
             raise exc
     
+    # TODO: -> Unit-test-> Test
     @staticmethod
     def best_estimator(
         model_name: str = None,
@@ -474,18 +475,14 @@ class MlModel:
 
         Parameters
         ----------
+        model_name: str
+            Machine learning model name
         model_algorithm: Tuple
             Model algorithm and some extra info
         param_grid: Dict
             List of pre-set parameters to use with GridSearch
         folds: int
             Number of folds to perform cross-validation
-        grid_search: bool
-            Boolean value to tag if model_tuning will use GridSearch to
-            find the best parameter combination
-        best_estimator: bool
-            Boolean value to tag if model_tuning will use best_estimator_
-            method from best params on GridSearch
 
         Returns:
         --------
@@ -495,10 +492,7 @@ class MlModel:
 
         Examples:
         ---------
-            >>> model = mlvc.MlModel('test')
-            >>> model.data_loading('db/data.csv')
-            >>> model.split_test_train_data(test_size= 0.3,random_state= 11) 
-            >>> model.tuning(model_algorithm=('LR,'LinearRegression()),param_grid= None,folds= None,grid_search= False,best_estimator= False) 
+            >>> model_data = best_estimator(model_algorithm=('LR,'LinearRegression()),param_grid= {data ...},folds= 5) 
         """
         try:
             model = GridSearchCV(
@@ -507,95 +501,22 @@ class MlModel:
                 cv= folds
             )
             model_data ={
-                'name':model_name,
-                'estimator': model
+                'model_name':model_name,
+                'model_results': model
             }
-            return 
-        except:
-            raise
-
-    #  Unit-tested -> ...
-    def tuning(
-        self,
-        model_name: str = None,
-        model_algorithm: Tuple = None, 
-        param_grid: Dict = None, 
-        folds: int = None, 
-        grid_search: bool = False,
-        best_estimator: bool = False
-    ):
-        """
-        Find the best parameters for the machine learning algorithm choosen
-
-        Parameters
-        ----------
-        model_algorithm: Tuple
-            Model algorithm and some extra info
-        param_grid: Dict
-            List of pre-set parameters to use with GridSearch
-        folds: int
-            Number of folds to perform cross-validation
-        grid_search: bool
-            Boolean value to tag if model_tuning will use GridSearch to
-            find the best parameter combination
-        best_estimator: bool
-            Boolean value to tag if model_tuning will use best_estimator_
-            method from best params on GridSearch
-
-        Returns:
-        --------
-        model_data: Dict
-            Dictionary containing the fitted model and its estimation using test
-            and train data 
-
-        Examples:
-        ---------
-            >>> model = mlvc.MlModel('test')
-            >>> model.data_loading('db/data.csv')
-            >>> model.split_test_train_data(test_size= 0.3,random_state= 11) 
-            >>> model.tuning(model_algorithm=('LR,'LinearRegression()),param_grid= None,folds= None,grid_search= False,best_estimator= False) 
-        """
-        try:
-
-            if grid_search:
-                model = GridSearchCV(
-                    estimator=model_algorithm, 
-                    param_grid=param_grid, 
-                    cv= folds
-                )
-            else:
-               model = model_algorithm
-
-            model.fit(self.X_train, self.y_train)
-
-            if best_estimator:
-                y_train_preds_cv_model = model.best_estimator_.predict(self.X_train)
-                y_test_preds_cv_model = model.best_estimator_.predict(self.X_test)
-            else:
-                y_train_preds_cv_model = model.predict(self.X_train)
-                y_test_preds_cv_model = model.predict(self.X_test)
-
-            model_data ={
-                'name':model_name,
-                'estimator': model,
-                'y_train_preds_cv_model': y_train_preds_cv_model,
-                'y_test_preds_cv_model': y_test_preds_cv_model
-            }
-
             logger.info(
-                f'SUCCESS -> model_tuning(model_algorithm= {model_algorithm},param_grid= {param_grid},folds= {folds},grid_search= {grid_search},best_estimator= {best_estimator}) -> '
-                f'MSG -> Model parameters generated ! \n-> '
-                f'OUTPUT \n\t-> y_train_preds_cv_model: {y_train_preds_cv_model} \n\t-> y_test_preds_cv_model: {y_test_preds_cv_model} '
-                f'\n\t-> model_data: {model_data }'
+                f'SUCCESS -> best_estimator( model_name={model_name}, model_algorithm={model_algorithm}, param_grid={param_grid}, cv={folds} ) -> '
+                f'MSG -> Best estimator and parameters were generated ! -> '
+                f'OUTPUT \n-> model_data: {model_data} .'
                 )
-            return model_data 
+            return model_data
         except BaseException as exc:
             logger.error(
-                f'ERROR  -> model_tuning(model_algorithm= {model_algorithm},param_grid= {param_grid},folds= {folds},grid_search= {grid_search},best_estimator= {best_estimator}) -> '
-                f'MSG -> Model parameters not generated ! ->'
+                f'ERROR  -> best_estimator( model_name={model_name}, model_algorithm={model_algorithm}, param_grid={param_grid}, cv={folds} ) -> '
+                f'MSG -> Best estimator worked ! ->'
                 f'Exception -> {exc} .'
                 )
-            raise
+            raise exc
 
     # TODO : Test in workspace!      
     def tp_rate_analysis(self,ml_models: List[Tuple]=(None,False)):
