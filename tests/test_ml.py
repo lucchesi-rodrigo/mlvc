@@ -133,10 +133,9 @@ class TestIntegration:
            col_name = 'height',
            base_value = 'short'
         )
-        #import pdb;pdb.set_trace()
         assert df.is_short.tolist() == [1, 0, 0]
 
-    def test_data_categoric_to_binary(self):
+    def test_data_categoric_to_binary_exception(self):
         with pytest.raises(BaseException):
             model = MlModel('test')
             model.data_loading('tests/data_mix.csv')
@@ -165,6 +164,14 @@ class TestIntegration:
         model.df = df
         model.data_feature_encoder(col_name=col_name, target_col=target_col)
         assert sorted(model.df.columns.tolist()) == sorted(["class", "order", "max_speed",f"{col_name}_{target_col}"])
+
+    def test_data_feature_encoder_exception(self):
+        with pytest.raises(BaseException):
+            col_name='order'
+            target_col='max_speed'
+            model = MlModel('test')
+            model.df = None
+            model.data_feature_encoder(col_name=col_name, target_col=target_col)
 
     def test_data_build_ml_matrix(self):
         df = pd.DataFrame(

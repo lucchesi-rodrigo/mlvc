@@ -228,7 +228,7 @@ class MlModel:
                 )
             raise
     
-    #   TODO: Unit-tested -> Integration-Tested -> Exception case not done
+    #   TODO: Done!
     def normalized_data_plot(self,col_name: str, plot_type: str) -> None:
         """
         Create a specific plot from a pandas series normalized
@@ -304,7 +304,7 @@ class MlModel:
                 )
             raise
 
-    #   TODO: Unit-tested -> Integration-Tested -> Exception case not done
+    #   TODO: Done!
     def data_heatmap_plot(self, color_pallete:str ='Dark2_r') -> None:
         """
         Create a heatmap plot from a pandas correlation matrix 
@@ -341,7 +341,7 @@ class MlModel:
                 )
             raise
     
-    #   Unit-tested -> Integration-Tested 
+    #   TODO: Test! 
     def data_categoric_to_binary(self, target_name: str ,col_name: str ,base_value: str) -> pd.DataFrame:
         """
         Convert a categorical (eg.: 2 value options: [high,low]) to binary
