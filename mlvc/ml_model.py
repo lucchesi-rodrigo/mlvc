@@ -341,7 +341,7 @@ class MlModel:
                 )
             raise
     
-    #   TODO: Test! 
+    #   FIXME: Test! 
     def data_categoric_to_binary(self, target_name: str ,col_name: str ,base_value: str) -> pd.DataFrame:
         """
         Convert a categorical (eg.: 2 value options: [high,low]) to binary
@@ -381,7 +381,7 @@ class MlModel:
                 )
             raise
     
-    #   TODO: Unit-tested -> Integration-Tested -> Exception case not done
+    #   FIXME: Test!
     def data_feature_encoder(self, col_name: str, target_col: str) -> pd.DataFrame:
         """
         Groupby a feature to create a new dataframe collumn?
@@ -425,7 +425,7 @@ class MlModel:
                 )
             raise
     
-    #  Unit-tested -> ...
+    #  FIXME: Test!
     def data_build_ml_matrix(self, target_col:str, states_key: List):
         """
         Builds a Machine learning matrix X(y)
@@ -466,7 +466,7 @@ class MlModel:
                 )
             raise
     
-    #  Unit-tested -> ...
+    #  FIXME: Test!
     def split_test_train_data(self, test_size: float, random_state: int) -> Tuple:
         """
         Split test and train data for machine learning task

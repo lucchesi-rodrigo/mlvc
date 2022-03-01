@@ -261,155 +261,82 @@ class TestIntegration:
             model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
             data_processed = model.split_test_train_data(test_size=0.9, random_state=11)
 
-    def test_tuning(self):
-
+    def test_fit_predict(self):
         df = pd.DataFrame(
             [
-                (100, 188, 38),
-                (70, 170, 18),
-                (60, 170, 22),
-                (80, 188, 60),
-                (67, 166, 80),
-                (66, 166, 40),
+                ("bird", "Falconiformes", 389.0),
+                ("bird", "Psittaciformes", 24.0),
+                ("mammal", "Carnivora", 80.2),
+                ("mammal", "Primates", 0),
+                ("mammal", "Carnivora", 58),
             ],
-            index=["vitor", "rita", "victoria", "preta", "ana", "mel"],
-            columns=("weight", "height", "age"),
+            index=["falcon", "parrot", "lion", "monkey", "leopard"],
+            columns=("class", "order", "max_speed"),
         )
-        states_key=["weight", "age"]
-        target_col='weight'
+        states_key=["class", "order"]
+        target_col='max_speed'
 
         model = MlModel('test')
         model.df = df
+        model.data_categoric_to_binary(
+           target_name ='class',
+           col_name = 'class',
+           base_value = 'mammal'
+        )
+        model.data_categoric_to_binary(
+           target_name ='order',
+           col_name = 'order',
+           base_value = 'Falconiformes'
+        )
         model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
         model.split_test_train_data(test_size=0.3, random_state=11)
-        model_data = model.tuning(
-            model_algorithm=LogisticRegression()
-        )
-        assert model_data
-
-    def test_tuning_grid_search(self):
-
-        df = pd.DataFrame(
-            [
-                (100, 188, 38),
-                (70, 170, 18),
-                (60, 170, 22),
-                (80, 188, 60),
-                (67, 166, 80),
-                (66, 166, 40),
-                (100, 188, 38),
-                (70, 170, 18),
-                (60, 170, 22),
-                (80, 188, 60),
-                (67, 166, 80),
-                (66, 166, 40),
-                (100, 188, 38),
-                (70, 170, 18),
-                (60, 170, 22),
-                (80, 188, 60),
-                (67, 166, 80),
-                (66, 166, 40),
-            ],
-            columns=("weight", "height", "age"),
-        )
-        states_key=["weight", "age"]
-        target_col='weight'
-        param_grid = { 
-            'n_estimators': [200, 500],
-            'max_features': ['auto', 'sqrt'],
-            'max_depth' : [4,5,100],
-            'criterion' :['gini', 'entropy']
-        }
-
-        model = MlModel('test')
-        model.df = df
-        model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
-        model.split_test_train_data(test_size=0.3, random_state=11)
-        model_data = model.tuning(
-            model_algorithm= RandomForestClassifier(random_state=42), 
-            param_grid= param_grid, 
-            folds= 2, 
-            grid_search= True, 
-            best_estimator= True
-        )
-        assert model_data
-
-    def test_tuning_exception(self):
+        model_data = model.fit_predict(
+                model_data={'name':'lrc'},
+                model_algorithm=LogisticRegression()
+            )
+        
+        y_train_predicted = model_data['y_train_predicted']
+        y_train_predicted = y_train_predicted.tolist()
+        y_test_predicted = model_data['y_test_predicted']
+        y_test_predicted = y_test_predicted.tolist()
+        assert y_test_predicted == [0.0, 0.0] 
+        assert y_train_predicted == [389.0, 0.0, 24.0]        
+        
+    def test_fit_predict_exception(self):
         with pytest.raises(BaseException):
             df = pd.DataFrame(
                 [
-                    (100, 188, 38),
-                    (70, 170, 18),
-                    (60, 170, 22),
-                    (80, 188, 60),
-                    (67, 166, 80),
-                    (66, 166, 40),
+                    ("bird", "Falconiformes", 389.0),
+                    ("bird", "Psittaciformes", 24.0),
+                    ("mammal", "Carnivora", 80.2),
+                    ("mammal", "Primates", 0),
+                    ("mammal", "Carnivora", 58),
                 ],
-                index=["vitor", "rita", "victoria", "preta", "ana", "mel"],
-                columns=("weight", "height", "age"),
+                index=["falcon", "parrot", "lion", "monkey", "leopard"],
+                columns=("class", "order", "max_speed"),
             )
-            states_key=["weight", "age"]
-            target_col='weight'
+            states_key=["class", "order"]
+            target_col='max_speed'
 
             model = MlModel('test')
             model.df = df
+            model.data_categoric_to_binary(
+            target_name ='class',
+            col_name = 'class',
+            base_value = 'mammal'
+            )
+            model.data_categoric_to_binary(
+            target_name ='order',
+            col_name = 'order',
+            base_value = 'Falconiformes'
+            )
             model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
             model.split_test_train_data(test_size=0.3, random_state=11)
-            model.tuning(
-                model_algorithm=LogisticRegression(),
-                grid_search=True
-            )
+            model.fit_predict(
+                    model_data={'name':'lrc'},
+                    model_algorithm=None
+                )
 
-    # def test_tp_rate_analysis(self):
-    #     df = pd.DataFrame(
-    #         [
-    #             (100, 188, 0),
-    #             (70, 170, 1),
-    #             (60, 170, 0),
-    #             (80, 188, 1),
-    #             (67, 166, 0),
-    #             (66, 166, 1),
-    #             (100, 188, 1),
-    #             (70, 170, 0),
-    #             (60, 170, 1),
-    #             (80, 188, 0),
-    #             (67, 166, 1),
-    #             (66, 166, 0),
-    #             (100, 188, 1),
-    #             (70, 170, 0),
-    #             (60, 170, 1),
-    #             (80, 188, 0),
-    #             (67, 166, 1),
-    #             (66, 166, 0),
-    #         ],
-    #         columns=("over_weight", "height", "age"),
-    #     )
-    #     states_key=["height", "age"]
-    #     target_col='over_weight'
-    #     param_grid = { 
-    #         'n_estimators': [200, 500],
-    #         'max_features': ['auto', 'sqrt'],
-    #         'max_depth' : [4,5,100],
-    #         'criterion' :['gini', 'entropy']
-    #     }
-
-    #     model = MlModel('test')
-    #     model.df = df
-    #     model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
-    #     model.split_test_train_data(test_size=0.3, random_state=11)
-    #     model_1 = model.tuning(
-    #         model_algorithm=LogisticRegression()
-    #     )
-    #     model_2 = model.tuning(
-    #         model_algorithm= RandomForestClassifier(random_state=42), 
-    #         param_grid= param_grid, 
-    #         folds= 2, 
-    #         grid_search= True, 
-    #         best_estimator= True
-    #     )
-    #     clf1 = model_1.get('estimator')
-    #     clf2 = model_2.get('estimator')
-    #     model.tp_rate_analysis([(clf1,False),(clf2,True)])
     def test_saving(self):
         df = pd.DataFrame(
             [
