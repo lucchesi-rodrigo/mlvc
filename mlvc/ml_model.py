@@ -667,33 +667,54 @@ class MlModel:
         except BaseException as exc:
             logger.error(f'ERROR -> {exc}')
 
-    # TODO : Test in workspace!
-    def feature_importance(self):
+    # TODO: -> Unit-test-> Test
+    def feature_importance_plot(self,model):
+        """
+        Generates a matplotlib bar plot to describe feature importance on
+        X matrix targeting dimensionality reduction to avoid overfitting
+        and decrease model complexity. 
+
+        Parameters
+        ----------
+        model: str
+            Machine learning model fitted
+            
+        Returns:
+        --------
+        None
+
+        Examples:
+        ---------
+            >>> model = mlvc.MlModel('test')
+            >>> model.data_loading('db/data.csv')
+            >>> model.test_train_data_split(test_size= 0.3,random_state= 11)
+            >>> model_1 = model.tuning(model_algorithm=('LR,'LinearRegression()))
+        """
         try:
-            # Calculate feature importances
-            importances = cv_rfc.best_estimator_.feature_importances_
-            # Sort feature importances in descending order
+            importances = model.best_estimator_.feature_importances_
             indices = np.argsort(importances)[::-1]
-
-            # Rearrange feature names so they match the sorted feature importances
-            names = [X.columns[i] for i in indices]
-
-            # Create plot
+            names = [self.X.columns[i] for i in indices]
+            
             plt.figure(figsize=(20,5))
 
-            # Create plot title
             plt.title("Feature Importance")
             plt.ylabel('Importance')
-
-            # Add bars
             plt.bar(range(X.shape[1]), importances[indices])
-
-            # Add feature names as x-axis labels
-            plt.xticks(range(X.shape[1]), names, rotation=90);
-            logger.info('SUCCESS -> ')
+            plt.xticks(range(X.shape[1]), names, rotation=90)
+            plt.savefig('line_plot.pdf')  
+            logger.info(
+                    f'SUCCESS -> feature_importance_plot(model= {model}) -> '
+                    f'MSG -> Feature importance plot generated ! -> '
+                    f'OUTPUT -> None .'
+                    )
+            return  
         except BaseException as exc:
-            logger.error(f'ERROR -> {exc}')
-
+            logger.error(
+                f'ERROR  -> feature_importance_plot(model= {model})  -> '
+                f'MSG -> Feature importance calculations not executed ! ->'
+                f'Exception -> {exc} .'
+                )
+            raise exc('Feature importance calculations not executed !')
     # TODO : Test in workspace!
     def report(self):
         try:
