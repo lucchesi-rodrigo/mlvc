@@ -5,6 +5,7 @@ date: February 2022
 """
 # library doc string
 import json
+from lib2to3.pytree import Base
 import os
 from datetime import datetime,date
 import shap
@@ -99,6 +100,30 @@ class MlModel:
             )
         return self.stats_data
 
+    def isolate_categ_and_num_cols(self):
+        """
+        Isolate the categoric and numeric cols, returning to lists
+        with pandas
+        """
+        try:
+            numeric_cols = [
+                column for column in self.df.columns if self.df[column].dtype != 'object'
+                ]
+            categ_cols = [
+                column for column in self.df.columns if self.df[column].dtype == 'object'
+                ]
+            return numeric_cols, categ_cols
+        except BaseException as exc:
+            raise exc
+            
+    @staticmethod     
+    def remove_cols(cols_lst,col):
+        try:
+            cols_lst.remove(col)
+        except:
+            pass
+
+        
     #   TODO: Unit-tested -> Integration-Tested -> Exception case not done
     def data_hist_plot(self,col_name: str) -> None:
         """
