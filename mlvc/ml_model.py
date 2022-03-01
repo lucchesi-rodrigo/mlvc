@@ -149,7 +149,7 @@ class MlModel:
             )
             raise 
 
-    # TODO: Unit-test -> Test     
+    # TODO: Test     
     @staticmethod     
     def remove_cols(cols_lst: List[str]=None,cols_to_rm: List[str]=None):
         """

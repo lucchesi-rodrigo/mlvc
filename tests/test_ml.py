@@ -75,6 +75,13 @@ class TestIntegration:
         output = model.data_hist_plot('x')
         assert output == 'matplotlib.figure' 
 
+    def test_data_hist_plot_exception(self):
+        with pytest.raises(BaseException):
+            model = MlModel('test')
+            model.df = pd.DataFrame()
+            model.data_hist_plot('x')
+        
+
     def test_normalized_data_plot(self):
         model = MlModel('test')
         model.data_loading('tests/data.csv')
