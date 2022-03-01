@@ -34,7 +34,7 @@ class MlModel:
     def __init__(self, name):
         self.__name__ = name
 
-    #   Unit-tested -> Integration-Tested
+    # TODO DONE!
     def data_loading(self, df_path: str) -> pd.DataFrame:
         """
         Converts a csv file into a dataframe
@@ -51,7 +51,8 @@ class MlModel:
 
         Examples:
         ---------
-            >>> df = load_data(df_path= 'path/file.csv')
+            >>> model = mlvc.MlModel('test')
+            >>> model.data_loading(df_path= 'path/file.csv')
         """
         try:
             self.df = pd.read_csv(df_path)
@@ -65,26 +66,28 @@ class MlModel:
             logger.error(
                 f'ERROR -> import_data({df_path}) -> '
                 f'MSG -> Could not import data object ! -> '
+                f'OUTPUT -> None'
                 f'EXCEPTION -> {exc} .')
             raise
     
-    #   Unit-tested -> Integration-Tested
-    def data_statistics(self):
+    # TODO DONE!
+    def data_statistics(self) -> Dict:
         """
         Perform data analysis into a data file
 
-        Parameters
+        Parameters:
         ----------
-        None
+        self
 
         Returns:
         --------
-        stats_data: Dict
+        stats_data: Dict[str,pd.Series,pd.DataFrame]
             Dictionary containing the data analysis information
 
         Examples:
         ---------
             >>> model = mlvc.MlModel('test')
+            >>> model.data_loading(df_path= 'path/file.csv')
             >>> stats = model.df_statistics()
         """
         
@@ -100,30 +103,94 @@ class MlModel:
             )
         return self.stats_data
 
-    def isolate_categ_and_num_cols(self):
+    # TODO: Unit-test -> Test
+    def isolate_categ_and_num_cols(self) -> Tuple[List[str],List[str]]:
         """
-        Isolate the categoric and numeric cols, returning to lists
-        with pandas
+        Isolate the categoric and numeric cols from pandas DataFrame
+
+        Parameters:
+        ----------
+        Self
+        
+        Returns:
+        --------
+        numeric_cols: List[str]
+            Numeric columns
+        categoric_cols: List[str]
+            Categoric columns
+
+        Examples:
+        ---------
+            >>> model = mlvc.MlModel('test')
+            >>> df = load_data(df_path= 'path/file.csv')
+            >>> numeric_cols, categoric_cols = model.isolate_categ_and_num_cols()
+            >>> numeric_cols
+                ['x1','x2',...]
         """
         try:
-            numeric_cols = [
+            self.numeric_cols = [
                 column for column in self.df.columns if self.df[column].dtype != 'object'
                 ]
-            categ_cols = [
+            self.categoric_cols = [
                 column for column in self.df.columns if self.df[column].dtype == 'object'
                 ]
-            return numeric_cols, categ_cols
+            logger.info(
+                f'SUCCESS -> isolate_categ_and_num_cols() -> '
+                f'MSG -> Isolated df numeric and categoric columns ! -> '
+                f'OUTPUT -> numeric_cols: {self.numeric_cols} , categoric_cols: {self.categoric_cols} .'
+            )
+            return self.numeric_cols, self.categoric_cols
         except BaseException as exc:
-            raise exc
-            
-    @staticmethod     
-    def remove_cols(cols_lst,col):
-        try:
-            cols_lst.remove(col)
-        except:
-            pass
+            logger.error(
+                f'SUCCESS -> isolate_categ_and_num_cols() -> '
+                f'MSG -> Could not isolate df numeric and categoric columns ! -> '
+                f'OUTPUT -> None .'
+                f'EXCEPTION -> {exc}'
+            )
+            raise 
 
+    # TODO: Unit-test -> Test     
+    @staticmethod     
+    def remove_cols(cols_lst: List[str]=None,cols_to_rm: List[str]=None):
+        """
+        Method to remove itens from a certain list
         
+        Parameters:
+        ----------
+        cols_lst: List[str]
+            List to be changed
+        cols_to_rm: List[str]
+            List of columns to be removed from cols_lst
+
+        Returns:
+        --------
+        cols_lst: List[str]
+            List changed
+
+        Examples:
+        ---------
+        >>> model = mlvc.MlModel('test')
+        >>> load_data(df_path= 'path/file.csv')
+        >>> numeric_cols, categoric_cols = model.isolate_categ_and_num_cols()
+        >>> numeric_cols = remove_cols(numeric_cols,['x1'])
+        >>> numeric_cols
+            ['x2',...]
+        """
+        for col in cols_to_rm:
+            try:
+                cols_lst.remove(col)
+            except:
+                logger.warning(
+                    f'WARNING -> MSG -> Could not remove column: {col} !'
+                )
+                pass
+        logger.info(
+            f'SUCCESS -> isolate_categ_and_num_cols() -> '
+            f'MSG -> Removed columns from list ! -> '
+            f'OUTPUT -> cols_lst_old: {cols_lst} -> cols_lst_new: {cols_lst} .'
+        )
+        return cols_lst
+
     #   TODO: Unit-tested -> Integration-Tested -> Exception case not done
     def data_hist_plot(self,col_name: str) -> None:
         """
