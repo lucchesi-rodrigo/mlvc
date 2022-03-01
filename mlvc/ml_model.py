@@ -191,7 +191,7 @@ class MlModel:
         )
         return cols_lst
 
-    #   TODO: Unit-tested -> Integration-Tested -> Exception case not done
+    #   TODO: Done!
     def data_hist_plot(self,col_name: str) -> None:
         """
         Create a histogram plot from a dataframe
@@ -267,7 +267,7 @@ class MlModel:
                 )
             raise
     
-    #   TODO: Unit-tested -> Integration-Tested -> Exception case not done
+    #   TODO: Done!
     def data_dist_plot(self,col_name:str) -> None:
         """
         Create a dist plot from a pandas series using seaborn backend

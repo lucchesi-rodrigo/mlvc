@@ -81,7 +81,6 @@ class TestIntegration:
             model.df = pd.DataFrame()
             model.data_hist_plot('x')
         
-
     def test_normalized_data_plot(self):
         model = MlModel('test')
         model.data_loading('tests/data.csv')
@@ -91,6 +90,15 @@ class TestIntegration:
         )
         assert fig
 
+    def test_normalized_data_plot_exception(self):
+        with pytest.raises(BaseException):
+            model = MlModel('test')
+            model.df = pd.DataFrame()
+            model.normalized_data_plot(
+                col_name = 'x', 
+                plot_type = 'bar'
+            )
+
     def test_data_dist_plot(self):
         model = MlModel('test')
         model.data_loading('tests/data.csv')
@@ -99,11 +107,23 @@ class TestIntegration:
         )
         assert fig 
 
+    def test_data_dist_plot_exception(self):
+        with pytest.raises(BaseException):
+            model = MlModel('test')
+            model.df = pd.DataFrame()
+            model.data_dist_plot(col_name = 'x')
+
     def test_data_heatmap_plot(self):
         model = MlModel('test')
         model.data_loading('tests/data.csv')
         fig = model.data_heatmap_plot()
         assert fig
+
+    def test_data_heatmap_plot_exception(self):
+        with pytest.raises(BaseException):
+            model = MlModel('test')
+            model.df = pd.DataFrame()
+            model.data_heatmap_plot()
 
     def test_data_categoric_to_binary(self):
         model = MlModel('test')
