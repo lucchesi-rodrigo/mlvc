@@ -103,7 +103,7 @@ class MlModel:
             )
         return self.stats_data
 
-    # TODO: Unit-test -> Test
+    # TODO: Test
     def isolate_categ_and_num_cols(self) -> Tuple[List[str],List[str]]:
         """
         Isolate the categoric and numeric cols from pandas DataFrame

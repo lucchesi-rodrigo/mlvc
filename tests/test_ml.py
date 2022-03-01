@@ -49,6 +49,10 @@ class TestIntegration:
             model.df = None
             model.isolate_categ_and_num_cols()
         
+    def test_remove_cols(self):
+        model = MlModel('test')
+        cols_list = model.remove_cols(['x','y','i'],['i','g'])
+        assert cols_list == ['x','y']
 
     def test_data_loading_invalid_path(self):
         with pytest.raises(FileNotFoundError):
