@@ -512,7 +512,7 @@ class MlModel:
                 )
             raise exc
     
-    # TODO: -> Unit-test-> Test
+    # FIXME: Test!
     def fit_predict(self,model_data: Dict=None,model_algorithm=None):
         """
         Fit and predict with choosen model
