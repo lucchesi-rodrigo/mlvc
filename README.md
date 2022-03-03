@@ -13,8 +13,11 @@ Automatic machine learning tool
  7.1 Maybe the model_data -> model would not work in execution,
     Check how to store this fitted model in a variable
 
-## Summary
+## System design
 
+![ML Version control brainstorming](static/project_design.png "ML Version control")
+
+---
 ## Design
 
 ## Instances
@@ -23,7 +26,7 @@ Automatic machine learning tool
 
 ## Example
 
-### MlModel
+### CreateMlModel
 
 ```python
 from mlvc.ml_model import MlModel
