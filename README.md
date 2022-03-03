@@ -1,6 +1,17 @@
-# ML Version control
+# ML Version control Beta
 
 Automatic machine learning tool
+
+# To-Do ...
+1. ~feature importance method~
+2. ~classification report with matplotlib~
+3. ~roc_curve (FP analysis)~
+4. ~tuning must be changed to (split_data -> fit_predict -> best_estimator) with grid search~
+5. Unit-test all methods
+6. Review Docstring PEP8
+7. Test in workspace to find execution erros
+ 7.1 Maybe the model_data -> model would not work in execution,
+    Check how to store this fitted model in a variable
 
 ## Summary
 

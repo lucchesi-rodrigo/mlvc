@@ -28,8 +28,8 @@ from sklearn.metrics import plot_roc_curve, classification_report
 
 
 
-class MlModel:
-    
+class CreateMlModel:
+    """Class to create Machine Learning Models"""
 
     def __init__(self, name):
         self.__name__ = name
@@ -513,7 +513,7 @@ class MlModel:
             raise exc
     
     # FIXME: Test!
-    def fit_predict(self,model_data: Dict=None,model_algorithm=None):
+    def fit_predict(self,model_name: str = None, model_data: Dict={},model_algorithm=None):
         """
         Fit and predict with choosen model
 
@@ -538,6 +538,8 @@ class MlModel:
         """
         try:
             model_algorithm.fit(self.X_train, self.y_train)
+            model_data['model_name'] = model_name
+            model_data['model'] = model_algorithm
             model_data['y_train_predicted'] = model_algorithm.predict(self.X_train)
             model_data['y_test_predicted'] = model_algorithm.predict(self.X_test)
             logger.info(
@@ -554,9 +556,10 @@ class MlModel:
                 )
             raise exc
     
-    # TODO: -> Unit-test-> Test
-    @staticmethod
-    def best_estimator(
+    # FIXME: -> Unit-test-> Test
+    def fit_predict_to_best_estimator(
+        self,
+        model_data: Dict={},
         model_name: str = None,
         model_algorithm: Tuple = None,
         param_grid: Dict = None, 
@@ -592,10 +595,11 @@ class MlModel:
                 param_grid=param_grid, 
                 cv= folds
             )
-            model_data ={
-                'model_name':model_name,
-                'model_results': model
-            }
+            model_data['model_name'] = model_name
+            model_data['model'] = model_algorithm
+            model_data['y_train_predicted'] = model.best_estimator_.predict(self.X_train)
+            model_data['y_test_predicted'] = model.best_estimator_.predict(self.X_test)
+           
             logger.info(
                 f'SUCCESS -> best_estimator( model_name={model_name}, model_algorithm={model_algorithm}, param_grid={param_grid}, cv={folds} ) -> '
                 f'MSG -> Best estimator and parameters were generated ! -> '
@@ -610,7 +614,7 @@ class MlModel:
                 )
             raise exc
 
-    # TODO : Test in workspace!      
+    # TODO : -> Unit-test-> Test   
     def tp_rate_analysis(self,ml_models: List[Tuple]=(None,False)):
         """
         Method to create insights from visual inspection of roc curve
@@ -660,9 +664,9 @@ class MlModel:
                 )
             raise
 
-    # TODO : Test in workspace!
+    # TODO : -> Unit-test-> Test
     @staticmethod
-    def saving(model: Dict=None):
+    def saving(model_data: Dict=None):
         """
         Save model at models folder in pickle format to use it later on experiments
 
@@ -683,14 +687,13 @@ class MlModel:
             >>> model.data_loading('db/data.csv')
             >>> model.test_train_data_split(test_size= 0.3,random_state= 11)
             >>> model_1 = model.tuning(model_algorithm=('LR,'LinearRegression()),param_grid= None,folds= None,grid_search= False,best_estimator= False) 
-            >>> model_2 = model.tuning(model_algorithm=('LR,'LogisticRegression()),param_grid= None,folds= None,grid_search= False,best_estimator= False) 
-            >>> model.tp_rate_analysis(model_1,model_2)
             >>> saving(model_name= 'LR', model= model_1)
         """
         try:
             timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M")
-            model['timestamp'] = timestamp
-            name = model['name']
+            model_data['timestamp'] = timestamp
+            name = model_data['model_name']
+            model = model_data['model']
             joblib.dump(model, f'./models/{name}_{timestamp}.pkl')
             logger.info(
                 f'SUCCESS -> saving(model= {model}) -> '
@@ -748,19 +751,53 @@ class MlModel:
                 )
             raise
     
-    
-    # TODO : Test in workspace!
-    def output_explanation(self):
-        try:
-            explainer = shap.TreeExplainer(cv_rfc.best_estimator_)
-            shap_values = explainer.shap_values(X_test)
-            shap.summary_plot(shap_values, X_test, plot_type="bar")
-            logger.info('SUCCESS -> ')
-        except BaseException as exc:
-            logger.error(f'ERROR -> {exc}')
+    # FIXME: -> Unit-test-> Test -> Docs
+    def feature_importance_plot_2(self,model_data: Dict=None):
+        """
+        Method to create insights from visual inspection of roc curve
+        analysing true positives rate on classifier
 
-    # TODO: -> Unit-test-> Test
-    def feature_importance_plot(self,model):
+        Parameters
+        ----------
+        model_1:
+            Model 1 to be analyzed
+        model_2: int
+            Model 2 to be analyzed
+            
+        Returns:
+        --------
+        None
+
+        Examples:
+        ---------
+            >>> model = mlvc.MlModel('test')
+            >>> model.data_loading('db/data.csv')
+            >>> model.test_train_data_split(test_size= 0.3,random_state= 11)
+            >>> model_1 = model.tuning(model_algorithm=('LR,'LinearRegression()),param_grid= None,folds= None,grid_search= False,best_estimator= False) 
+            >>> model_2 = model.tuning(model_algorithm=('LR,'LogisticRegression()),param_grid= None,folds= None,grid_search= False,best_estimator= False) 
+            >>> model.tp_rate_analysis(model_1,model_2)
+        """
+        try:
+            model = model_data['model']
+            explainer = shap.TreeExplainer(model.best_estimator_)
+            shap_values = explainer.shap_values(self.X_test)
+            shap.summary_plot(shap_values, self.X_test, plot_type="bar")
+            logger.info(
+                f'SUCCESS -> feature_importance_plot_1(model_data= {model_data}) -> '
+                f'MSG -> Feature importance plot 2 (shap engine) generated ! -> '
+                f'OUTPUT -> None .'
+                )
+            return  
+        except BaseException as exc:
+            logger.error(
+                f'ERROR  -> feature_importance_plot_1(model_data= {model_data}) -> '
+                f'MSG -> Feature importance calculations not executed ! ->'
+                f'Exception -> {exc} .'
+                )
+            raise 
+
+    # FIXME: -> Unit-test-> Test -> Docs
+    def feature_importance_plot_1(self,model_data: Dict=None):
         """
         Generates a matplotlib bar plot to describe feature importance on
         X matrix targeting dimensionality reduction to avoid overfitting
@@ -783,6 +820,7 @@ class MlModel:
             >>> model_1 = model.tuning(model_algorithm=('LR,'LinearRegression()))
         """
         try:
+            model = model_data['model']
             importances = model.best_estimator_.feature_importances_
             indices = np.argsort(importances)[::-1]
             names = [self.X.columns[i] for i in indices]
@@ -791,8 +829,8 @@ class MlModel:
 
             plt.title("Feature Importance")
             plt.ylabel('Importance')
-            plt.bar(range(X.shape[1]), importances[indices])
-            plt.xticks(range(X.shape[1]), names, rotation=90)
+            plt.bar(range(self.X.shape[1]), importances[indices])
+            plt.xticks(range(self.X.shape[1]), names, rotation=90)
             plt.savefig('line_plot.pdf')  
             logger.info(
                     f'SUCCESS -> feature_importance_plot(model= {model}) -> '
@@ -806,21 +844,54 @@ class MlModel:
                 f'MSG -> Feature importance calculations not executed ! ->'
                 f'Exception -> {exc} .'
                 )
-            raise exc('Feature importance calculations not executed !')
-    # TODO : Test in workspace!
-    def report(self):
+            raise 
+    
+    # FIXME: -> Unit-test-> Test -> Docs
+    def clf_report(self, model_data: Dict=None):
+        """
+        Generates a matplotlib bar plot to describe feature importance on
+        X matrix targeting dimensionality reduction to avoid overfitting
+        and decrease model complexity. 
+
+        Parameters
+        ----------
+        model: str
+            Machine learning model fitted
+            
+        Returns:
+        --------
+        None
+
+        Examples:
+        ---------
+            >>> model = mlvc.MlModel('test')
+            >>> model.data_loading('db/data.csv')
+            >>> model.test_train_data_split(test_size= 0.3,random_state= 11)
+            >>> model_1 = model.tuning(model_algorithm=('LR,'LinearRegression()))
+        """
         try:
+            y_train_predicted = model_data['y_train_predicted']
+            y_test_predicted = model_data['y_test_predicted']
+            model_name = model_data['model_name']
             fig = plt.rc('figure', figsize=(5, 5))
-            #plt.text(0.01, 0.05, str(model.summary()), {'fontsize': 12}) old approach
             fig.text(0.01, 1.25, str('Random Forest Train'), {'fontsize': 10}, fontproperties = 'monospace')
-            fig.text(0.01, 0.05, str(classification_report(self.y_test, self.y_test_preds_rf)), {'fontsize': 10}, fontproperties = 'monospace') # approach improved by OP -> monospace!
+            fig.text(0.01, 0.05, str(classification_report(self.y_test, y_test_predicted)), {'fontsize': 10}, fontproperties = 'monospace') 
             fig.text(0.01, 0.6, str('Random Forest Test'), {'fontsize': 10}, fontproperties = 'monospace')
-            fig.text(0.01, 0.7, str(classification_report(self.y_train, self.y_train_preds_rf)), {'fontsize': 10}, fontproperties = 'monospace') # approach improved by OP -> monospace!
+            fig.text(0.01, 0.7, str(classification_report(self.y_train, y_train_predicted)), {'fontsize': 10}, fontproperties = 'monospace') 
             fig.axis('off');
-            fig.savefig(f'plots/model_report.pdf')
-            logger.info('SUCCESS -> ')
+            fig.savefig(f'reports/{model_name}_report.pdf')
+            logger.info(
+                f'SUCCESS -> clf_report(model_data= {model_data}) -> '
+                f'MSG -> Report created ! -> '
+                f'OUTPUT -> None .'
+                )
+            return
         except BaseException as exc:
-            logger(f'ERROR -> {exc}')
+            logger.error(
+                f'ERROR  -> clf_report(model_data= {model_data}) -> '
+                f'MSG -> Report not loaded ! ->'
+                f'Exception -> {exc} .'
+                )
             raise
 
 
