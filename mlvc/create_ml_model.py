@@ -7,6 +7,7 @@ date: February 2022
 import json
 from lib2to3.pytree import Base
 import os
+import json
 from datetime import datetime,date
 import shap
 import joblib
@@ -28,16 +29,16 @@ from sklearn.metrics import plot_roc_curve, classification_report
 
 
 
-class CreateMlModel:
+class CreateCreateMlModel:
     """Class to create Machine Learning Models"""
 
     def __init__(self, name):
         self.__name__ = name
 
-    # TODO DONE!
-    def data_loading(self, df_path: str) -> pd.DataFrame:
+    # TODO Test! OK
+    def data_loading(self, df_path: str) -> Dict:
         """
-        Converts a csv file into a dataframe
+        Loads a csv file into a dataframe
 
         Parameters
         ----------
@@ -51,59 +52,66 @@ class CreateMlModel:
 
         Examples:
         ---------
-            >>> model = mlvc.MlModel('test')
+            >>> model = mlvc.CreateCreateMlModel('test')
             >>> model.data_loading(df_path= 'path/file.csv')
         """
         try:
             self.df = pd.read_csv(df_path)
             logger.info(
-                f'SUCCESS -> import_data({df_path}) -> '
-                f'MSG -> Dataframe read successfully -> '
+                f'SUCCESS -> data_loading({df_path}) -> '
+                f'MSG -> Csv file loaded successfully -> '
                 f'OUTPUT -> df.head(): {self.df.head().to_dict()} .'
                 )
             return self.df
         except FileNotFoundError as exc:
             logger.error(
-                f'ERROR -> import_data({df_path}) -> '
+                f'ERROR -> data_loading({df_path}) -> '
                 f'MSG -> Could not import data object ! -> '
                 f'OUTPUT -> None'
                 f'EXCEPTION -> {exc} .')
             raise
     
-    # TODO DONE!
-    def data_statistics(self) -> Dict:
+    # TODO Test! OK
+    def data_analysis(self) -> Dict:
         """
-        Perform data analysis into a data file
+        Perform data analysis in a dataframe
 
         Parameters:
         ----------
-        self
+        Self
 
         Returns:
         --------
-        stats_data: Dict[str,pd.Series,pd.DataFrame]
+        stats_data: Dict
             Dictionary containing the data analysis information
 
         Examples:
         ---------
-            >>> model = mlvc.MlModel('test')
+            >>> model = mlvc.CreateMlModel('test')
             >>> model.data_loading(df_path= 'path/file.csv')
-            >>> stats = model.df_statistics()
+            >>> stats_data = model.data_analysis()
         """
-        
-        self.stats_data = {
-            'shape': self.df.shape,
-            'null_values': self.df.isnull().sum(),
-            'numeric_stats': self.df.describe()
-        }
-        logger.info(
-            f'SUCCESS -> df_statistics() -> '
-            f'MSG -> dataframe statistics callculated successfully -> '
-            f'OUTPUT -> stats_data: {self.stats_data} .'
-            )
-        return self.stats_data
+        try:
+            self.stats_data = {
+                'shape': self.df.shape,
+                'null_values': self.df.isnull().sum(),
+                'numeric_stats': self.df.describe()
+            }
+            logger.info(
+                f'SUCCESS -> data_analysis() -> '
+                f'MSG -> Data analysis calculated successfully ! -> '
+                f'OUTPUT -> stats_data: {json.dumps(self.stats_data)} .'
+                )
+            return self.stats_data
+        except BaseException as exc:
+            logger.error(
+                f'ERROR -> data_analysis() -> '
+                f'MSG -> Could not create statistics calculation ! -> '
+                f'OUTPUT -> None'
+                f'EXCEPTION -> {exc} .')
+            raise
 
-    # TODO: Test
+    # TODO: Test! OK
     def isolate_categ_and_num_cols(self) -> Tuple[List[str],List[str]]:
         """
         Isolate the categoric and numeric cols from pandas DataFrame
@@ -121,7 +129,7 @@ class CreateMlModel:
 
         Examples:
         ---------
-            >>> model = mlvc.MlModel('test')
+            >>> model = mlvc.CreateMlModel('test')
             >>> df = load_data(df_path= 'path/file.csv')
             >>> numeric_cols, categoric_cols = model.isolate_categ_and_num_cols()
             >>> numeric_cols
@@ -149,11 +157,11 @@ class CreateMlModel:
             )
             raise 
 
-    # TODO: Test     
+    # TODO: Test ! OK    
     @staticmethod     
-    def remove_cols(cols_lst: List[str]=None,cols_to_rm: List[str]=None):
+    def remove_cols(cols_lst: List[str]=None,cols_to_rm: List[str]=None) -> List[str]:
         """
-        Method to remove itens from a certain list
+        Method to remove items from a certain list
         
         Parameters:
         ----------
@@ -169,7 +177,7 @@ class CreateMlModel:
 
         Examples:
         ---------
-        >>> model = mlvc.MlModel('test')
+        >>> model = mlvc.CreateMlModel('test')
         >>> load_data(df_path= 'path/file.csv')
         >>> numeric_cols, categoric_cols = model.isolate_categ_and_num_cols()
         >>> numeric_cols = remove_cols(numeric_cols,['x1'])
@@ -185,13 +193,13 @@ class CreateMlModel:
                 )
                 pass
         logger.info(
-            f'SUCCESS -> isolate_categ_and_num_cols() -> '
+            f'SUCCESS -> remove_cols(cols_lst={cols_lst}, cols_to_rm={cols_to_rm}) -> '
             f'MSG -> Removed columns from list ! -> '
             f'OUTPUT -> cols_lst_old: {cols_lst} -> cols_lst_new: {cols_lst} .'
         )
         return cols_lst
 
-    #   TODO: Done!
+    #   TODO: Test! OK
     def data_hist_plot(self,col_name: str) -> None:
         """
         Create a histogram plot from a dataframe
@@ -207,13 +215,13 @@ class CreateMlModel:
 
         Examples:
         ---------
-            >>> model = mlvc.MlModel('test')
+            >>> model = mlvc.CreateMlModel('test')
             >>> model.data_hist_plot(col_name= 'X')
         """
         try:
             fig = self.df[col_name].hist();
             fig = fig.get_figure()
-            fig.savefig(f'plots/hist_plot_{col_name}.pdf')
+            fig.savefig(f'plots/histograms/hist_plot_{col_name}.pdf')
             logger.info(
                 f'SUCCESS -> df_hist_plot(col_name={col_name}) -> '
                 f'MSG -> Dataframe histogram plot created ! -> '
@@ -228,10 +236,10 @@ class CreateMlModel:
                 )
             raise
     
-    #   TODO: Done!
+    #   TODO: Test! OK
     def normalized_data_plot(self,col_name: str, plot_type: str) -> None:
         """
-        Create a specific plot from a pandas series normalized
+        Create a specific plot from a normalized pandas series
 
         Parameters
         ----------
@@ -246,7 +254,7 @@ class CreateMlModel:
 
         Examples:
         ---------
-            >>> model = mlvc.MlModel('test')
+            >>> model = mlvc.CreateMlModel('test')
             >>> model.normalized_data_plot(col_name= 'X', plot_type= 'bar')
         """
         try:
@@ -267,7 +275,7 @@ class CreateMlModel:
                 )
             raise
     
-    #   TODO: Done!
+    #   TODO: Test! OK
     def data_dist_plot(self,col_name:str) -> None:
         """
         Create a dist plot from a pandas series using seaborn backend
@@ -283,36 +291,38 @@ class CreateMlModel:
 
         Examples:
         ---------
-            >>> model = mlvc.MlModel('test')
+            >>> model = mlvc.CreateMlModel('test')
             >>> model.data_dist_plot(col_name= 'X')
         """
         try:
             fig = sns.distplot(self.df[col_name]);
             fig = fig.get_figure()
-            fig.savefig(f'plots/distplot_plot_{col_name}.pdf')
+            fig.savefig(f'plots/distplots/distplot_plot_{col_name}.pdf')
             logger.info(
-                f'SUCCESS -> normalized_data_plot(col_name={col_name}) -> '
+                f'SUCCESS -> data_dist_plot(col_name={col_name}) -> '
                 f'MSG -> Created Pandas series dist plot ! -> '
                 f'OUTPUT -> {fig.__dict__} .'
                 )
-            return fig
+            return
         except BaseException as exc:
             logger.error(
-                f'ERROR  -> normalized_data_plot(col_name={col_name}) -> '
+                f'ERROR  -> data_dist_plot(col_name={col_name}) -> '
                 f'MSG -> Could not create Pandas series dist plot ! ->'
                 f'Exception -> {exc} .'
                 )
             raise
 
-    #   TODO: Done!
-    def data_heatmap_plot(self, color_pallete:str ='Dark2_r') -> None:
+    #   TODO: Test! OK
+    def data_heatmap_plot(self, color_pallette:str ='Dark2_r') -> None:
         """
         Create a heatmap plot from a pandas correlation matrix 
         using seaborn backend
 
         Parameters
         ----------
-        None
+        color_pallette: str
+            Color pallette to be used on the heatmap plot,
+            default value: Dark2_r
 
         Returns:
         --------
@@ -320,13 +330,13 @@ class CreateMlModel:
 
         Examples:
         ---------
-            >>> model = mlvc.MlModel('test')
+            >>> model = mlvc.CreateMlModel('test')
             >>> model.data_heatmap_plot()
         """
         try:
-            fig = sns.heatmap(self.df.corr(), annot=True, cmap=color_pallete, linewidths = 2)
+            fig = sns.heatmap(self.df.corr(), annot=True, cmap=color_pallette, linewidths = 2)
             fig = fig.get_figure()
-            fig.savefig(f'plots/heatmap_{self.__name__}.pdf')
+            fig.savefig(f'plots/heatmap/heatmap_{self.__name__}.pdf')
             logger.info(
                 f'SUCCESS -> data_heatmap_plot() -> '
                 f'MSG -> Created heatmap plot ! -> '
@@ -341,7 +351,7 @@ class CreateMlModel:
                 )
             raise
     
-    #   FIXME: Test! 
+    #   TODO: Test! OK
     def data_categoric_to_binary(self, target_name: str ,col_name: str ,base_value: str) -> pd.DataFrame:
         """
         Convert a categorical (eg.: 2 value options: [high,low]) to binary
@@ -362,14 +372,14 @@ class CreateMlModel:
 
         Examples:
         ---------
-            >>> model = mlvc.MlModel('test')
+            >>> model = mlvc.CreateMlModel('test')
             >>> model.data_categoric_to_binary(target_name= 'z' ,col_name= 'X1' ,base_value= 'low')
         """
         try:
             self.df[target_name] = self.df[col_name].apply(lambda val: 0 if val == base_value else 1)
             logger.info(
                 f'SUCCESS -> data_categoric_to_binary(target_name= {target_name} ,col_name= {col_name} ,base_value= {base_value}) -> '
-                f'MSG -> Dataframe pre-processed succesfully ! -> '
+                f'MSG -> Dataframe pre-processed successfully ! -> '
                 f'OUTPUT -> df cols: {self.df} .'
                 )
             return self.df
@@ -381,17 +391,17 @@ class CreateMlModel:
                 )
             raise
     
-    #   FIXME: Test!
+    #   TODO: Test! OK
     def data_feature_encoder(self, col_name: str, target_col: str) -> pd.DataFrame:
         """
-        Groupby a feature to create a new dataframe collumn?
+        Groupby a feature to create a new dataframe column?
 
         Parameters
         ----------
         col_name: str
             Column name to be transformed to binary values
         target_col: str
-            Column to be compared? TODO: What is groupby??
+            Grouped column
             
         Returns:
         --------
@@ -400,7 +410,7 @@ class CreateMlModel:
 
         Examples:
         ---------
-            >>> model = mlvc.MlModel('test')
+            >>> model = mlvc.CreateMlModel('test')
             >>> model.data_feature_encoder(col_name= 'X1', target_col= 'X3')
         """
         category_lst = []
@@ -413,7 +423,7 @@ class CreateMlModel:
             self.df[f'{col_name}_{target_col}'] = category_lst
             logger.info(
                 f'SUCCESS -> data_feature_encoder(col_name= {col_name}, target_col= {target_col} ) -> '
-                f'MSG -> Dataframe pre-processed succesfully ! -> '
+                f'MSG -> Dataframe pre-processed successfully ! -> '
                 f'OUTPUT -> df cols: {self.df.columns.to_list()} .'
                 )
             return self.df
@@ -425,7 +435,7 @@ class CreateMlModel:
                 )
             raise
     
-    #  FIXME: Test!
+    #  TODO: Test! OK
     def data_build_ml_matrix(self, target_col:str, states_key: List):
         """
         Builds a Machine learning matrix X(y)
@@ -435,7 +445,7 @@ class CreateMlModel:
         target_col: str
             Target column
         states_key: List
-            List of columns to be keeped in the ML matrix
+            List of columns to keep in the ML matrix
             
         Returns:
         --------
@@ -444,7 +454,7 @@ class CreateMlModel:
 
         Examples:
         ---------
-            >>> model = mlvc.MlModel('test')
+            >>> model = mlvc.CreateMlModel('test')
             >>> model.data_build_ml_matrix(target_col= 'y', states_key= ['x1','x2',...]) 
         """
         try:
@@ -466,7 +476,7 @@ class CreateMlModel:
                 )
             raise
     
-    #  FIXME: Test!
+    #  TODO: Test! OK
     def split_test_train_data(self, test_size: float, random_state: int) -> Tuple:
         """
         Split test and train data for machine learning task
@@ -481,11 +491,11 @@ class CreateMlModel:
         Returns:
         --------
         data_processed: Dict
-            Tuple conatining: X_train, X_test, y_train, y_test
+            Tuple containing: X_train, X_test, y_train, y_test
 
         Examples:
         ---------
-            >>> model = mlvc.MlModel('test')
+            >>> model = mlvc.CreateMlModel('test')
             >>> model.data_loading('db/data.csv')
             >>> data_processed = model.split_test_train_data(test_size= 0.3,random_state= 11) 
         """
@@ -510,12 +520,12 @@ class CreateMlModel:
                 f'MSG -> Train and test data not created ! ->'
                 f'Exception -> {exc} .'
                 )
-            raise exc
+            raise
     
-    # FIXME: Test!
+    # TODO: Test! OK
     def fit_predict(self,model_name: str = None, model_data: Dict={},model_algorithm=None):
         """
-        Fit and predict with choosen model
+        Fit and predict with chosen model
 
         Parameters
         ----------
@@ -531,7 +541,7 @@ class CreateMlModel:
 
         Examples:
         ---------
-            >>> model = mlvc.MlModel('test')
+            >>> model = mlvc.CreateMlModel('test')
             >>> model.data_loading('db/data.csv')
             >>> model.split_test_train_data(test_size= 0.3,random_state= 11) 
             >>> model.fit_predict(model_data={'name':'lrc'},model_algorithm=('LR,'LinearRegression())) 
@@ -554,8 +564,13 @@ class CreateMlModel:
                 f'MSG -> Fit-Predict not worked ! ->'
                 f'Exception -> {exc} .'
                 )
-            raise exc
+            raise
     
+
+
+
+
+    #-----Continue
     # FIXME: -> Unit-test-> Test
     def fit_predict_to_best_estimator(
         self,
@@ -633,7 +648,7 @@ class CreateMlModel:
 
         Examples:
         ---------
-            >>> model = mlvc.MlModel('test')
+            >>> model = mlvc.CreateMlModel('test')
             >>> model.data_loading('db/data.csv')
             >>> model.test_train_data_split(test_size= 0.3,random_state= 11)
             >>> model_1 = model.tuning(model_algorithm=('LR,'LinearRegression()),param_grid= None,folds= None,grid_search= False,best_estimator= False) 
@@ -683,7 +698,7 @@ class CreateMlModel:
 
         Examples:
         ---------
-            >>> model = mlvc.MlModel('test')
+            >>> model = mlvc.CreateMlModel('test')
             >>> model.data_loading('db/data.csv')
             >>> model.test_train_data_split(test_size= 0.3,random_state= 11)
             >>> model_1 = model.tuning(model_algorithm=('LR,'LinearRegression()),param_grid= None,folds= None,grid_search= False,best_estimator= False) 
@@ -726,7 +741,7 @@ class CreateMlModel:
 
         Examples:
         ---------
-            >>> model = mlvc.MlModel('test')
+            >>> model = mlvc.CreateMlModel('test')
             >>> model.data_loading('db/data.csv')
             >>> model.test_train_data_split(test_size= 0.3,random_state= 11)
             >>> model_1 = model.tuning(model_algorithm=('LR,'LinearRegression()),param_grid= None,folds= None,grid_search= False,best_estimator= False) 
@@ -770,7 +785,7 @@ class CreateMlModel:
 
         Examples:
         ---------
-            >>> model = mlvc.MlModel('test')
+            >>> model = mlvc.CreateMlModel('test')
             >>> model.data_loading('db/data.csv')
             >>> model.test_train_data_split(test_size= 0.3,random_state= 11)
             >>> model_1 = model.tuning(model_algorithm=('LR,'LinearRegression()),param_grid= None,folds= None,grid_search= False,best_estimator= False) 
@@ -814,7 +829,7 @@ class CreateMlModel:
 
         Examples:
         ---------
-            >>> model = mlvc.MlModel('test')
+            >>> model = mlvc.CreateMlModel('test')
             >>> model.data_loading('db/data.csv')
             >>> model.test_train_data_split(test_size= 0.3,random_state= 11)
             >>> model_1 = model.tuning(model_algorithm=('LR,'LinearRegression()))
@@ -864,7 +879,7 @@ class CreateMlModel:
 
         Examples:
         ---------
-            >>> model = mlvc.MlModel('test')
+            >>> model = mlvc.CreateMlModel('test')
             >>> model.data_loading('db/data.csv')
             >>> model.test_train_data_split(test_size= 0.3,random_state= 11)
             >>> model_1 = model.tuning(model_algorithm=('LR,'LinearRegression()))

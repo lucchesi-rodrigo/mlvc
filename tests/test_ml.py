@@ -11,21 +11,41 @@ from sklearn.ensemble import RandomForestClassifier
 
 class TestIntegration:
 
-    @classmethod
-    def set_up(cls):
-        os.system('clear')
-
+    #---CreateMlModel 
     def test_init(self):
         model = CreateMlModel('test')
         assert model.__name__ == 'test'
-        
-    def test_data_loading_valid_path(self):
+    #---data_loading   
+    def test_data_loading_exception(self):
+        """Invalid path"""
+        with pytest.raises(FileNotFoundError):
+            model = CreateMlModel('test')
+            model.data_loading('tests/extra/data.csv')
+
+    def test_data_loading(self):
+        """Loads csv file"""
         model = CreateMlModel('test')
         df = model.data_loading('tests/data.csv')
-        # import pdb;pdb.set_trace()
         assert df.columns.to_list() == ['x','y']
+    #---data_analysis     
+    def test_data_analysis(self):
+        model = CreateMlModel('test')
+        model.data_loading('tests/data.csv')
+        assert model.data_analysis()
 
+    def test_data_analysis_categorical_data(self):
+        model = CreateMlModel('test')
+        model.data_loading('tests/data_cat.csv')
+        assert model.data_analysis()
+
+    def test_data_analysis_exception(self):
+        with pytest.raises(BaseException):
+            model = CreateMlModel('test')
+            model.df = None
+            model.data_analysis()
+    #---isolate_categ_and_num_cols
     def test_isolate_categ_and_num_cols(self):
+        """Isolate categoric and numeric collumns from df"""
         df = pd.DataFrame(
             [
                 ("bird", "Falconiformes", 389.0),
@@ -43,32 +63,17 @@ class TestIntegration:
         assert numeric_cols == ['max_speed']
         assert categoric_cols == ['class', 'order']
 
-    def test_isolate_categ_and_num_cols(self):
+    def test_isolate_categ_and_num_cols_exception(self):
         with pytest.raises(BaseException):
             model = CreateMlModel('test')
             model.df = None
-            model.isolate_categ_and_num_cols()
-        
+            model.isolate_categ_and_num_cols()  
+    #---remove_cols
     def test_remove_cols(self):
         model = CreateMlModel('test')
         cols_list = model.remove_cols(['x','y','i'],['i','g'])
         assert cols_list == ['x','y']
-
-    def test_data_loading_invalid_path(self):
-        with pytest.raises(FileNotFoundError):
-            model = CreateMlModel('test')
-            model.data_loading('tests/extra/data.csv')
-            
-    def test_data_statistics(self):
-        model = CreateMlModel('test')
-        model.data_loading('tests/data.csv')
-        assert model.data_statistics()
-
-    def test_data_statistics_categorical_data(self):
-        model = CreateMlModel('test')
-        model.data_loading('tests/data_cat.csv')
-        assert model.data_statistics()
-
+    #---data_hist_plot
     def test_data_hist_plot(self):
         model = CreateMlModel('test')
         model.data_loading('tests/data.csv')
@@ -80,7 +85,7 @@ class TestIntegration:
             model = CreateMlModel('test')
             model.df = pd.DataFrame()
             model.data_hist_plot('x')
-        
+    #---normalized_data_plot    
     def test_normalized_data_plot(self):
         model = CreateMlModel('test')
         model.data_loading('tests/data.csv')
@@ -98,21 +103,20 @@ class TestIntegration:
                 col_name = 'x', 
                 plot_type = 'bar'
             )
-
+    #---data_dist_plot
     def test_data_dist_plot(self):
         model = CreateMlModel('test')
         model.data_loading('tests/data.csv')
-        fig = model.data_dist_plot(
+        assert model.data_dist_plot(
             col_name = 'x'
-        )
-        assert fig 
+        ) 
 
     def test_data_dist_plot_exception(self):
         with pytest.raises(BaseException):
             model = CreateMlModel('test')
             model.df = pd.DataFrame()
             model.data_dist_plot(col_name = 'x')
-
+    #---data_heatmap_plot
     def test_data_heatmap_plot(self):
         model = CreateMlModel('test')
         model.data_loading('tests/data.csv')
@@ -124,7 +128,7 @@ class TestIntegration:
             model = CreateMlModel('test')
             model.df = pd.DataFrame()
             model.data_heatmap_plot()
-
+    #---data_categoric_to_binary
     def test_data_categoric_to_binary(self):
         model = CreateMlModel('test')
         model.data_loading('tests/data_mix.csv')
@@ -144,7 +148,7 @@ class TestIntegration:
                 col_name = 'z',
                 base_value = 1
                 )
-
+    #---data_feature_encoder
     def test_data_feature_encoder(self):
         df = pd.DataFrame(
             [
@@ -172,7 +176,7 @@ class TestIntegration:
             model = CreateMlModel('test')
             model.df = None
             model.data_feature_encoder(col_name=col_name, target_col=target_col)
-
+    #---data_build_ml_matrix
     def test_data_build_ml_matrix(self):
         df = pd.DataFrame(
             [
@@ -213,7 +217,7 @@ class TestIntegration:
             model = CreateMlModel('test')
             model.df = df
             model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
-    
+    #---split_test_train_data
     def test_split_test_train_data(self):
 
         df = pd.DataFrame(
@@ -260,7 +264,7 @@ class TestIntegration:
             model.df = df
             model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
             data_processed = model.split_test_train_data(test_size=0.9, random_state=11)
-
+    #---fit_predict
     def test_fit_predict(self):
         df = pd.DataFrame(
             [
@@ -336,6 +340,8 @@ class TestIntegration:
                     model_data={'name':'lrc'},
                     model_algorithm=None
                 )
+    #---fit_predict_to_best_estimator
+
 
     def test_saving(self):
         df = pd.DataFrame(
