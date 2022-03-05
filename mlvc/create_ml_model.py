@@ -29,7 +29,7 @@ from sklearn.metrics import plot_roc_curve, classification_report
 
 
 
-class CreateCreateMlModel:
+class CreateMlModel:
     """Class to create Machine Learning Models"""
 
     def __init__(self, name):
@@ -100,7 +100,7 @@ class CreateCreateMlModel:
             logger.info(
                 f'SUCCESS -> data_analysis() -> '
                 f'MSG -> Data analysis calculated successfully ! -> '
-                f'OUTPUT -> stats_data: {json.dumps(self.stats_data)} .'
+                f'OUTPUT -> stats_data: {str(self.stats_data)} .'
                 )
             return self.stats_data
         except BaseException as exc:
@@ -336,13 +336,13 @@ class CreateCreateMlModel:
         try:
             fig = sns.heatmap(self.df.corr(), annot=True, cmap=color_pallette, linewidths = 2)
             fig = fig.get_figure()
-            fig.savefig(f'plots/heatmap/heatmap_{self.__name__}.pdf')
+            fig.savefig(f'plots/heatmaps/heatmap_{self.__name__}.pdf')
             logger.info(
                 f'SUCCESS -> data_heatmap_plot() -> '
                 f'MSG -> Created heatmap plot ! -> '
                 f'OUTPUT -> {fig.__dict__} .'
                 )
-            return fig
+            return
         except BaseException as exc:
             logger.error(
                 f'ERROR  -> data_heatmap_plot() -> '
@@ -610,6 +610,7 @@ class CreateCreateMlModel:
                 param_grid=param_grid, 
                 cv= folds
             )
+            model.fit(self.X_train, self.y_train)
             model_data['model_name'] = model_name
             model_data['model'] = model_algorithm
             model_data['y_train_predicted'] = model.best_estimator_.predict(self.X_train)

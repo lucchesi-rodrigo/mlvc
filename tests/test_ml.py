@@ -107,7 +107,7 @@ class TestIntegration:
     def test_data_dist_plot(self):
         model = CreateMlModel('test')
         model.data_loading('tests/data.csv')
-        assert model.data_dist_plot(
+        model.data_dist_plot(
             col_name = 'x'
         ) 
 
@@ -120,8 +120,7 @@ class TestIntegration:
     def test_data_heatmap_plot(self):
         model = CreateMlModel('test')
         model.data_loading('tests/data.csv')
-        fig = model.data_heatmap_plot()
-        assert fig
+        model.data_heatmap_plot()
 
     def test_data_heatmap_plot_exception(self):
         with pytest.raises(BaseException):
@@ -341,9 +340,7 @@ class TestIntegration:
                     model_algorithm=None
                 )
     #---fit_predict_to_best_estimator
-
-
-    def test_saving(self):
+    def test_fit_predict_to_best_estimator(self):
         df = pd.DataFrame(
             [
                 (100, 188, 0),
@@ -380,16 +377,104 @@ class TestIntegration:
         model.df = df
         model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
         model.split_test_train_data(test_size=0.3, random_state=11)
-        model_data = model.tuning(
-            model_algorithm= RandomForestClassifier(random_state=42), 
-            param_grid= param_grid, 
-            folds= 2, 
-            grid_search= True, 
-            best_estimator= True
+        model.split_test_train_data(test_size=0.3, random_state=11)
+        model_data = model.fit_predict_to_best_estimator(
+                    model_name='rfc',
+                    model_algorithm=RandomForestClassifier(),
+                    param_grid=param_grid,
+                    folds=2,
+                )
+        assert model_data
+    
+    def test_fit(self):
+        pass
+    #---
+    def test_saving(self):
+        df = pd.DataFrame(
+            [
+                ("bird", "Falconiformes", 389.0),
+                ("bird", "Psittaciformes", 24.0),
+                ("mammal", "Carnivora", 80.2),
+                ("mammal", "Primates", 0),
+                ("mammal", "Carnivora", 58),
+            ],
+            index=["falcon", "parrot", "lion", "monkey", "leopard"],
+            columns=("class", "order", "max_speed"),
         )
+        states_key=["class", "order"]
+        target_col='max_speed'
+
+        model = CreateMlModel('test')
+        model.df = df
+        model.data_categoric_to_binary(
+           target_name ='class',
+           col_name = 'class',
+           base_value = 'mammal'
+        )
+        model.data_categoric_to_binary(
+           target_name ='order',
+           col_name = 'order',
+           base_value = 'Falconiformes'
+        )
+        model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
+        model.split_test_train_data(test_size=0.3, random_state=11)
+        model_data = model.fit_predict(
+                model_data={'name':'lrc'},
+                model_algorithm=LogisticRegression()
+            )
         model_data['name'] = 'random_forest_classifier'
         model.saving(model_data)
 
+    def test_tp_rate_analysis(self):
+        # Do it later
+        pass
+
+    def test_t(self):
+        df = pd.DataFrame(
+            [
+                (100, 188, 0),
+                (70, 170, 1),
+                (60, 170, 0),
+                (80, 188, 1),
+                (67, 166, 0),
+                (66, 166, 1),
+                (100, 188, 1),
+                (70, 170, 0),
+                (60, 170, 1),
+                (80, 188, 0),
+                (67, 166, 1),
+                (66, 166, 0),
+                (100, 188, 1),
+                (70, 170, 0),
+                (60, 170, 1),
+                (80, 188, 0),
+                (67, 166, 1),
+                (66, 166, 0),
+            ],
+            columns=("over_weight", "height", "age"),
+        )
+        states_key=["height", "age"]
+        target_col='over_weight'
+        param_grid = { 
+            'n_estimators': [200, 500],
+            'max_features': ['auto', 'sqrt'],
+            'max_depth' : [4,5,100],
+            'criterion' :['gini', 'entropy']
+        }
+
+        model = CreateMlModel('test')
+        model.df = df
+        model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
+        model.split_test_train_data(test_size=0.3, random_state=11)
+        model.split_test_train_data(test_size=0.3, random_state=11)
+        model_data = model.fit_predict_to_best_estimator(
+                    model_name='rfc',
+                    model_algorithm=RandomForestClassifier(),
+                    param_grid=param_grid,
+                    folds=2,
+                )
+        model_data['model'].feature_importance_plot_2(model_data)
+        
     def test_loading(self):
         timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M")
         name = 'random_forest_classifier'
