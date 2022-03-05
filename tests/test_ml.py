@@ -384,11 +384,78 @@ class TestIntegration:
                     param_grid=param_grid,
                     folds=2,
                 )
-        assert model_data
-    
-    def test_fit(self):
+        assert model_data['model_name'] == 'rfc'
+        np.testing.assert_allclose(model_data['y_train_predicted'].tolist(),[67, 100, 67, 67, 100, 70, 70, 70, 70, 100, 70, 67],atol=20)
+        np.testing.assert_allclose(model_data['y_test_predicted'].tolist(),[100, 100, 100, 67, 66, 70],atol=20)
+
+    def test_fit_predict_to_best_estimator_exception(self):
+        with pytest.raises(BaseException):
+            df = pd.DataFrame(
+                [RandomForestClassifier(max_depth=4, max_features='sqrt', n_estimators=200)
+                    (100, 188, 0),
+                    (70, 170, 1),
+                    (60, 170, 0),
+                    (80, 188, 1),
+                    (67, 166, 0),
+                    (66, 166, 1),
+                    (100, 188, 1),
+                    (70, 170, 0),
+                    (60, 170, 1),
+                    (80, 188, 0),
+                    (67, 166, 1),
+                    (66, 166, 0),
+                    (100, 188, 1),
+                    (70, 170, 0),
+                    (60, 170, 1),
+                    (80, 188, 0),
+                    (67, 166, 1),
+                    (66, 166, 0),
+                ],
+                columns=("over_weight", "height", "age"),
+            )
+            states_key=["height", "age"]
+            target_col='over_weight'
+            param_grid = { 
+                'n_estimators': [200, 500],
+                'max_features': ['auto', 'sqrt'],
+                'max_depth' : [4,5,100],
+                'criterion' :['gini', 'entropy']
+            }
+
+            model = CreateMlModel('test')
+            model.df = df
+            model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
+            model.split_test_train_data(test_size=0.3, random_state=11)
+            model.split_test_train_data(test_size=0.3, random_state=11)
+            model.fit_predict_to_best_estimator(
+                        model_name='rfc',
+                        model_algorithm=None,
+                        param_grid=param_grid,
+                        folds=2,
+                    )
+    #---tp_rate_analysis TODO:       
+    def test_tp_rate_analysis(self):
+        # Do it later
         pass
-    #---
+    def test_tp_rate_analysis_exception(self):
+        # Do it later
+        pass
+    #---feature_importance_plot_1
+    def feature_importance_plot_1(self):
+        pass
+    def feature_importance_plot_1_exception(self):
+        pass
+    #---feature_importance_plot_2
+    def feature_importance_plot_2(self):
+        pass
+    def feature_importance_plot_2_exception(self):
+        pass
+    #---clf_report
+    def clf_report(self):
+        pass
+    def clf_report_exception(self):
+        pass
+    #---saving
     def test_saving(self):
         df = pd.DataFrame(
             [
@@ -424,57 +491,9 @@ class TestIntegration:
             )
         model_data['name'] = 'random_forest_classifier'
         model.saving(model_data)
-
-    def test_tp_rate_analysis(self):
-        # Do it later
+    def test_saving_exception(self):
         pass
-
-    def test_t(self):
-        df = pd.DataFrame(
-            [
-                (100, 188, 0),
-                (70, 170, 1),
-                (60, 170, 0),
-                (80, 188, 1),
-                (67, 166, 0),
-                (66, 166, 1),
-                (100, 188, 1),
-                (70, 170, 0),
-                (60, 170, 1),
-                (80, 188, 0),
-                (67, 166, 1),
-                (66, 166, 0),
-                (100, 188, 1),
-                (70, 170, 0),
-                (60, 170, 1),
-                (80, 188, 0),
-                (67, 166, 1),
-                (66, 166, 0),
-            ],
-            columns=("over_weight", "height", "age"),
-        )
-        states_key=["height", "age"]
-        target_col='over_weight'
-        param_grid = { 
-            'n_estimators': [200, 500],
-            'max_features': ['auto', 'sqrt'],
-            'max_depth' : [4,5,100],
-            'criterion' :['gini', 'entropy']
-        }
-
-        model = CreateMlModel('test')
-        model.df = df
-        model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
-        model.split_test_train_data(test_size=0.3, random_state=11)
-        model.split_test_train_data(test_size=0.3, random_state=11)
-        model_data = model.fit_predict_to_best_estimator(
-                    model_name='rfc',
-                    model_algorithm=RandomForestClassifier(),
-                    param_grid=param_grid,
-                    folds=2,
-                )
-        model_data['model'].feature_importance_plot_2(model_data)
-        
+    #---loading
     def test_loading(self):
         timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M")
         name = 'random_forest_classifier'
@@ -483,3 +502,5 @@ class TestIntegration:
         assert model
         os.system('rm -R ./models/*.pkl')
         os.system('rm -R ./plots/*.pdf')
+    def test_loading_exception(self):
+        pass
