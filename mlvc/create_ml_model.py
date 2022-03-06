@@ -29,8 +29,8 @@ from sklearn.metrics import plot_roc_curve, classification_report
 
 
 
-class CreateMlModel:
-    """Class to create Machine Learning Models"""
+class MlModel:
+    """Class to process Machine Learning Models"""
 
     def __init__(self, name):
         """Init method which has as input the model instance name"""
@@ -159,49 +159,6 @@ class CreateMlModel:
             )
             raise 
   
-    @staticmethod     
-    def remove_cols(cols_lst: List[str]=None,cols_to_rm: List[str]=None) -> List[str]:
-        """
-        Method to remove items from a certain list
-        
-        Parameters:
-        ----------
-        self: CreateMlModel
-            Create model object data
-        cols_lst: List[str]
-            List to be changed
-        cols_to_rm: List[str]
-            List of columns to be removed from cols_lst
-
-        Returns:
-        --------
-        cols_lst: List[str]
-            List changed
-
-        Examples:
-        ---------
-        >>> model = mlvc.CreateMlModel('test')
-        >>> load_data(df_path= 'path/file.csv')
-        >>> numeric_cols, categoric_cols = model.isolate_categ_and_num_cols()
-        >>> numeric_cols = remove_cols(numeric_cols,['x1'])
-        >>> numeric_cols
-            ['x2',...]
-        """
-        for col in cols_to_rm:
-            try:
-                cols_lst.remove(col)
-            except:
-                logger.warning(
-                    f'WARNING -> MSG -> Could not remove column: {col} !'
-                )
-                pass
-        logger.info(
-            f'SUCCESS -> remove_cols(cols_lst={cols_lst}, cols_to_rm={cols_to_rm}) -> '
-            f'MSG -> Removed columns from list ! -> '
-            f'OUTPUT -> cols_lst_old: {cols_lst} -> cols_lst_new: {cols_lst} .'
-        )
-        return cols_lst
-
     def data_hist_plot(self,col_name: str) -> None:
         """
         Create a histogram plot from a dataframe column
@@ -847,7 +804,6 @@ class CreateMlModel:
                 )
             raise
 
-    # TODO : -> Unit-test-> Test
     @staticmethod
     def saving(model_data: Dict=None):
         """
@@ -932,5 +888,46 @@ class CreateMlModel:
                 )
             raise
     
+    @staticmethod     
+    def remove_cols(cols_lst: List[str]=None,cols_to_rm: List[str]=None) -> List[str]:
+        """
+        Method to remove items from a certain list
+        
+        Parameters:
+        ----------
+        self: CreateMlModel
+            Create model object data
+        cols_lst: List[str]
+            List to be changed
+        cols_to_rm: List[str]
+            List of columns to be removed from cols_lst
 
+        Returns:
+        --------
+        cols_lst: List[str]
+            List changed
+
+        Examples:
+        ---------
+        >>> model = mlvc.CreateMlModel('test')
+        >>> load_data(df_path= 'path/file.csv')
+        >>> numeric_cols, categoric_cols = model.isolate_categ_and_num_cols()
+        >>> numeric_cols = remove_cols(numeric_cols,['x1'])
+        >>> numeric_cols
+            ['x2',...]
+        """
+        for col in cols_to_rm:
+            try:
+                cols_lst.remove(col)
+            except:
+                logger.warning(
+                    f'WARNING -> MSG -> Could not remove column: {col} !'
+                )
+                pass
+        logger.info(
+            f'SUCCESS -> remove_cols(cols_lst={cols_lst}, cols_to_rm={cols_to_rm}) -> '
+            f'MSG -> Removed columns from list ! -> '
+            f'OUTPUT -> cols_lst_old: {cols_lst} -> cols_lst_new: {cols_lst} .'
+        )
+        return cols_lst
 
