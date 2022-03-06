@@ -94,7 +94,7 @@ class TestIntegration:
             col_name = 'x', 
             plot_type = 'bar'
         )
-        assert fig
+        assert fig == 'matplotlib.figure'
 
     def test_normalized_data_plot_exception(self):
         with pytest.raises(BaseException):
@@ -108,9 +108,10 @@ class TestIntegration:
     def test_data_dist_plot(self):
         model = CreateMlModel('test')
         model.data_loading('tests/data.csv')
-        model.data_dist_plot(
+        output = model.data_dist_plot(
             col_name = 'x'
-        ) 
+        )
+        assert output == 'matplotlib.figure'
 
     def test_data_dist_plot_exception(self):
         with pytest.raises(BaseException):
@@ -121,7 +122,8 @@ class TestIntegration:
     def test_data_heatmap_plot(self):
         model = CreateMlModel('test')
         model.data_loading('tests/data.csv')
-        model.data_heatmap_plot()
+        output = model.data_heatmap_plot()
+        assert output == 'matplotlib.figure'
 
     def test_data_heatmap_plot_exception(self):
         with pytest.raises(BaseException):
@@ -473,7 +475,8 @@ class TestIntegration:
                 model_algorithm=tree.DecisionTreeClassifier()
             )
         models = [(model_data_1,False),(model_data_2,False)] # True to exception
-        model.tp_rate_analysis(ml_models=models)
+        output = model.tp_rate_analysis(ml_models=models)
+        assert output.__name__ == 'matplotlib.pyplot'
 
     """def test_tp_rate_analysis_exception(self):
         with pytest.raises(BaseException):
@@ -560,7 +563,8 @@ class TestIntegration:
                     param_grid=param_grid,
                     folds=2,
                 )
-        model.feature_importance_plot_1(model_data=model_data)
+        response = model.feature_importance_plot_1(model_data=model_data)
+        assert response.__name__ == 'matplotlib.pyplot'
 
     def test_feature_importance_plot_1_exception(self):
         with pytest.raises(BaseException):
@@ -603,16 +607,185 @@ class TestIntegration:
             model.split_test_train_data(test_size=0.3, random_state=11)
             model_data = None
             model.feature_importance_plot_1(model_data=model_data)
+            
+
     #---feature_importance_plot_2
     def test_feature_importance_plot_2(self):
-        pass
+        df = pd.DataFrame(
+            [
+                (100, 188, 0),
+                (70, 170, 1),
+                (60, 170, 0),
+                (80, 188, 1),
+                (67, 166, 0),
+                (66, 166, 1),
+                (100, 188, 1),
+                (70, 170, 0),
+                (60, 170, 1),
+                (80, 188, 0),
+                (67, 166, 1),
+                (66, 166, 0),
+                (100, 188, 1),
+                (70, 170, 0),
+                (60, 170, 1),
+                (80, 188, 0),
+                (67, 166, 1),
+                (66, 166, 0),
+            ],
+            columns=("over_weight", "height", "age"),
+        )
+        states_key=["height", "age"]
+        target_col='over_weight'
+        param_grid = { 
+            'n_estimators': [200, 500],
+            'max_features': ['auto', 'sqrt'],
+            'max_depth' : [4,5,100],
+            'criterion' :['gini', 'entropy']
+        }
+
+        model = CreateMlModel('test')
+        model.df = df
+        model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
+        model.split_test_train_data(test_size=0.3, random_state=11)
+        model.split_test_train_data(test_size=0.3, random_state=11)
+        model_data = model.fit_predict_to_best_estimator(
+                    model_name='rfc',
+                    model_algorithm=RandomForestClassifier(),
+                    param_grid=param_grid,
+                    folds=2,
+                )
+        response = model.feature_importance_plot_2(model_data=model_data)
+        assert response.__name__ == 'shap'
+
     def test_feature_importance_plot_2_exception(self):
-        pass
+        with pytest.raises(BaseException):
+            df = pd.DataFrame(
+                [
+                    (100, 188, 0),
+                    (70, 170, 1),
+                    (60, 170, 0),
+                    (80, 188, 1),
+                    (67, 166, 0),
+                    (66, 166, 1),
+                    (100, 188, 1),
+                    (70, 170, 0),
+                    (60, 170, 1),
+                    (80, 188, 0),
+                    (67, 166, 1),
+                    (66, 166, 0),
+                    (100, 188, 1),
+                    (70, 170, 0),
+                    (60, 170, 1),
+                    (80, 188, 0),
+                    (67, 166, 1),
+                    (66, 166, 0),
+                ],
+                columns=("over_weight", "height", "age"),
+            )
+            states_key=["height", "age"]
+            target_col='over_weight'
+            param_grid = { 
+                'n_estimators': [200, 500],
+                'max_features': ['auto', 'sqrt'],
+                'max_depth' : [4,5,100],
+                'criterion' :['gini', 'entropy']
+            }
+
+            model = CreateMlModel('test')
+            model.df = df
+            model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
+            model.split_test_train_data(test_size=0.3, random_state=11)
+            model.split_test_train_data(test_size=0.3, random_state=11)
+            model_data = None
+            model.feature_importance_plot_2(model_data=model_data)
     #---clf_report
     def test_clf_report(self):
-        pass
+        df = pd.DataFrame(
+            [
+                (100, 188, 0),
+                (70, 170, 1),
+                (60, 170, 0),
+                (80, 188, 1),
+                (67, 166, 0),
+                (66, 166, 1),
+                (100, 188, 1),
+                (70, 170, 0),
+                (60, 170, 1),
+                (80, 188, 0),
+                (67, 166, 1),
+                (66, 166, 0),
+                (100, 188, 1),
+                (70, 170, 0),
+                (60, 170, 1),
+                (80, 188, 0),
+                (67, 166, 1),
+                (66, 166, 0),
+            ],
+            columns=("over_weight", "height", "age"),
+        )
+        states_key=["height", "age"]
+        target_col='over_weight'
+        param_grid = { 
+            'n_estimators': [200, 500],
+            'max_features': ['auto', 'sqrt'],
+            'max_depth' : [4,5,100],
+            'criterion' :['gini', 'entropy']
+        }
+
+        model = CreateMlModel('test')
+        model.df = df
+        model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
+        model.split_test_train_data(test_size=0.3, random_state=11)
+        model.split_test_train_data(test_size=0.3, random_state=11)
+        model_data = model.fit_predict_to_best_estimator(
+                    model_name='rfc',
+                    model_algorithm=RandomForestClassifier(),
+                    param_grid=param_grid,
+                    folds=2,
+                )
+        response = model.clf_report(model_data=model_data)
+        assert response.__name__ == 'matplotlib.pyplot'
     def test_clf_report_exception(self):
-        pass
+        with pytest.raises(BaseException):
+            df = pd.DataFrame(
+                [
+                    (100, 188, 0),
+                    (70, 170, 1),
+                    (60, 170, 0),
+                    (80, 188, 1),
+                    (67, 166, 0),
+                    (66, 166, 1),
+                    (100, 188, 1),
+                    (70, 170, 0),
+                    (60, 170, 1),
+                    (80, 188, 0),
+                    (67, 166, 1),
+                    (66, 166, 0),
+                    (100, 188, 1),
+                    (70, 170, 0),
+                    (60, 170, 1),
+                    (80, 188, 0),
+                    (67, 166, 1),
+                    (66, 166, 0),
+                ],
+                columns=("over_weight", "height", "age"),
+            )
+            states_key=["height", "age"]
+            target_col='over_weight'
+            param_grid = { 
+                'n_estimators': [200, 500],
+                'max_features': ['auto', 'sqrt'],
+                'max_depth' : [4,5,100],
+                'criterion' :['gini', 'entropy']
+            }
+
+            model = CreateMlModel('test')
+            model.df = df
+            model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
+            model.split_test_train_data(test_size=0.3, random_state=11)
+            model.split_test_train_data(test_size=0.3, random_state=11)
+            model_data = None
+            model.clf_report(model_data=model_data)
     #---saving
     def test_saving(self):
         df = pd.DataFrame(

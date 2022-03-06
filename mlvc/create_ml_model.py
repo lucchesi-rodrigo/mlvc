@@ -266,7 +266,7 @@ class CreateMlModel:
                 f'MSG -> Created Pandas series plot {plot_type} ! -> '
                 f'OUTPUT -> {fig.__dict__} .'
                 )
-            return fig
+            return fig.__module__
         except BaseException as exc:
             logger.error(
                 f'ERROR -> normalized_data_plot(col_name={col_name} ,plot_type= {plot_type}) -> '
@@ -303,7 +303,7 @@ class CreateMlModel:
                 f'MSG -> Created Pandas series dist plot ! -> '
                 f'OUTPUT -> {fig.__dict__} .'
                 )
-            return
+            return fig.__module__
         except BaseException as exc:
             logger.error(
                 f'ERROR  -> data_dist_plot(col_name={col_name}) -> '
@@ -342,7 +342,7 @@ class CreateMlModel:
                 f'MSG -> Created heatmap plot ! -> '
                 f'OUTPUT -> {fig.__dict__} .'
                 )
-            return
+            return fig.__module__
         except BaseException as exc:
             logger.error(
                 f'ERROR  -> data_heatmap_plot() -> '
@@ -667,7 +667,7 @@ class CreateMlModel:
                 f'MSG -> Model parameters generated ! -> '
                 f'OUTPUT -> None .'
                 )
-            return  
+            return  plt
         except BaseException as exc:
             logger.error(
                 f'ERROR  -> tp_rate_analysis(ml_models= {ml_models})-> '
@@ -717,7 +717,7 @@ class CreateMlModel:
                     f'MSG -> Feature importance plot generated ! -> '
                     f'OUTPUT -> None .'
                     )
-            return  
+            return plt
         except BaseException as exc:
             logger.error(
                 f'ERROR  -> feature_importance_plot(model= {model})  -> '
@@ -762,7 +762,7 @@ class CreateMlModel:
                 f'MSG -> Feature importance plot 2 (shap engine) generated ! -> '
                 f'OUTPUT -> None .'
                 )
-            return  
+            return shap
         except BaseException as exc:
             logger.error(
                 f'ERROR  -> feature_importance_plot_1(model_data= {model_data}) -> '
@@ -798,19 +798,20 @@ class CreateMlModel:
             y_train_predicted = model_data['y_train_predicted']
             y_test_predicted = model_data['y_test_predicted']
             model_name = model_data['model_name']
-            fig = plt.rc('figure', figsize=(5, 5))
-            fig.text(0.01, 1.25, str('Random Forest Train'), {'fontsize': 10}, fontproperties = 'monospace')
-            fig.text(0.01, 0.05, str(classification_report(self.y_test, y_test_predicted)), {'fontsize': 10}, fontproperties = 'monospace') 
-            fig.text(0.01, 0.6, str('Random Forest Test'), {'fontsize': 10}, fontproperties = 'monospace')
-            fig.text(0.01, 0.7, str(classification_report(self.y_train, y_train_predicted)), {'fontsize': 10}, fontproperties = 'monospace') 
-            fig.axis('off');
-            fig.savefig(f'reports/{model_name}_report.pdf')
+            plt.figure(figsize=(5,5))
+            plt.text(0.01, 1.25, model_name, {'fontsize': 10}, fontproperties = 'monospace')
+            plt.text(0.01, 0.05, str(classification_report(self.y_test, y_test_predicted)), {'fontsize': 10}, fontproperties = 'monospace') 
+            plt.text(0.01, 0.6, model_name, {'fontsize': 10}, fontproperties = 'monospace')
+            plt.text(0.01, 0.7, str(classification_report(self.y_train, y_train_predicted)), {'fontsize': 10}, fontproperties = 'monospace') 
+            plt.axis('off')
+            plt.savefig(f'reports/{model_name}_report.pdf')
+            plt.show()
             logger.info(
                 f'SUCCESS -> clf_report(model_data= {model_data}) -> '
                 f'MSG -> Report created ! -> '
                 f'OUTPUT -> None .'
                 )
-            return
+            return plt
         except BaseException as exc:
             logger.error(
                 f'ERROR  -> clf_report(model_data= {model_data}) -> '
