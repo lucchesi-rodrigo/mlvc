@@ -166,6 +166,8 @@ class CreateMlModel:
         
         Parameters:
         ----------
+        self: CreateMlModel
+            Create model object data
         cols_lst: List[str]
             List to be changed
         cols_to_rm: List[str]
@@ -200,19 +202,22 @@ class CreateMlModel:
         )
         return cols_lst
 
-    #   TODO: Test! OK
     def data_hist_plot(self,col_name: str) -> None:
         """
-        Create a histogram plot from a dataframe
+        Create a histogram plot from a dataframe column
 
         Parameters
         ----------
+        self: CreateMlModel
+            Create model object data
         col_name: str
             Column name to generate the histogram plot from
 
         Returns:
         --------
-        None
+        fig: matplotlib
+            The fig's module to map the method execution to
+            unit-testing
 
         Examples:
         ---------
@@ -224,26 +229,27 @@ class CreateMlModel:
             fig = fig.get_figure()
             fig.savefig(f'plots/histograms/hist_plot_{col_name}.pdf')
             logger.info(
-                f'SUCCESS -> df_hist_plot(col_name={col_name}) -> '
+                f'SUCCESS -> data_hist_plot(col_name={col_name}) -> '
                 f'MSG -> Dataframe histogram plot created ! -> '
                 f'OUTPUT -> {fig.__dict__} .'
                 )
             return fig.__module__
         except BaseException as exc:
             logger.error(
-                f'ERROR -> df_hist_plot(col_name={col_name}) ->'
+                f'ERROR -> data_hist_plot(col_name={col_name}) ->'
                 f'MSG -> Could not create dataframe histogram ! ->'
                 f'Exception -> {exc} .'
                 )
             raise
     
-    #   TODO: Test! OK
     def normalized_data_plot(self,col_name: str, plot_type: str) -> None:
         """
-        Create a specific plot from a normalized pandas series
+        Create a chosen plot from a normalized pandas series
 
         Parameters
         ----------
+        self: CreateMlModel
+            Create model object data
         col_name: str
             Column name to generate the histogram plot from
         plot_type: str
@@ -251,7 +257,9 @@ class CreateMlModel:
 
         Returns:
         --------
-        None
+        fig: matplotlib
+            The fig's module to map the method execution to
+            unit-testing
 
         Examples:
         ---------
@@ -276,19 +284,22 @@ class CreateMlModel:
                 )
             raise
     
-    #   TODO: Test! OK
     def data_dist_plot(self,col_name:str) -> None:
         """
         Create a dist plot from a pandas series using seaborn backend
 
         Parameters
         ----------
+        self: CreateMlModel
+            Create model object data
         col_name: str
             Column name to generate the dist plot from
 
         Returns:
         --------
-        None
+        fig: matplotlib
+            The fig's module to map the method execution to
+            unit-testing
 
         Examples:
         ---------
@@ -313,7 +324,6 @@ class CreateMlModel:
                 )
             raise
 
-    #   TODO: Test! OK
     def data_heatmap_plot(self, color_pallette:str ='Dark2_r') -> None:
         """
         Create a heatmap plot from a pandas correlation matrix 
@@ -321,13 +331,17 @@ class CreateMlModel:
 
         Parameters
         ----------
+        self: CreateMlModel
+            Create model object data
         color_pallette: str
             Color pallette to be used on the heatmap plot,
             default value: Dark2_r
 
         Returns:
         --------
-        None
+        fig: matplotlib
+            The fig's module to map the method execution to
+            unit-testing
 
         Examples:
         ---------
@@ -339,26 +353,27 @@ class CreateMlModel:
             fig = fig.get_figure()
             fig.savefig(f'plots/heatmaps/heatmap_{self.__name__}.pdf')
             logger.info(
-                f'SUCCESS -> data_heatmap_plot() -> '
+                f'SUCCESS -> data_heatmap_plot(color_pallette= {color_pallette}) -> '
                 f'MSG -> Created heatmap plot ! -> '
                 f'OUTPUT -> {fig.__dict__} .'
                 )
             return fig.__module__
         except BaseException as exc:
             logger.error(
-                f'ERROR  -> data_heatmap_plot() -> '
+                f'ERROR  -> data_heatmap_plot(color_pallette = {color_pallette}) -> '
                 f'MSG -> Could not create heatmap plot ! ->'
                 f'Exception -> {exc} .'
                 )
             raise
     
-    #   TODO: Test! OK
     def data_categoric_to_binary(self, target_name: str ,col_name: str ,base_value: str) -> pd.DataFrame:
         """
         Convert a categorical (eg.: 2 value options: [high,low]) to binary
 
         Parameters
         ----------
+        self: CreateMlModel
+            Create model object data
         target_name: str
             New column name created from this process
         col_name: str
@@ -392,13 +407,14 @@ class CreateMlModel:
                 )
             raise
     
-    #   TODO: Test! OK
     def data_feature_encoder(self, col_name: str, target_col: str) -> pd.DataFrame:
         """
-        Groupby a feature to create a new dataframe column?
+        Groupby a features to create a new dataframe column
 
         Parameters
         ----------
+        self: CreateMlModel
+            Create model object data
         col_name: str
             Column name to be transformed to binary values
         target_col: str
@@ -436,13 +452,14 @@ class CreateMlModel:
                 )
             raise
     
-    #  TODO: Test! OK
     def data_build_ml_matrix(self, target_col:str, states_key: List):
         """
         Builds a Machine learning matrix X(y)
 
         Parameters
         ----------
+        self: CreateMlModel
+            Create model object data
         target_col: str
             Target column
         states_key: List
@@ -477,13 +494,14 @@ class CreateMlModel:
                 )
             raise
     
-    #  TODO: Test! OK
     def split_test_train_data(self, test_size: float, random_state: int) -> Tuple:
         """
         Split test and train data for machine learning task
 
         Parameters
         ----------
+        self: CreateMlModel
+            Create model object data
         test_size: float
             Ratio of whole database to be used on test
         random_state: int
@@ -523,7 +541,6 @@ class CreateMlModel:
                 )
             raise
     
-    # TODO: Test! OK
     def fit_predict(self,model_name: str = None, model_data: Dict={},model_algorithm=None):
         """
         Fit and predict with chosen model
@@ -537,6 +554,8 @@ class CreateMlModel:
         
         Returns:
         --------
+        self: CreateMlModel
+            Create model object data
         model_data: Dict
             Object to store model information to experiments monitoring
 
@@ -567,7 +586,6 @@ class CreateMlModel:
                 )
             raise
     
-    # FIXME: -> Unit-test-> Test
     def fit_predict_to_best_estimator(
         self,
         model_data: Dict={},
@@ -577,10 +595,12 @@ class CreateMlModel:
         folds: int = None, 
     ):
         """
-        Find the best parameters for the machine learning algorithm choosen
+        Find the best parameters for the machine learning algorithm chosen
 
         Parameters
         ----------
+        self: CreateMlModel
+            Create model object data
         model_name: str
             Machine learning model name
         model_algorithm: Tuple
@@ -598,7 +618,11 @@ class CreateMlModel:
 
         Examples:
         ---------
-            >>> model_data = best_estimator(model_algorithm=('LR,'LinearRegression()),param_grid= {data ...},folds= 5) 
+
+            >>> model = mlvc.CreateMlModel('test')
+            >>> model.data_loading('db/data.csv')
+            >>> model.split_test_train_data(test_size= 0.3,random_state= 11) 
+            >>> model_data = fit_predict_to_best_estimator(model_name='rfc',model_algorithm='RandomForestClassifier(),param_grid= {data ...},folds= 5) 
         """
         try:
             model = GridSearchCV(
@@ -613,20 +637,19 @@ class CreateMlModel:
             model_data['y_test_predicted'] = fit_model.best_estimator_.predict(self.X_test)
            
             logger.info(
-                f'SUCCESS -> best_estimator( model_name={model_name}, model_algorithm={model_algorithm}, param_grid={param_grid}, cv={folds} ) -> '
-                f'MSG -> Best estimator and parameters were generated ! -> '
+                f'SUCCESS -> fit_predict_to_best_estimator( model_name={model_name}, model_algorithm={model_algorithm}, param_grid={param_grid}, cv={folds} ) -> '
+                f'MSG -> Predicted best estimator and parameters were generated ! -> '
                 f'OUTPUT \n-> model_data: {model_data} .'
                 )
             return model_data
         except BaseException as exc:
             logger.error(
-                f'ERROR  -> best_estimator( model_name={model_name}, model_algorithm={model_algorithm}, param_grid={param_grid}, cv={folds} ) -> '
-                f'MSG -> Best estimator worked ! ->'
+                f'ERROR  -> fit_predict_to_best_estimator( model_name={model_name}, model_algorithm={model_algorithm}, param_grid={param_grid}, cv={folds} ) -> '
+                f'MSG -> Best estimator process not worked ! ->'
                 f'Exception -> {exc} .'
                 )
-            raise exc
-
-    # TODO : -> Unit-test-> Test   
+            raise
+   
     def tp_rate_analysis(self,ml_models: List[Dict]=(None,False)):
         """
         Method to create insights from visual inspection of roc curve
@@ -634,10 +657,10 @@ class CreateMlModel:
 
         Parameters
         ----------
-        model_1:
-            Model 1 to be analyzed
-        model_2: int
-            Model 2 to be analyzed
+        self: CreateMlModel
+            Create model object data
+        models: List
+            List with model_data and if it had GridSearch processment
             
         Returns:
         --------
@@ -647,28 +670,27 @@ class CreateMlModel:
         ---------
             >>> model = mlvc.CreateMlModel('test')
             >>> model.data_loading('db/data.csv')
-            >>> model.test_train_data_split(test_size= 0.3,random_state= 11)
-            >>> model_1 = model.tuning(model_algorithm=('LR,'LinearRegression()),param_grid= None,folds= None,grid_search= False,best_estimator= False) 
-            >>> model_2 = model.tuning(model_algorithm=('LR,'LogisticRegression()),param_grid= None,folds= None,grid_search= False,best_estimator= False) 
-            >>> model.tp_rate_analysis(model_1,model_2)
+            >>> model.split_test_train_data(test_size= 0.3,random_state= 11) 
+            >>> model_data_1 = fit_predict_to_best_estimator(model_name='rfc',model_algorithm='RandomForestClassifier(),param_grid= {data ...},folds= 5) 
+            >>> model_data_2 = fit_predict_to_best_estimator(model_name='rfc',model_algorithm='RandomForestClassifier(),param_grid= {data ...},folds= 5) 
+            >>> model.tp_rate_analysis(models=[model_data_1,model_data_2])
         """
         try:
             plt.figure(figsize=(15, 8))
             ax = plt.gca()
             for model_data,grid_search in ml_models:
-                #import pdb; pdb.set_trace()
                 if grid_search:
-                    model_plot_1 = plot_roc_curve(model_data['model'], self.X_test, self.y_test, ax=ax, alpha=0.8)
+                    model_plot = plot_roc_curve(model_data['model'], self.X_test, self.y_test, ax=ax, alpha=0.8)
                 else:
-                    model_plot_2 = plot_roc_curve(model_data['model'], self.X_test, self.y_test)
-                    model_plot_2.plot(ax=ax, alpha=0.8)
+                    model_plot = plot_roc_curve(model_data['model'], self.X_test, self.y_test)
+                    model_plot.plot(ax=ax, alpha=0.8)
             plt.show()
             logger.info(
                 f'SUCCESS -> tp_rate_analysis(ml_models= {ml_models})-> '
                 f'MSG -> Model parameters generated ! -> '
                 f'OUTPUT -> None .'
                 )
-            return  plt
+            return plt
         except BaseException as exc:
             logger.error(
                 f'ERROR  -> tp_rate_analysis(ml_models= {ml_models})-> '
@@ -677,28 +699,31 @@ class CreateMlModel:
                 )
             raise
 
-    # FIXME: -> Unit-test-> Test -> Docs
     def feature_importance_plot_1(self,model_data: Dict=None):
         """
         Generates a matplotlib bar plot to describe feature importance on
         X matrix targeting dimensionality reduction to avoid overfitting
-        and decrease model complexity. 
+        and decrease model complexity -> Matplotlib backend
 
         Parameters
         ----------
-        model: str
-            Machine learning model fitted
+        self: CreateMlModel
+            Create model object data
+        model_data: str
+            Machine learning model data
             
         Returns:
         --------
-        None
+        plt: matplotlib
+            Matplotlib plot object
 
         Examples:
         ---------
             >>> model = mlvc.CreateMlModel('test')
             >>> model.data_loading('db/data.csv')
             >>> model.test_train_data_split(test_size= 0.3,random_state= 11)
-            >>> model_1 = model.tuning(model_algorithm=('LR,'LinearRegression()))
+            >>> model_data = fit_predict_to_best_estimator(model_name='rfc',model_algorithm='RandomForestClassifier(),param_grid= {data ...},folds= 5) 
+            >>> model.feature_importance_plot_1(model_data=model_data)
         """
         try:
             model = model_data['model']
@@ -714,86 +739,87 @@ class CreateMlModel:
             plt.xticks(range(self.X.shape[1]), names, rotation=90)
             plt.savefig('line_plot.pdf')  
             logger.info(
-                    f'SUCCESS -> feature_importance_plot(model= {model}) -> '
+                    f'SUCCESS -> feature_importance_plot_1(model_data= {model_data}) -> '
                     f'MSG -> Feature importance plot generated ! -> '
                     f'OUTPUT -> None .'
                     )
             return plt
         except BaseException as exc:
             logger.error(
-                f'ERROR  -> feature_importance_plot(model= {model})  -> '
+                f'ERROR  -> feature_importance_plot_1(model_data= {model_data})  -> '
                 f'MSG -> Feature importance calculations not executed ! ->'
                 f'Exception -> {exc} .'
                 )
             raise 
 
-    # FIXME: -> Unit-test-> Test -> Docs
     def feature_importance_plot_2(self,model_data: Dict=None):
         """
-        Method to create insights from visual inspection of roc curve
-        analysing true positives rate on classifier
+        Generates a matplotlib bar plot to describe feature importance on
+        X matrix targeting dimensionality reduction to avoid overfitting
+        and decrease model complexity -> Shap backend
 
         Parameters
         ----------
-        model_1:
-            Model 1 to be analyzed
-        model_2: int
-            Model 2 to be analyzed
+        self: CreateMlModel
+            Create model object data
+        model_data: str
+            Machine learning model data
             
         Returns:
         --------
-        None
+        shap: Shap
+            Figure with feature importance information
 
         Examples:
         ---------
             >>> model = mlvc.CreateMlModel('test')
             >>> model.data_loading('db/data.csv')
             >>> model.test_train_data_split(test_size= 0.3,random_state= 11)
-            >>> model_1 = model.tuning(model_algorithm=('LR,'LinearRegression()),param_grid= None,folds= None,grid_search= False,best_estimator= False) 
-            >>> model_2 = model.tuning(model_algorithm=('LR,'LogisticRegression()),param_grid= None,folds= None,grid_search= False,best_estimator= False) 
-            >>> model.tp_rate_analysis(model_1,model_2)
-        """
+            >>> model_data = fit_predict_to_best_estimator(model_name='rfc',model_algorithm='RandomForestClassifier(),param_grid= {data ...},folds= 5) 
+            >>> model.feature_importance_plot_2(model_data=model_data)        """
         try:
             model = model_data['model']
             explainer = shap.TreeExplainer(model.best_estimator_)
             shap_values = explainer.shap_values(self.X_test)
             shap.summary_plot(shap_values, self.X_test, plot_type="bar")
             logger.info(
-                f'SUCCESS -> feature_importance_plot_1(model_data= {model_data}) -> '
+                f'SUCCESS -> feature_importance_plot_2(model_data= {model_data}) -> '
                 f'MSG -> Feature importance plot 2 (shap engine) generated ! -> '
                 f'OUTPUT -> None .'
                 )
             return shap
         except BaseException as exc:
             logger.error(
-                f'ERROR  -> feature_importance_plot_1(model_data= {model_data}) -> '
+                f'ERROR  -> feature_importance_plot_2(model_data= {model_data}) -> '
                 f'MSG -> Feature importance calculations not executed ! ->'
                 f'Exception -> {exc} .'
                 )
             raise 
    
-    # FIXME: -> Unit-test-> Test -> Docs
     def clf_report(self, model_data: Dict=None):
         """
-        Generates a matplotlib bar plot to describe feature importance on
-        X matrix targeting dimensionality reduction to avoid overfitting
-        and decrease model complexity. 
+        Generates a classification report with estimator
+        information 
 
         Parameters
         ----------
-        model: str
-            Machine learning model fitted
+        self: CreateMlModel
+            Create model object data
+        model_data: str
+            Machine learning model data
             
         Returns:
         --------
-        None
+        plt: matplotlib
+            Plot with classification report info
 
         Examples:
         ---------
             >>> model = mlvc.CreateMlModel('test')
             >>> model.data_loading('db/data.csv')
             >>> model.test_train_data_split(test_size= 0.3,random_state= 11)
-            >>> model_1 = model.tuning(model_algorithm=('LR,'LinearRegression()))
+            >>> model_data = fit_predict_to_best_estimator(model_name='rfc',model_algorithm='RandomForestClassifier(),param_grid= {data ...},folds= 5) 
+            >>> model.clf_report(model_data=model_data)
         """
         try:
             y_train_predicted = model_data['y_train_predicted']
@@ -829,6 +855,8 @@ class CreateMlModel:
 
         Parameters
         ----------
+        self: CreateMlModel
+            Create model object data
         model_name: str
             Model name
         model: 
@@ -836,15 +864,16 @@ class CreateMlModel:
             
         Returns:
         --------
-        None
+        joblib: Joblib
+            Object to map dumped object on unit-tests
 
         Examples:
         ---------
             >>> model = mlvc.CreateMlModel('test')
             >>> model.data_loading('db/data.csv')
             >>> model.test_train_data_split(test_size= 0.3,random_state= 11)
-            >>> model_1 = model.tuning(model_algorithm=('LR,'LinearRegression()),param_grid= None,folds= None,grid_search= False,best_estimator= False) 
-            >>> saving(model_name= 'LR', model= model_1)
+            >>> model_data = fit_predict_to_best_estimator(model_name='rfc',model_algorithm='RandomForestClassifier(),param_grid= {data ...},folds= 5)        
+            >>> saving(model_data= model_data)
         """
         try:
             assert model_data
@@ -867,9 +896,8 @@ class CreateMlModel:
                 )
             raise
 
-    # TODO : Test in workspace!
     @staticmethod
-    def loading(path_to_model:str):
+    def loading(path_to_model:str) -> Dict:
         """
         Load model at models folder to use it on experiments
 
@@ -880,18 +908,12 @@ class CreateMlModel:
             
         Returns:
         --------
-        None
+        model: Dict
+            model data
 
         Examples:
         ---------
-            >>> model = mlvc.CreateMlModel('test')
-            >>> model.data_loading('db/data.csv')
-            >>> model.test_train_data_split(test_size= 0.3,random_state= 11)
-            >>> model_1 = model.tuning(model_algorithm=('LR,'LinearRegression()),param_grid= None,folds= None,grid_search= False,best_estimator= False) 
-            >>> model_2 = model.tuning(model_algorithm=('LR,'LogisticRegression()),param_grid= None,folds= None,grid_search= False,best_estimator= False) 
-            >>> model.tp_rate_analysis(model_1,model_2)
-            >>> saving(model_name= 'LR', model= model_1)
-            >>> model_1 = loading(model_name= 'LR')
+            >>> loading('test/rfc')
         """
         try:
             file_name = f'{path_to_model}.pkl'
