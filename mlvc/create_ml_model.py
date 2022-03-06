@@ -607,9 +607,7 @@ class CreateMlModel:
             )
             fit_model = model.fit(self.X_train, self.y_train)
             model_data['model_name'] = model_name
-            model_data['model'] = {
-                f'{fit_model.best_estimator_}':fit_model.best_estimator_
-                }
+            model_data['model']=fit_model.best_estimator_
             model_data['y_train_predicted'] = fit_model.best_estimator_.predict(self.X_train)
             model_data['y_test_predicted'] = fit_model.best_estimator_.predict(self.X_test)
            
@@ -628,7 +626,7 @@ class CreateMlModel:
             raise exc
 
     # TODO : -> Unit-test-> Test   
-    def tp_rate_analysis(self,ml_models: List[Tuple]=(None,False)):
+    def tp_rate_analysis(self,ml_models: List[Dict]=(None,False)):
         """
         Method to create insights from visual inspection of roc curve
         analysing true positives rate on classifier
@@ -656,11 +654,12 @@ class CreateMlModel:
         try:
             plt.figure(figsize=(15, 8))
             ax = plt.gca()
-            for model,grid_search in ml_models:
+            for model_data,grid_search in ml_models:
+                #import pdb; pdb.set_trace()
                 if grid_search:
-                    model_plot_1 = plot_roc_curve(model.best_estimator_, self.X_test, self.y_test, ax=ax, alpha=0.8)
+                    model_plot_1 = plot_roc_curve(model_data['model'], self.X_test, self.y_test, ax=ax, alpha=0.8)
                 else:
-                    model_plot_2 = plot_roc_curve(model, self.X_test, self.y_test)
+                    model_plot_2 = plot_roc_curve(model_data['model'], self.X_test, self.y_test)
                     model_plot_2.plot(ax=ax, alpha=0.8)
             plt.show()
             logger.info(

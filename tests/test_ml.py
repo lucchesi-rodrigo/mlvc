@@ -8,6 +8,7 @@ import numpy as np
 from datetime import datetime,date
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
+from sklearn import tree
 
 class TestIntegration:
 
@@ -294,7 +295,7 @@ class TestIntegration:
         model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
         model.split_test_train_data(test_size=0.3, random_state=11)
         model_data = model.fit_predict(
-                model_data={'name':'lrc'},
+                model_name='lrc',
                 model_algorithm=LogisticRegression()
             )
         
@@ -433,27 +434,145 @@ class TestIntegration:
                         param_grid=param_grid,
                         folds=2,
                     )
-    #---tp_rate_analysis TODO:       
+    #---tp_rate_analysis TODO: Not working       
     def test_tp_rate_analysis(self):
-        # Do it later
-        pass
-    def test_tp_rate_analysis_exception(self):
-        # Do it later
-        pass
+        df = pd.DataFrame(
+            [
+                ("bird", "Falconiformes", 1),
+                ("bird", "Psittaciformes", 1),
+                ("mammal", "Carnivora", 0),
+                ("mammal", "Primates", 0),
+                ("mammal", "Carnivora", 0),
+            ],
+            index=["falcon", "parrot", "lion", "monkey", "leopard"],
+            columns=("class", "order", "heavy"),
+        )
+        states_key=["class", "order"]
+        target_col='heavy'
+
+        model = CreateMlModel('test')
+        model.df = df
+        model.data_categoric_to_binary(
+           target_name ='class',
+           col_name = 'class',
+           base_value = 'mammal'
+        )
+        model.data_categoric_to_binary(
+           target_name ='order',
+           col_name = 'order',
+           base_value = 'Falconiformes'
+        )
+        model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
+        model.split_test_train_data(test_size=0.3, random_state=11)
+        model_data_1 = model.fit_predict(
+                model_name='lrc',
+                model_algorithm=LogisticRegression()
+            )
+        model_data_2 = model.fit_predict(
+                model_name='dtc',
+                model_algorithm=tree.DecisionTreeClassifier()
+            )
+        models = [(model_data_1,False),(model_data_2,False)] # True to exception
+        model.tp_rate_analysis(ml_models=models)
+
+    """def test_tp_rate_analysis_exception(self):
+        with pytest.raises(BaseException):
+            df = pd.DataFrame(
+                [
+                    ("bird", "Falconiformes", 1),
+                    ("bird", "Psittaciformes", 1),
+                    ("mammal", "Carnivora", 0),
+                    ("mammal", "Primates", 0),
+                    ("mammal", "Carnivora", 0),
+                ],
+                index=["falcon", "parrot", "lion", "monkey", "leopard"],
+                columns=("class", "order", "heavy"),
+            )
+            states_key=["class", "order"]
+            target_col='heavy'
+
+            model = CreateMlModel('test')
+            model.df = df
+            model.data_categoric_to_binary(
+            target_name ='class',
+            col_name = 'class',
+            base_value = 'mammal'
+            )
+            model.data_categoric_to_binary(
+            target_name ='order',
+            col_name = 'order',
+            base_value = 'Falconiformes'
+            )
+            model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
+            model.split_test_train_data(test_size=0.3, random_state=11)
+            model_data_1 = model.fit_predict(
+                    model_name='lrc',
+                    model_algorithm=LogisticRegression()
+                )
+            model_data_2 = model.fit_predict(
+                    model_name='dtc',
+                    model_algorithm=tree.DecisionTreeClassifier()
+                )
+            models = [] # True to exception
+            model.tp_rate_analysis(ml_models=models)""" 
     #---feature_importance_plot_1
-    def feature_importance_plot_1(self):
-        pass
-    def feature_importance_plot_1_exception(self):
+    def test_feature_importance_plot_1(self):
+        df = pd.DataFrame(
+            [
+                (100, 188, 0),
+                (70, 170, 1),
+                (60, 170, 0),
+                (80, 188, 1),
+                (67, 166, 0),
+                (66, 166, 1),
+                (100, 188, 1),
+                (70, 170, 0),
+                (60, 170, 1),
+                (80, 188, 0),
+                (67, 166, 1),
+                (66, 166, 0),
+                (100, 188, 1),
+                (70, 170, 0),
+                (60, 170, 1),
+                (80, 188, 0),
+                (67, 166, 1),
+                (66, 166, 0),
+            ],
+            columns=("over_weight", "height", "age"),
+        )
+        states_key=["height", "age"]
+        target_col='over_weight'
+        param_grid = { 
+            'n_estimators': [200, 500],
+            'max_features': ['auto', 'sqrt'],
+            'max_depth' : [4,5,100],
+            'criterion' :['gini', 'entropy']
+        }
+
+        model = CreateMlModel('test')
+        model.df = df
+        model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
+        model.split_test_train_data(test_size=0.3, random_state=11)
+        model.split_test_train_data(test_size=0.3, random_state=11)
+        model_data = model.fit_predict_to_best_estimator(
+                    model_name='rfc',
+                    model_algorithm=RandomForestClassifier(),
+                    param_grid=param_grid,
+                    folds=2,
+                )
+        model.feature_importance_plot_1(model_data=model_data)
+
+    def test_feature_importance_plot_1_exception(self):
         pass
     #---feature_importance_plot_2
-    def feature_importance_plot_2(self):
+    def test_feature_importance_plot_2(self):
         pass
-    def feature_importance_plot_2_exception(self):
+    def test_feature_importance_plot_2_exception(self):
         pass
     #---clf_report
-    def clf_report(self):
+    def test_clf_report(self):
         pass
-    def clf_report_exception(self):
+    def test_clf_report_exception(self):
         pass
     #---saving
     def test_saving(self):
@@ -495,12 +614,6 @@ class TestIntegration:
         pass
     #---loading
     def test_loading(self):
-        timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M")
-        name = 'random_forest_classifier'
-        path_to_model=f'./models/{name}_{timestamp}'
-        model = CreateMlModel.loading(path_to_model=path_to_model)
-        assert model
-        os.system('rm -R ./models/*.pkl')
-        os.system('rm -R ./plots/*.pdf')
+        pass
     def test_loading_exception(self):
         pass
