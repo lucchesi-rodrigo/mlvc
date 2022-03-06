@@ -823,7 +823,10 @@ class TestIntegration:
         model_data['name'] = 'random_forest_classifier'
         model.saving(model_data)
     def test_saving_exception(self):
-        pass
+        with pytest.raises(BaseException):
+            model = CreateMlModel('test')
+            model_data = None
+            model.saving(model_data)
     #---loading
     def test_loading(self):
         pass

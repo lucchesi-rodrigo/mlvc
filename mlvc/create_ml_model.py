@@ -846,6 +846,7 @@ class CreateMlModel:
             >>> saving(model_name= 'LR', model= model_1)
         """
         try:
+            assert model_data
             timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M")
             model_data['timestamp'] = timestamp
             name = model_data['model_name']
@@ -856,7 +857,7 @@ class CreateMlModel:
                 f'MSG -> Model saved as pickle file ! -> '
                 f'OUTPUT -> None .'
                 )
-            return  
+            return joblib
         except BaseException as exc:
             logger.error(
                 f'ERROR  -> saving(model= {model})  -> '
