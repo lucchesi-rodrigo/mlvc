@@ -33,15 +33,17 @@ class CreateMlModel:
     """Class to create Machine Learning Models"""
 
     def __init__(self, name):
+        """Init method which has as input the model instance name"""
         self.__name__ = name
-
-    # TODO Test! OK
+ 
     def data_loading(self, df_path: str) -> Dict:
         """
         Loads a csv file into a dataframe
 
         Parameters
         ----------
+        self: CreateMlModel
+            Create model object data
         df_path: str
             Path to the csv file
 
@@ -59,7 +61,7 @@ class CreateMlModel:
             self.df = pd.read_csv(df_path)
             logger.info(
                 f'SUCCESS -> data_loading({df_path}) -> '
-                f'MSG -> Csv file loaded successfully -> '
+                f'MSG -> CSV file loaded successfully -> '
                 f'OUTPUT -> df.head(): {self.df.head().to_dict()} .'
                 )
             return self.df
@@ -70,15 +72,15 @@ class CreateMlModel:
                 f'OUTPUT -> None'
                 f'EXCEPTION -> {exc} .')
             raise
-    
-    # TODO Test! OK
+       
     def data_analysis(self) -> Dict:
         """
         Perform data analysis in a dataframe
 
         Parameters:
         ----------
-        Self
+        self: CreateMlModel
+            Create model object data
 
         Returns:
         --------
@@ -111,14 +113,14 @@ class CreateMlModel:
                 f'EXCEPTION -> {exc} .')
             raise
 
-    # TODO: Test! OK
     def isolate_categ_and_num_cols(self) -> Tuple[List[str],List[str]]:
         """
         Isolate the categoric and numeric cols from pandas DataFrame
 
         Parameters:
         ----------
-        Self
+        self: CreateMlModel
+            Create model object data
         
         Returns:
         --------
@@ -156,8 +158,7 @@ class CreateMlModel:
                 f'EXCEPTION -> {exc}'
             )
             raise 
-
-    # TODO: Test ! OK    
+  
     @staticmethod     
     def remove_cols(cols_lst: List[str]=None,cols_to_rm: List[str]=None) -> List[str]:
         """
