@@ -10,6 +10,7 @@ loguru = "*"
 matplotlib = "*"
 seaborn = "*"
 shap = "*"
+autopep8 = "*"
 
 [dev-packages]
 
@@ -19,3 +20,4 @@ python_version = "3.9"
 [scripts]
 unit-tests = "pytest -s -vv -x tests"
 lib-run = "python main.py"
+format = "autopep8 --in-place --aggressive --aggressive --recursive mlvc --verbose"
