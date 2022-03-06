@@ -817,11 +817,12 @@ class TestIntegration:
         model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
         model.split_test_train_data(test_size=0.3, random_state=11)
         model_data = model.fit_predict(
-                model_data={'name':'lrc'},
                 model_algorithm=LogisticRegression()
             )
-        model_data['name'] = 'random_forest_classifier'
-        model.saving(model_data)
+        model_data['model_name'] = 'random_forest_classifier'
+        output = model.saving(model_data)
+        assert output.__name__ == 'joblib'
+
     def test_saving_exception(self):
         with pytest.raises(BaseException):
             model = CreateMlModel('test')
@@ -829,6 +830,11 @@ class TestIntegration:
             model.saving(model_data)
     #---loading
     def test_loading(self):
-        pass
+        model = CreateMlModel('test')
+        model_data = model.loading('models/random_forest_classifier_2022')
+        assert model_data['model_name'] == 'random_forest_classifier'
     def test_loading_exception(self):
-        pass
+        with pytest.raises(BaseException):
+            model = CreateMlModel('test')
+            model.loading('models/random_forest_classifier_2021')
+        

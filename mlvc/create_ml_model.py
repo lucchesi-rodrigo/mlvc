@@ -851,7 +851,7 @@ class CreateMlModel:
             model_data['timestamp'] = timestamp
             name = model_data['model_name']
             model = model_data['model']
-            joblib.dump(model, f'./models/{name}_{timestamp}.pkl')
+            joblib.dump(model_data, f'./models/{name}_{timestamp}.pkl')
             logger.info(
                 f'SUCCESS -> saving(model= {model}) -> '
                 f'MSG -> Model saved as pickle file ! -> '
@@ -893,7 +893,8 @@ class CreateMlModel:
             >>> model_1 = loading(model_name= 'LR')
         """
         try:
-            model = joblib.load(f'{path_to_model}.pkl')
+            file_name = f'{path_to_model}.pkl'
+            model = joblib.load(file_name)
             logger.info(
                 f'SUCCESS -> loading(path_to_model= {path_to_model}) -> '
                 f'MSG -> Model loaded ! -> '
