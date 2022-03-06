@@ -607,7 +607,7 @@ class CreateMlModel:
             )
             fit_model = model.fit(self.X_train, self.y_train)
             model_data['model_name'] = model_name
-            model_data['model']=fit_model.best_estimator_
+            model_data['model']=fit_model
             model_data['y_train_predicted'] = fit_model.best_estimator_.predict(self.X_train)
             model_data['y_test_predicted'] = fit_model.best_estimator_.predict(self.X_test)
            
