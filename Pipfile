@@ -11,6 +11,8 @@ matplotlib = "*"
 seaborn = "*"
 shap = "*"
 autopep8 = "*"
+pylint = "*"
+pylint-json2html = "*"
 
 [dev-packages]
 
@@ -21,3 +23,4 @@ python_version = "3.9"
 unit-tests = "pytest -s -vv -x tests"
 lib-run = "python main.py"
 format = "autopep8 --in-place --aggressive --aggressive --recursive mlvc --verbose"
+code-quality = "pylint mlvc"
