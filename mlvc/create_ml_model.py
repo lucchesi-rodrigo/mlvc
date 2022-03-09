@@ -59,9 +59,8 @@ class MlModel:
             logger.info(
                 f'SUCCESS -> data_loading({df_path}) -> '
                 f'MSG -> CSV file loaded successfully -> '
-                f'OUTPUT -> df.head(): {self.df.head().to_dict()} .'
             )
-            return self.df
+            return
         except FileNotFoundError as exc:
             logger.error(
                 f'ERROR -> data_loading({df_path}) -> '
@@ -94,12 +93,13 @@ class MlModel:
             self.stats_data = {
                 'shape': self.df.shape,
                 'null_values': self.df.isnull().sum(),
-                'numeric_stats': self.df.describe()
+                'numeric_stats': self.df.describe().to_json()
             }
+            data_shape = self.stats_data['shape']
             logger.info(
                 f'SUCCESS -> data_analysis() -> '
                 f'MSG -> Data analysis calculated successfully ! -> '
-                f'OUTPUT -> stats_data: {str(self.stats_data)} .'
+                f'OUTPUT -> stats_data shape: {data_shape} .'
             )
             return self.stats_data
         except BaseException as exc:
@@ -181,9 +181,8 @@ class MlModel:
             logger.info(
                 f'SUCCESS -> data_hist_plot(col_name={col_name}) -> '
                 f'MSG -> Dataframe histogram plot created ! -> '
-                f'OUTPUT -> {fig.__dict__} .'
             )
-            return fig.__module__
+            return
         except BaseException as exc:
             logger.error(
                 f'ERROR -> data_hist_plot(col_name={col_name}) ->'
@@ -220,12 +219,12 @@ class MlModel:
             fig = self.df[col_name].value_counts(
                 'normalize').plot(kind=plot_type)
             fig = fig.get_figure()
-            fig.savefig(f'plots/{plot_type}_plot_{col_name}.pdf')
+            fig.savefig(f'plots/barplots/{plot_type}_plot_{col_name}.pdf')
             logger.info(
                 f'SUCCESS -> normalized_data_plot(col_name={col_name} ,plot_type= {plot_type}) -> '
                 f'MSG -> Created Pandas series plot {plot_type} ! -> '
-                f'OUTPUT -> {fig.__dict__} .')
-            return fig.__module__
+            )
+            return
         except BaseException as exc:
             logger.error(
                 f'ERROR -> normalized_data_plot(col_name={col_name} ,plot_type= {plot_type}) -> '
@@ -256,15 +255,18 @@ class MlModel:
             >>> model.data_dist_plot(col_name= 'X')
         """
         try:
-            fig = sns.distplot(self.df[col_name])
-            fig = fig.get_figure()
+            x_list = self.df[col_name].tolist()
+            x = pd.Series(x_list, name=f"{col_name}")
+            logger.info(f'x:{x}')
+            fig = plt.figure(figsize=(20,10))
+            sns.distplot(x)
+            fig.get_figure()
             fig.savefig(f'plots/distplots/distplot_plot_{col_name}.pdf')
             logger.info(
                 f'SUCCESS -> data_dist_plot(col_name={col_name}) -> '
                 f'MSG -> Created Pandas series dist plot ! -> '
-                f'OUTPUT -> {fig.__dict__} .'
             )
-            return fig.__module__
+            return
         except BaseException as exc:
             logger.error(
                 f'ERROR  -> data_dist_plot(col_name={col_name}) -> '
@@ -298,18 +300,20 @@ class MlModel:
             >>> model.data_heatmap_plot()
         """
         try:
-            fig = sns.heatmap(
+            fig = plt.figure(figsize=(20,10))
+            sns.heatmap(
                 self.df.corr(),
                 annot=True,
                 cmap=color_pallette,
                 linewidths=2)
-            fig = fig.get_figure()
+            fig.get_figure()
             fig.savefig(f'plots/heatmaps/heatmap_{self.__name__}.pdf')
+            plt.show()
             logger.info(
                 f'SUCCESS -> data_heatmap_plot(color_pallette= {color_pallette}) -> '
                 f'MSG -> Created heatmap plot ! -> '
-                f'OUTPUT -> {fig.__dict__} .')
-            return fig.__module__
+            )
+            return 
         except BaseException as exc:
             logger.error(
                 f'ERROR  -> data_heatmap_plot(color_pallette = {color_pallette}) -> '
@@ -352,8 +356,8 @@ class MlModel:
             logger.info(
                 f'SUCCESS -> data_categoric_to_binary(target_name= {target_name} ,col_name= {col_name} ,base_value= {base_value}) -> '
                 f'MSG -> Dataframe pre-processed successfully ! -> '
-                f'OUTPUT -> df cols: {self.df} .')
-            return self.df
+                f'OUTPUT -> df cols: {self.df.columns} .')
+            return 
         except BaseException as exc:
             logger.error(
                 f'ERROR  -> data_categoric_to_binary(target_name= {target_name} ,col_name= {col_name} ,base_value= {base_value}) -> '
@@ -395,11 +399,12 @@ class MlModel:
                 category_lst.append(category_groups.loc[val])
 
             self.df[f'{col_name}_{target_col}'] = category_lst
+            
             logger.info(
                 f'SUCCESS -> data_feature_encoder(col_name= {col_name}, target_col= {target_col} ) -> '
                 f'MSG -> Dataframe pre-processed successfully ! -> '
-                f'OUTPUT -> df cols: {self.df.columns.to_list()} .')
-            return self.df
+                f'OUTPUT -> df cols: {self.df.columns} ,df head: {self.df.head().to_json()} .')
+            return
         except BaseException as exc:
             logger.error(
                 f'ERROR  -> data_feature_encoder(col_name= {col_name}, target_col= {target_col} ) -> '
@@ -434,12 +439,11 @@ class MlModel:
             self.y = self.df[target_col]
             self.X = pd.DataFrame()
             self.X = self.df.filter(items=states_key)
-            self.ml_data = {'X': self.X, 'y': self.y}
             logger.info(
                 f'SUCCESS -> data_build_ml_matrix(target_col= {target_col}, states_key= {states_key}) -> '
                 f'MSG -> Machine learning matrix is created ! -> '
-                f'OUTPUT -> y: {self.y.to_list()} , \nX: {self.X} .')
-            return self.ml_data
+                f'OUTPUT -> y: {self.y.tolist()[:10]} , \nX columns: {self.X.head().to_json()} .')
+            return 
         except BaseException as exc:
             logger.error(
                 f'ERROR  -> data_build_ml_matrix(target_col= {target_col}, states_key= {states_key}) -> '
@@ -485,9 +489,9 @@ class MlModel:
             logger.info(
                 f'SUCCESS -> split_test_train_data(test_size= {test_size} ,random_state= {random_state} ) -> '
                 f'MSG -> Train and test data created ! -> '
-                f'OUTPUT \n-> X_train: {self.X_train.head(n=2)} \n-> X_test: {self.X_test.head(n=2)} '
-                f'\n-> y_train: {self.y_train.head(n=2)} \n-> y_test: {self.y_test.head(n=2)}')
-            return self.data_processed
+                f'OUTPUT \n-> X_train: {self.X_train.head(n=2).to_json()} \n-> X_test: {self.X_test.head(n=2).to_json()} '
+                f'\n-> y_train: {self.y_train.head(n=2).to_json()} \n-> y_test: {self.y_test.head(n=2).to_json()}')
+            return 
         except BaseException as exc:
             logger.error(
                 f'ERROR  -> split_test_train_data(test_size= {test_size} ,random_state= {random_state} ) -> '
@@ -606,7 +610,7 @@ class MlModel:
                 f'Exception -> {exc} .')
             raise
 
-    def tp_rate_analysis(self, ml_models: List[Dict] = (None, False)):
+    def tp_rate_analysis(self, ml_models: List[Tuple[Dict,bool]] = None):
         """
         Method to create insights from visual inspection of roc curve
         analysing true positives rate on classifier
@@ -646,9 +650,8 @@ class MlModel:
             logger.info(
                 f'SUCCESS -> tp_rate_analysis(ml_models= {ml_models})-> '
                 f'MSG -> Model parameters generated ! -> '
-                f'OUTPUT -> None .'
             )
-            return plt
+            return 
         except BaseException as exc:
             logger.error(
                 f'ERROR  -> tp_rate_analysis(ml_models= {ml_models})-> '
@@ -698,9 +701,9 @@ class MlModel:
             plt.savefig('line_plot.pdf')
             logger.info(
                 f'SUCCESS -> feature_importance_plot_1(model_data= {model_data}) -> '
-                f'MSG -> Feature importance plot generated ! -> '
-                f'OUTPUT -> None .')
-            return plt
+                f'MSG -> Feature importance plot generated ! '
+            )
+            return 
         except BaseException as exc:
             logger.error(
                 f'ERROR  -> feature_importance_plot_1(model_data= {model_data})  -> '
@@ -741,8 +744,8 @@ class MlModel:
             logger.info(
                 f'SUCCESS -> feature_importance_plot_2(model_data= {model_data}) -> '
                 f'MSG -> Feature importance plot 2 (shap engine) generated ! -> '
-                f'OUTPUT -> None .')
-            return shap
+            )
+            return 
         except BaseException as exc:
             logger.error(
                 f'ERROR  -> feature_importance_plot_2(model_data= {model_data}) -> '
@@ -802,9 +805,8 @@ class MlModel:
             logger.info(
                 f'SUCCESS -> clf_report(model_data= {model_data}) -> '
                 f'MSG -> Report created ! -> '
-                f'OUTPUT -> None .'
             )
-            return plt
+            return
         except BaseException as exc:
             logger.error(
                 f'ERROR  -> clf_report(model_data= {model_data}) -> '
@@ -850,9 +852,8 @@ class MlModel:
             logger.info(
                 f'SUCCESS -> saving(model= {model}) -> '
                 f'MSG -> Model saved as pickle file ! -> '
-                f'OUTPUT -> None .'
             )
-            return joblib
+            return
         except BaseException as exc:
             logger.error(
                 f'ERROR  -> saving(model= {model})  -> '
