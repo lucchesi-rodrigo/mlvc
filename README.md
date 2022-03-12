@@ -1,4 +1,4 @@
-# mlvc -> Beta
+# mlvc (Beta - version)
 
 This Python library seeks easier machine learning steps to develop a production model for commercialization for example. 
 
