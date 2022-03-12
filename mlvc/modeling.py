@@ -26,7 +26,7 @@ import seaborn as sns
 sns.set()
 
 
-class MlModel:
+class MlModelling:
     """Class to process Machine Learning Models"""
 
     def __init__(self, name):
