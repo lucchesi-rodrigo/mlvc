@@ -19,7 +19,7 @@ Therefore the framework architecture is based on three pillars in a Machine Lear
 
 ```python
 import os
-repository_url=''
+repository_url='https://github.com/lucchesi-rodrigo/mlvc.git'
 os.system(f'git clone {repository_url}')
 ```
 
