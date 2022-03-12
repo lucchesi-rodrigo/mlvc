@@ -703,3 +703,7 @@ model.feature_importance_plot_2(model_data=model_2)
 ```
 
 Finally ...
+
+---
+# Contact
+[Rodrigo Lucchesi](https://www.linkedin.com/in/rodrigo-lucchesi/)
