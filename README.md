@@ -30,24 +30,6 @@ os.system(f'git clone {repository_url}')
 ! pip install -U loguru
 ```
 
-    Collecting loguru
-    [?25l  Downloading https://files.pythonhosted.org/packages/fe/21/e1d1da2586865a159fc73b611f36bdd50b6c4043cb6132d3d5e972988028/loguru-0.6.0-py3-none-any.whl (58kB)
-    [K    100% |████████████████████████████████| 61kB 5.3MB/s ta 0:00:011
-    [?25hCollecting aiocontextvars>=0.2.0; python_version < "3.7" (from loguru)
-      Downloading https://files.pythonhosted.org/packages/db/c1/7a723e8d988de0a2e623927396e54b6831b68cb80dce468c945b849a9385/aiocontextvars-0.2.2-py2.py3-none-any.whl
-    Collecting contextvars==2.4; python_version < "3.7" (from aiocontextvars>=0.2.0; python_version < "3.7"->loguru)
-      Downloading https://files.pythonhosted.org/packages/83/96/55b82d9f13763be9d672622e1b8106c85acb83edd7cc2fa5bc67cd9877e9/contextvars-2.4.tar.gz
-    Collecting immutables>=0.9 (from contextvars==2.4; python_version < "3.7"->aiocontextvars>=0.2.0; python_version < "3.7"->loguru)
-    [?25l  Downloading https://files.pythonhosted.org/packages/4f/ae/0b6a1d3643099d63c6eb122b2299d535162c8600c11409eeebe47aa3b4c8/immutables-0.16-cp36-cp36m-manylinux_2_5_x86_64.manylinux1_x86_64.whl (103kB)
-    [K    100% |████████████████████████████████| 112kB 8.7MB/s ta 0:00:01
-    [?25hRequirement already satisfied: typing-extensions>=3.7.4.3; python_version < "3.8" in /opt/conda/lib/python3.6/site-packages (from immutables>=0.9->contextvars==2.4; python_version < "3.7"->aiocontextvars>=0.2.0; python_version < "3.7"->loguru) (4.1.1)
-    Building wheels for collected packages: contextvars
-      Running setup.py bdist_wheel for contextvars ... [?25ldone
-    [?25h  Stored in directory: /root/.cache/pip/wheels/a5/7d/68/1ebae2668bda2228686e3c1cf16f2c2384cea6e9334ad5f6de
-    Successfully built contextvars
-    Installing collected packages: immutables, contextvars, aiocontextvars, loguru
-    Successfully installed aiocontextvars-0.2.2 contextvars-2.4 immutables-0.16 loguru-0.6.0
-
 
 3. Import the library:
 
@@ -55,13 +37,6 @@ os.system(f'git clone {repository_url}')
 ```python
 from ml_version_controller.mlvc.create_ml_model import MlModel
 ```
-
-
-    ---------------------------------------------------------------------------
-
-    RuntimeError                              Traceback (most recent call last)
-
-    RuntimeError: module compiled against API version 0xb but this version of numpy is 0xa
 
 
 4. Create an instance model and load the dataset to it:
