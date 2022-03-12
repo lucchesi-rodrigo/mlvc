@@ -1,5 +1,5 @@
 from lib2to3.pytree import Base
-from mlvc.create_ml_model import MlModel
+from mlvc.modeling import MlModel
 import os
 import pytest
 import pandas as pd
