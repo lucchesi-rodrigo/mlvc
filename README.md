@@ -1,22 +1,18 @@
-# ML Version control Beta
+# mlvc
 
-Machine learning tool
+This Python library seeks easier machine learning steps to develop a production model for commercialization for example. 
 
-# To-Do ...
-1. fit_predict_to_best_estimator -> end 
-(unit-test and docstring)
-2. Test all pipeline on workspace
+It uses [scikit-learn](https://scikit-learn.org/stable/) as a machine learning library, [pandas](https://pandas.pydata.org/) for data analysis and manipulation tool, [seaborn](https://seaborn.pydata.org/) for data visualization as well and [gitpython](https://gitpython.readthedocs.io/en/stable/) for version control.
 
-## System design
+The idea to start working on this project was taken from the [udacity](https://www.udacity.com/)  nanodegree: Machine learning DevOps; a tool to ml production development [deployment environment](https://en.wikipedia.org/wiki/Deployment_environment). 
 
-![ML Version control brainstorming](static/project_design.png "ML Version control")
+Therefore the framework architecture is based on three pillars in a Machine Learning pipeline:
 
+- Modeling -> class MlModeling ->  It has the necessary methods for machine learning pipelines. It contains tasks necessary methods for EDA and pre-process stage, training & predicting. Also, produce graphical information from those as reports or plots.
+- Control -> MlController -> Not implemented -> Idea: Act as controller on machine learning models, targeting better accuracy giving relaibility to what is being developed. 
+- Versioning -> MlVersioning ->  Not implemented -> Idea: Act as a version control tool as Git is for any software. However, acting more precisely to machine learning. 
+- Communication -> MlApis -> Not implemented -> Idea: Act as a plataform to expose easily the developed models in Rest APIs.
 ---
-## Design
-
-## Instances
-
-## Methods
 
 ## Example
 
