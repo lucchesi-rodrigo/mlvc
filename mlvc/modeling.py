@@ -30,13 +30,20 @@ sns.set()
 class MlModelling:
     """Class to process Machine Learning Models"""
 
-    def __init__(self, model_name, model_algorithm,model_version,model_notes=None):
+    def __init__(self, model_name, model_algorithm,model_version,model_notes=[]) -> None:
         """Init method which has as input the model instance name"""
         self.model_name = model_name
         self.model_algorithm = model_algorithm
         self.model_datetime = datetime.now()
         self.model_version = model_version
         self.model_notes = model_notes
+        self.model_data = {
+            'model_name':self.model_name,
+            'model_algorithm':self.model_algorithm,
+            'model_datetime':self.model_datetime ,
+            'model_version':self.model_version,
+            'model_notes':self.model_notes
+        }
 
     def data_loading(self, df_path: str) -> Dict:
         """
@@ -555,6 +562,10 @@ class MlModelling:
             >>> data_processed = model.split_test_train_data(test_size= 0.3,random_state= 11)
         """
         try:
+            logger.info(
+                f'[SUCCESS -> split_test_train_data(test_size={test_size},random_state={random_state})] -> '
+                f'MSG -> split_test_train_data starting process !'
+            )
             self.data_processed = train_test_split(
                 self.X,
                 self.y,
@@ -562,33 +573,36 @@ class MlModelling:
                 random_state=random_state)
 
             self.X_train, self.X_test, self.y_train, self.y_test = self.data_processed
+            x_train = self.X_train.head().to_json()
+            X_test = self.X_test.head().to_json()
+            y_train = self.y_train.to_list()[:2]
+            y_test = self.y_test.to_list()[:2]
+
             logger.info(
-                f'SUCCESS -> split_test_train_data(test_size= {test_size} ,random_state= {random_state} ) -> '
-                f'MSG -> Train and test data created ! -> '
-                f'OUTPUT \n-> X_train: {self.X_train.head(n=2).to_json()} \n-> X_test: {self.X_test.head(n=2).to_json()} '
-                f'\n-> y_train: {self.y_train.head(n=2).to_json()} \n-> y_test: {self.y_test.head(n=2).to_json()}')
-            return 
+                f'[SUCCESS -> split_test_train_data(test_size={test_size},random_state={random_state})] -> '
+                f'MSG -> split_test_train_data finishing process !'
+                f'OUTPUT -> x_train: {x_train}, X_test: {X_test}, y_train: {y_train}, y_test:{y_test} !'
+            )
+            return self.data_processed
         except BaseException as exc:
             logger.error(
-                f'ERROR  -> split_test_train_data(test_size= {test_size} ,random_state= {random_state} ) -> '
-                f'MSG -> Train and test data not created ! ->'
-                f'Exception -> {exc} .')
-            raise
+                str(traceback.format_exc()).replace('\n', ' | ')
+                )
+            raise RuntimeError(       
+                f'[ERROR -> split_test_train_data(test_size={test_size},random_state={random_state})] -> '
+                f"MSG -> Could split ml data ! -> Exception: {exc}!"
+            )
 
     def fit_predict(
-            self,
-            model_name: str = None,
-            model_data: Dict = {},
-            model_algorithm=None):
+            self
+            ) -> Dict:
         """
         Fit and predict with chosen model
 
         Parameters
         ----------
-        model_algorithm: Tuple
-            Model algorithm and some extra info
-        model_data: Dict
-            Object to store model information to experiments monitoring
+        self: CreateMlModel
+            Create model object data
 
         Returns:
         --------
@@ -605,31 +619,39 @@ class MlModelling:
             >>> model.fit_predict(model_data={'name':'lrc'},model_algorithm=('LR,'LinearRegression()))
         """
         try:
-            fit_model = model_algorithm.fit(self.X_train, self.y_train)
-            model_data['model_name'] = model_name
-            model_data['model'] = fit_model
-            model_data['y_train_predicted'] = fit_model.predict(self.X_train)
-            model_data['y_test_predicted'] = fit_model.predict(self.X_test)
             logger.info(
-                f'SUCCESS -> fit_predict(model_data={model_data},model_algorithm={model_algorithm}) -> '
-                f'MSG -> Fitted & Predicted model ! -> '
-                f'OUTPUT \n-> model_data: {model_data} .')
-            return model_data
+                f'[SUCCESS -> fit_predict()] -> '
+                f'MSG -> fit_predict starting process !'
+            )
+            fit_model = self.model_algorithm.fit(self.X_train, self.y_train)
+            self.model_data['model_name'] = self.model_name
+            self.model_data['model'] = fit_model
+            self.model_data['y_train_predicted'] = fit_model.predict(self.X_train)
+            self.model_data['y_test_predicted'] = fit_model.predict(self.X_test)
+            logger.info(
+                f'[SUCCESS -> fit_predict()] -> '
+                f'MSG -> fit_predict finishing process !'
+            )
+            logger.debug(
+                f'[SUCCESS -> fit_predict()] -> '
+                f'MSG -> fit_predict finishing process !'
+                f'OUTPUT -> self.model_data: {self.model_data.__dict__}  !'
+            )
+            return self.model_data
         except BaseException as exc:
             logger.error(
-                f'ERROR  -> fit_predict(model_data={model_data},model_algorithm={model_algorithm}) -> '
-                f'MSG -> Fit-Predict not worked ! ->'
-                f'Exception -> {exc} .')
-            raise
+                str(traceback.format_exc()).replace('\n', ' | ')
+                )
+            raise RuntimeError(       
+                f'[ERROR -> fit_predict()] -> '
+                f"MSG -> Could split ml data ! -> Exception: {exc}!"
+            )
 
     def fit_predict_to_best_estimator(
         self,
-        model_data: Dict = {},
-        model_name: str = None,
-        model_algorithm: Tuple = None,
         param_grid: Dict = None,
         folds: int = None,
-    ):
+    ) -> Dict:
         """
         Find the best parameters for the machine learning algorithm chosen
 
@@ -637,10 +659,6 @@ class MlModelling:
         ----------
         self: CreateMlModel
             Create model object data
-        model_name: str
-            Machine learning model name
-        model_algorithm: Tuple
-            Model algorithm and some extra info
         param_grid: Dict
             List of pre-set parameters to use with GridSearch
         folds: int
@@ -661,32 +679,43 @@ class MlModelling:
             >>> model_data = fit_predict_to_best_estimator(model_name='rfc',model_algorithm='RandomForestClassifier(),param_grid= {data ...},folds= 5)
         """
         try:
+            logger.info(
+                f'[SUCCESS -> fit_predict_to_best_estimator(param_grid= {param_grid},folds= {folds})] -> '
+                f'MSG -> fit_predict_to_best_estimator starting process !'
+            )
             model = GridSearchCV(
-                estimator=model_algorithm,
+                estimator=self.model_algorithm,
                 param_grid=param_grid,
                 cv=folds
             )
             fit_model = model.fit(self.X_train, self.y_train)
-            model_data['model_name'] = model_name
-            model_data['model'] = fit_model
-            model_data['y_train_predicted'] = fit_model.best_estimator_.predict(
+            self.model_data['model_name'] = self.model_name
+            self.model_data['model'] = fit_model
+            self.model_data['y_train_predicted'] = fit_model.best_estimator_.predict(
                 self.X_train)
-            model_data['y_test_predicted'] = fit_model.best_estimator_.predict(
+            self.model_data['y_test_predicted'] = fit_model.best_estimator_.predict(
                 self.X_test)
 
             logger.info(
-                f'SUCCESS -> fit_predict_to_best_estimator( model_name={model_name}, model_algorithm={model_algorithm}, param_grid={param_grid}, cv={folds} ) -> '
-                f'MSG -> Predicted best estimator and parameters were generated ! -> '
-                f'OUTPUT \n-> model_data: {model_data} .')
-            return model_data
+                f'[SUCCESS -> fit_predict_to_best_estimator(param_grid= {param_grid},folds= {folds})] -> '
+                f'MSG -> fit_predict_to_best_estimator starting process !'
+            )
+            logger.debug(
+                f'[SUCCESS -> fit_predict_to_best_estimator(param_grid= {param_grid},folds= {folds})] -> '
+                f'MSG -> fit_predict_to_best_estimator starting process !'
+                f'OUTPUT -> self.model_data: {self.model_data.__dict__}  !'
+            )
+            return self.model_data
         except BaseException as exc:
             logger.error(
-                f'ERROR  -> fit_predict_to_best_estimator( model_name={model_name}, model_algorithm={model_algorithm}, param_grid={param_grid}, cv={folds} ) -> '
-                f'MSG -> Best estimator process not worked ! ->'
-                f'Exception -> {exc} .')
-            raise
+                str(traceback.format_exc()).replace('\n', ' | ')
+                )
+            raise RuntimeError(       
+                f'[ERROR -> fit_predict_to_best_estimator(param_grid= {param_grid},folds= {folds})] -> '
+                f"MSG -> Could execute fit_predict_to_best_estimator ! -> Exception: {exc}!"
+            )
 
-    def tp_rate_analysis(self, ml_models: List[Tuple[Dict,bool]] = None):
+    def tp_rate_analysis(self, ml_models: List[Tuple[Dict,bool]] = None) -> None:
         """
         Method to create insights from visual inspection of roc curve
         analysing true positives rate on classifier
@@ -696,7 +725,7 @@ class MlModelling:
         self: CreateMlModel
             Create model object data
         models: List
-            List with model_data and if it had GridSearch processment
+            List with model_data and if it had GridSearch procedure
 
         Returns:
         --------
@@ -712,7 +741,10 @@ class MlModelling:
             >>> model.tp_rate_analysis(models=[model_data_1,model_data_2])
         """
         try:
-            plt.figure(figsize=(15, 8))
+            logger.info(
+                f'[SUCCESS -> tp_rate_analysis(ml_models= {ml_models})] -> '
+                f'MSG -> tp_rate_analysis starting process !'
+            )
             ax = plt.gca()
             for model_data, grid_search in ml_models:
                 if grid_search:
@@ -722,19 +754,24 @@ class MlModelling:
                     model_plot = plot_roc_curve(
                         model_data['model'], self.X_test, self.y_test)
                     model_plot.plot(ax=ax, alpha=0.8)
+            model_plot.get_figure()
+            model_plot.savefig(f'plots/tp_plots/tp_{self.__name__}.pdf')
             plt.show()
+
             logger.info(
-                f'SUCCESS -> tp_rate_analysis(ml_models= {ml_models})-> '
-                f'MSG -> Model parameters generated ! -> '
+                f'[SUCCESS -> tp_rate_analysis(ml_models= {ml_models})] -> '
+                f'MSG -> tp_rate_analysis finishing process !'
+                f'OUTPUT -> file saved at: plots/tp_plots/tp_{self.__name__}.pdf !'
             )
-            return 
+            return
         except BaseException as exc:
             logger.error(
-                f'ERROR  -> tp_rate_analysis(ml_models= {ml_models})-> '
-                f'MSG -> Model parameters not generated ! ->'
-                f'Exception -> {exc} .'
+                str(traceback.format_exc()).replace('\n', ' | ')
+                )
+            raise RuntimeError(       
+                f'[ERROR -> tp_rate_analysis(ml_models= {ml_models})]  -> '
+                f"MSG -> Could execute tp_rate_analysis ! -> Exception: {exc}!"
             )
-            raise
 
     def feature_importance_plot_1(self, model_data: Dict = None):
         """
@@ -763,29 +800,46 @@ class MlModelling:
             >>> model.feature_importance_plot_1(model_data=model_data)
         """
         try:
+            logger.debug(
+                f'[SUCCESS -> feature_importance_plot_1(model_data= {model_data})] -> '
+                f'MSG -> feature_importance_plot_1 starting process !'
+            )
+            logger.info(
+                f'[SUCCESS -> feature_importance_plot_1(model_data)] -> '
+                f'MSG -> feature_importance_plot_1 starting process !'
+            )
             model = model_data['model']
-            importances = model.best_estimator_.feature_importances_
-            indices = np.argsort(importances)[::-1]
+            importance = model.best_estimator_.feature_importances_
+            indices = np.argsort(importance)[::-1]
             names = [self.X.columns[i] for i in indices]
 
             plt.figure(figsize=(20, 5))
 
             plt.title("Feature Importance")
             plt.ylabel('Importance')
-            plt.bar(range(self.X.shape[1]), importances[indices])
+            plt.bar(range(self.X.shape[1]), importance[indices])
             plt.xticks(range(self.X.shape[1]), names, rotation=90)
-            plt.savefig('line_plot.pdf')
-            logger.info(
-                f'SUCCESS -> feature_importance_plot_1(model_data= {model_data}) -> '
-                f'MSG -> Feature importance plot generated ! '
+            plt.savefig('plots/feature_importance/feature_importance_plot1_{self.__name__}.pdf')
+
+            logger.debug(
+                f'[SUCCESS -> feature_importance_plot_1(model_data= {model_data})] -> '
+                f'MSG -> feature_importance_plot_1 finishing process ! -> '
+                f'OUTPUT -> plots/feature_importance/feature_importance_plot1_{self.__name__}.pdf'
             )
-            return 
+            logger.info(
+                f'[SUCCESS -> feature_importance_plot_1(model_data)] -> '
+                f'MSG -> feature_importance_plot_1 starting process ! ->'
+                f'OUTPUT -> plots/feature_importance/feature_importance_plot1_{self.__name__}.pdf'
+            )
+            return
         except BaseException as exc:
             logger.error(
-                f'ERROR  -> feature_importance_plot_1(model_data= {model_data})  -> '
-                f'MSG -> Feature importance calculations not executed ! ->'
-                f'Exception -> {exc} .')
-            raise
+                str(traceback.format_exc()).replace('\n', ' | ')
+                )
+            raise RuntimeError(       
+                f'[ERROR -> feature_importance_plot_1(model_data= {model_data})] -> '
+                f"MSG -> Could execute feature_importance_plot_1 ! -> Exception: {exc}!"
+            )
 
     def feature_importance_plot_2(self, model_data: Dict = None):
         """
@@ -813,21 +867,38 @@ class MlModelling:
             >>> model_data = fit_predict_to_best_estimator(model_name='rfc',model_algorithm='RandomForestClassifier(),param_grid= {data ...},folds= 5)
             >>> model.feature_importance_plot_2(model_data=model_data)        """
         try:
+            logger.debug(
+                f'[SUCCESS -> feature_importance_plot_2(model_data= {model_data})] -> '
+                f'MSG -> feature_importance_plot_2 starting process !'
+            )
+            logger.info(
+                f'[SUCCESS -> feature_importance_plot_2(model_data)] -> '
+                f'MSG -> feature_importance_plot_2 starting process !'
+            )
             model = model_data['model']
             explainer = shap.TreeExplainer(model.best_estimator_)
             shap_values = explainer.shap_values(self.X_test)
             shap.summary_plot(shap_values, self.X_test, plot_type="bar")
-            logger.info(
-                f'SUCCESS -> feature_importance_plot_2(model_data= {model_data}) -> '
-                f'MSG -> Feature importance plot 2 (shap engine) generated ! -> '
+            shap.savefig('plots/feature_importance/feature_importance_plot2_{self.__name__}.pdf')
+            logger.debug(
+                f'[SUCCESS -> feature_importance_plot_2(model_data= {model_data})] -> '
+                f'MSG -> feature_importance_plot_2 finishing process ! -> '
+                f'OUTPUT -> plots/feature_importance/feature_importance_plot1_{self.__name__}.pdf'
             )
-            return 
+            logger.info(
+                f'[SUCCESS -> feature_importance_plot_1(model_data)] -> '
+                f'MSG -> feature_importance_plot_2 starting process ! ->'
+                f'OUTPUT -> plots/feature_importance/feature_importance_plot1_{self.__name__}.pdf'
+            )
+            return
         except BaseException as exc:
             logger.error(
-                f'ERROR  -> feature_importance_plot_2(model_data= {model_data}) -> '
-                f'MSG -> Feature importance calculations not executed ! ->'
-                f'Exception -> {exc} .')
-            raise
+                str(traceback.format_exc()).replace('\n', ' | ')
+                )
+            raise RuntimeError(       
+                f'[ERROR -> feature_importance_plot_1(model_data= {model_data})] -> '
+                f"MSG -> Could execute feature_importance_plot_2 ! -> Exception: {exc}!"
+            )
 
     def clf_report(self, model_data: Dict = None):
         """
@@ -855,6 +926,14 @@ class MlModelling:
             >>> model.clf_report(model_data=model_data)
         """
         try:
+            logger.debug(
+                f'[SUCCESS -> clf_report(model_data= {model_data.__dict__})] -> '
+                f'MSG -> clf_report starting process ! -> '
+            )
+            logger.info(
+                f'[SUCCESS -> clf_report(model_data)] -> '
+                f'MSG -> clf_report starting process ! -> '
+            )
             y_train_predicted = model_data['y_train_predicted']
             y_test_predicted = model_data['y_test_predicted']
             model_name = model_data['model_name']
@@ -878,18 +957,26 @@ class MlModelling:
             plt.axis('off')
             plt.savefig(f'reports/{model_name}_report.pdf')
             plt.show()
+
+            logger.debug(
+                f'[SUCCESS -> clf_report(model_data= {model_data.__dict__})] -> '
+                f'MSG -> clf_report starting process ! -> '
+                f'OUTPUT -> reports/{model_name}_report.pdf'
+            )
             logger.info(
-                f'SUCCESS -> clf_report(model_data= {model_data}) -> '
-                f'MSG -> Report created ! -> '
+                f'[SUCCESS -> clf_report(model_data)] -> '
+                f'MSG -> clf_report starting process ! -> '
+                f'OUTPUT -> reports/{model_name}_report.pdf'
             )
             return
         except BaseException as exc:
             logger.error(
-                f'ERROR  -> clf_report(model_data= {model_data}) -> '
-                f'MSG -> Report not loaded ! ->'
-                f'Exception -> {exc} .'
+                str(traceback.format_exc()).replace('\n', ' | ')
+                )
+            raise RuntimeError(       
+                f'[ERROR -> clf_report(model_data= {model_data.__dict__})] -> '
+                f"MSG -> Could execute clf_report ! -> Exception: {exc}!"
             )
-            raise
 
     @staticmethod
     def saving(model_data: Dict = None):
@@ -919,24 +1006,39 @@ class MlModelling:
             >>> saving(model_data= model_data)
         """
         try:
+            logger.debug(
+                f'[SUCCESS -> saving(model_data= {model_data.__dict__})] -> '
+                f'MSG -> saving starting process ! -> '
+            )
+            logger.info(
+                f'[SUCCESS -> saving(model_data)] -> '
+                f'MSG -> saving starting process ! -> '
+            )
             assert model_data
             timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M")
             model_data['timestamp'] = timestamp
             name = model_data['model_name']
             model = model_data['model']
             joblib.dump(model_data, f'./models/{name}_{timestamp}.pkl')
+            logger.debug(
+                f'[SUCCESS -> saving(model_data= {model_data.__dict__})] -> '
+                f'MSG -> saving starting process ! -> '
+                f'OUTPUT -> ./models/{name}_{timestamp}.pkl'
+            )
             logger.info(
-                f'SUCCESS -> saving(model= {model}) -> '
-                f'MSG -> Model saved as pickle file ! -> '
+                f'[SUCCESS -> saving(model_data)] -> '
+                f'MSG -> saving starting process ! -> '
+                f'OUTPUT -> ./models/{name}_{timestamp}.pkl'
             )
             return
         except BaseException as exc:
             logger.error(
-                f'ERROR  -> saving(model= {model})  -> '
-                f'MSG -> Model not saved ! ->'
-                f'Exception -> {exc} .'
+                str(traceback.format_exc()).replace('\n', ' | ')
+                )
+            raise RuntimeError(       
+                f'[ERROR -> saving(model_data= {model_data.__dict__})] -> '
+                f"MSG -> Could execute saving ! -> Exception: {exc}!"
             )
-            raise
 
     @staticmethod
     def loading(path_to_model: str) -> Dict:
@@ -958,21 +1060,31 @@ class MlModelling:
             >>> loading('test/rfc')
         """
         try:
+            logger.info(
+                f'[SUCCESS -> loading({path_to_model})] -> '
+                f'MSG -> loading starting process ! -> '
+            )
             file_name = f'{path_to_model}.pkl'
             model = joblib.load(file_name)
+            logger.debug(
+                f'[SUCCESS -> loading({path_to_model})] -> '
+                f'MSG -> loading starting process ! -> '
+                f'OUTPUT -> model from loaded {path_to_model}.pkl'
+            )
             logger.info(
-                f'SUCCESS -> loading(path_to_model= {path_to_model}) -> '
-                f'MSG -> Model loaded ! -> '
-                f'OUTPUT -> model: {model} .'
+                f'[SUCCESS -> loading({path_to_model})] -> '
+                f'MSG -> loading starting process ! -> '
+                f'OUTPUT -> model: {model.__dict__}'
             )
             return model
         except BaseException as exc:
             logger.error(
-                f'ERROR  -> loading(path_to_model= {path_to_model}) -> '
-                f'MSG -> Model not loaded ! ->'
-                f'Exception -> {exc} .'
+                str(traceback.format_exc()).replace('\n', ' | ')
+                )
+            raise RuntimeError(       
+                f'[ERROR -> loading({path_to_model})] -> '
+                f"MSG -> Could execute loading ! -> Exception: {exc}!"
             )
-            raise
 
     @staticmethod
     def remove_cols(cols_lst: List[str] = None,
@@ -1003,6 +1115,10 @@ class MlModelling:
         >>> numeric_cols
             ['x2',...]
         """
+        logger.info(
+            f'SUCCESS -> remove_cols(cols_lst={cols_lst}, cols_to_rm={cols_to_rm}) -> '
+            f'MSG -> remove_cols starting process !'
+        )
         for col in cols_to_rm:
             try:
                 cols_lst.remove(col)
@@ -1013,6 +1129,16 @@ class MlModelling:
                 pass
         logger.info(
             f'SUCCESS -> remove_cols(cols_lst={cols_lst}, cols_to_rm={cols_to_rm}) -> '
-            f'MSG -> Removed columns from list ! -> '
+            f'MSG -> remove_cols finishing process ! ->'
             f'OUTPUT -> cols_lst_old: {cols_lst} -> cols_lst_new: {cols_lst} .')
         return cols_lst
+
+    def model_notes(self,notes:str):
+        try:
+            logger.info(f'Notes: {self.model_notes}')
+            self.model_notes.append(notes)
+            logger.info(f'Notes: {self.model_notes}')
+            return self.model_notes
+        except BaseException as exc:
+            raise NotImplementedError(f'{exc}')
+
