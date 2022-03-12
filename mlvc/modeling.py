@@ -23,15 +23,20 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import traceback
 sns.set()
 
 
 class MlModelling:
     """Class to process Machine Learning Models"""
 
-    def __init__(self, name):
+    def __init__(self, model_name, model_algorithm,model_version,model_notes=None):
         """Init method which has as input the model instance name"""
-        self.__name__ = name
+        self.model_name = model_name
+        self.model_algorithm = model_algorithm
+        self.model_datetime = datetime.now()
+        self.model_version = model_version
+        self.model_notes = model_notes
 
     def data_loading(self, df_path: str) -> Dict:
         """
@@ -55,19 +60,27 @@ class MlModelling:
             >>> model.data_loading(df_path= 'path/file.csv')
         """
         try:
-            self.df = pd.read_csv(df_path)
             logger.info(
-                f'SUCCESS -> data_loading({df_path}) -> '
-                f'MSG -> CSV file loaded successfully -> '
+                f'[SUCCESS -> data_loading({df_path})] -> '
+                f'MSG -> data_loading starting process ! -> '
+                f'OUTPUT -> df sample: {df_to_logging}'
+            )
+            self.df = pd.read_csv(df_path)
+            df_to_logging = self.df.to_json()[-1]
+            logger.info(
+                f'[SUCCESS -> data_loading({df_path})] -> '
+                f'MSG -> data_loading finished process ! -> '
+                f'OUTPUT -> df sample: {df_to_logging}'
             )
             return
-        except FileNotFoundError as exc:
+        except BaseException as exc:
             logger.error(
-                f'ERROR -> data_loading({df_path}) -> '
-                f'MSG -> Could not import data object ! -> '
-                f'OUTPUT -> None'
-                f'EXCEPTION -> {exc} .')
-            raise
+                str(traceback.format_exc()).replace('\n', ' | ')
+                )
+            raise FileNotFoundError(       
+                f"[ERROR -> data_loading({df_path})] -> "
+                f"MSG -> Could not find file with this path ! -> Exception: {exc}!"
+            )
 
     def data_analysis(self) -> Dict:
         """
@@ -90,25 +103,31 @@ class MlModelling:
             >>> stats_data = model.data_analysis()
         """
         try:
+            logger.info(
+                f'[SUCCESS -> data_analysis()] -> '
+                f'MSG -> Data analysis starting process ! -> '
+            )
             self.stats_data = {
                 'shape': self.df.shape,
                 'null_values': self.df.isnull().sum(),
                 'numeric_stats': self.df.describe().to_json()
             }
-            data_shape = self.stats_data['shape']
+            numeric_stats = self.stats_data['numeric_stats']
+
             logger.info(
-                f'SUCCESS -> data_analysis() -> '
-                f'MSG -> Data analysis calculated successfully ! -> '
-                f'OUTPUT -> stats_data shape: {data_shape} .'
+                f'[SUCCESS -> data_analysis()] -> '
+                f'MSG -> Data analysis finished process ! -> '
+                f'OUTPUT -> stats_data numeric_stats: {numeric_stats} !'
             )
             return self.stats_data
         except BaseException as exc:
             logger.error(
-                f'ERROR -> data_analysis() -> '
-                f'MSG -> Could not create statistics calculation ! -> '
-                f'OUTPUT -> None'
-                f'EXCEPTION -> {exc} .')
-            raise
+                str(traceback.format_exc()).replace('\n', ' | ')
+                )
+            raise RuntimeError(       
+                f"[ERROR -> data_analysis()] -> "
+                f"MSG -> Could not calculate DataFrame statistics -> Exception: {exc}!"
+            )
 
     def isolate_categ_and_num_cols(self) -> Tuple[List[str], List[str]]:
         """
@@ -129,28 +148,34 @@ class MlModelling:
         Examples:
         ---------
             >>> model = mlvc.CreateMlModel('test')
-            >>> df = load_data(df_path= 'path/file.csv')
+            >>> model.data_loading(df_path= 'path/file.csv')
             >>> numeric_cols, categoric_cols = model.isolate_categ_and_num_cols()
             >>> numeric_cols
                 ['x1','x2',...]
         """
         try:
+            logger.info(
+                f'[SUCCESS -> isolate_categ_and_num_cols()] -> '
+                f'MSG -> isolate_categ_and_num_cols starting process ! -> '
+            )
             self.numeric_cols = [
                 column for column in self.df.columns if self.df[column].dtype != 'object']
             self.categoric_cols = [
                 column for column in self.df.columns if self.df[column].dtype == 'object']
             logger.info(
-                f'SUCCESS -> isolate_categ_and_num_cols() -> '
-                f'MSG -> Isolated df numeric and categoric columns ! -> '
-                f'OUTPUT -> numeric_cols: {self.numeric_cols} , categoric_cols: {self.categoric_cols} .')
+                f'[SUCCESS -> isolate_categ_and_num_cols()] -> '
+                f'MSG -> Data analysis finished process ! -> '
+                f'OUTPUT -> numeric_cols: {self.numeric_cols}, categoric_cols: {self.categoric_cols}!'
+            )
             return self.numeric_cols, self.categoric_cols
         except BaseException as exc:
             logger.error(
-                f'SUCCESS -> isolate_categ_and_num_cols() -> '
-                f'MSG -> Could not isolate df numeric and categoric columns ! -> '
-                f'OUTPUT -> None .'
-                f'EXCEPTION -> {exc}')
-            raise
+                str(traceback.format_exc()).replace('\n', ' | ')
+                )
+            raise RuntimeError(       
+                f"[ERROR -> isolate_categ_and_num_cols()] -> "
+                f"MSG -> Could not isolate categorical and numerical columns -> Exception: {exc}!"
+            )
 
     def data_hist_plot(self, col_name: str) -> None:
         """
@@ -175,25 +200,31 @@ class MlModelling:
             >>> model.data_hist_plot(col_name= 'X')
         """
         try:
+            logger.info(
+                f'[SUCCESS -> data_hist_plot(col_name={col_name})] -> '
+                f'MSG -> data_hist_plot starting process ! -> '
+            )
             fig = self.df[col_name].hist()
             fig = fig.get_figure()
             fig.savefig(f'plots/histograms/hist_plot_{col_name}.pdf')
             logger.info(
-                f'SUCCESS -> data_hist_plot(col_name={col_name}) -> '
-                f'MSG -> Dataframe histogram plot created ! -> '
+                f'[SUCCESS -> data_hist_plot(col_name={col_name})] -> '
+                f'MSG -> data_hist_plot finished process ! -> '
+                f'OUTPUT -> file saved at: plots/histograms/hist_plot_{col_name}.pdf !'
             )
             return
         except BaseException as exc:
             logger.error(
-                f'ERROR -> data_hist_plot(col_name={col_name}) ->'
-                f'MSG -> Could not create dataframe histogram ! ->'
-                f'Exception -> {exc} .'
+                str(traceback.format_exc()).replace('\n', ' | ')
+                )
+            raise RuntimeError(       
+                f"[ERROR -> data_hist_plot(col_name={col_name})] -> "
+                f"MSG -> Could not create dist plot -> Exception: {exc}!"
             )
-            raise
 
-    def normalized_data_plot(self, col_name: str, plot_type: str) -> None:
+    def normalized_barplots_data_plot(self, col_name: str) -> None:
         """
-        Create a chosen plot from a normalized pandas series
+        Create a barplot from a normalized pandas series
 
         Parameters
         ----------
@@ -201,8 +232,6 @@ class MlModelling:
             Create model object data
         col_name: str
             Column name to generate the histogram plot from
-        plot_type: str
-            Plot type
 
         Returns:
         --------
@@ -216,21 +245,28 @@ class MlModelling:
             >>> model.normalized_data_plot(col_name= 'X', plot_type= 'bar')
         """
         try:
-            fig = self.df[col_name].value_counts(
-                'normalize').plot(kind=plot_type)
-            fig = fig.get_figure()
-            fig.savefig(f'plots/barplots/{plot_type}_plot_{col_name}.pdf')
             logger.info(
-                f'SUCCESS -> normalized_data_plot(col_name={col_name} ,plot_type= {plot_type}) -> '
-                f'MSG -> Created Pandas series plot {plot_type} ! -> '
+                f'[SUCCESS -> normalized_data_plot(col_name={col_name})] -> '
+                f'MSG -> normalized_barplots_data_plot starting process ! -> '
+            )
+            fig = self.df[col_name].value_counts(
+                'normalize').plot(kind='bar')
+            fig = fig.get_figure()
+            fig.savefig(f'plots/barplots/barplot_plot_{col_name}.pdf')
+            logger.info(
+                f'[SUCCESS -> normalized_barplots_data_plot(col_name={col_name})] -> '
+                f'MSG -> normalized_barplots_data_plot finished process ! -> '
+                f'OUTPUT -> file saved at: plots/barplots/barplot_plot_{col_name}.pdf !'
             )
             return
         except BaseException as exc:
             logger.error(
-                f'ERROR -> normalized_data_plot(col_name={col_name} ,plot_type= {plot_type}) -> '
-                f'MSG -> Could not create Pandas series plot {plot_type} ! ->'
-                f'Exception -> {exc} .')
-            raise
+                str(traceback.format_exc()).replace('\n', ' | ')
+                )
+            raise RuntimeError(       
+                f"[ERROR -> normalized_barplots_data_plot(col_name={col_name})] -> "
+                f"MSG -> Could not create barplot ! -> Exception: {exc}!"
+            )
 
     def data_dist_plot(self, col_name: str) -> None:
         """
