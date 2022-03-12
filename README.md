@@ -354,7 +354,7 @@ model.data_hist_plot(col_name='Churn')
 
 
     
-![png](output_19_1.png)
+![png](./static/output_19_1.png)
     
 
 
@@ -368,7 +368,7 @@ model.data_hist_plot(col_name= 'Customer_Age')
 
 
     
-![png](output_20_1.png)
+![png](./static/output_20_1.png)
     
 
 
@@ -382,7 +382,7 @@ model.normalized_data_plot(col_name='Marital_Status', plot_type='bar')
 
 
     
-![png](output_21_1.png)
+![png](./static/output_21_1.png)
     
 
 
@@ -457,7 +457,7 @@ model.data_dist_plot(col_name='Total_Trans_Ct')
 
 
     
-![png](output_22_2.png)
+![png](./static/output_22_2.png)
     
 
 
@@ -468,7 +468,7 @@ model.data_heatmap_plot()
 
 
     
-![png](output_23_0.png)
+![png](./static/output_23_0.png)
     
 
 
