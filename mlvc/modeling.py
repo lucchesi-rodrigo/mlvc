@@ -66,11 +66,11 @@ class MlModelling:
                 f'OUTPUT -> df sample: {df_to_logging}'
             )
             self.df = pd.read_csv(df_path)
-            df_to_logging = self.df.to_json()[-1]
+            data_sample = self.df.head(n=2).to_json()
             logger.info(
                 f'[SUCCESS -> data_loading({df_path})] -> '
                 f'MSG -> data_loading finished process ! -> '
-                f'OUTPUT -> df sample: {df_to_logging}'
+                f'OUTPUT -> df sample: {data_sample}'
             )
             return
         except BaseException as exc:
@@ -291,6 +291,10 @@ class MlModelling:
             >>> model.data_dist_plot(col_name= 'X')
         """
         try:
+            logger.info(
+                f'[SUCCESS -> data_dist_plot(col_name={col_name})] -> '
+                f'MSG -> data_dist_plot starting process ! -> '
+            )
             x_list = self.df[col_name].tolist()
             x = pd.Series(x_list, name=f"{col_name}")
             logger.info(f'x:{x}')
@@ -299,17 +303,19 @@ class MlModelling:
             fig.get_figure()
             fig.savefig(f'plots/distplots/distplot_plot_{col_name}.pdf')
             logger.info(
-                f'SUCCESS -> data_dist_plot(col_name={col_name}) -> '
-                f'MSG -> Created Pandas series dist plot ! -> '
+                f'[SUCCESS -> data_dist_plot(col_name={col_name})] -> '
+                f'MSG -> data_dist_plot finishing process ! -> '
+                f'OUTPUT -> file saved at: plots/distplots/distplot_plot_{col_name}.pdf !'
             )
             return
         except BaseException as exc:
             logger.error(
-                f'ERROR  -> data_dist_plot(col_name={col_name}) -> '
-                f'MSG -> Could not create Pandas series dist plot ! ->'
-                f'Exception -> {exc} .'
+                str(traceback.format_exc()).replace('\n', ' | ')
+                )
+            raise RuntimeError(       
+                f"[ERROR -> normalized_barplots_data_plot(col_name={col_name})] -> "
+                f"MSG -> Could not create distplot ! -> Exception: {exc}!"
             )
-            raise
 
     def data_heatmap_plot(self, color_pallette: str = 'Dark2_r') -> None:
         """
@@ -336,6 +342,10 @@ class MlModelling:
             >>> model.data_heatmap_plot()
         """
         try:
+            logger.info(
+                f'[SUCCESS -> data_heatmap_plot()] -> '
+                f'MSG -> data_heatmap_plot starting process ! -> '
+            )
             fig = plt.figure(figsize=(20,10))
             sns.heatmap(
                 self.df.corr(),
@@ -346,16 +356,19 @@ class MlModelling:
             fig.savefig(f'plots/heatmaps/heatmap_{self.__name__}.pdf')
             plt.show()
             logger.info(
-                f'SUCCESS -> data_heatmap_plot(color_pallette= {color_pallette}) -> '
-                f'MSG -> Created heatmap plot ! -> '
+                f'[SUCCESS -> data_heatmap_plot()] -> '
+                f'MSG -> data_heatmap_plot finishing process ! -> '
+                f'OUTPUT -> file saved at: plots/heatmaps/heatmap_{self.__name__}.pdf !'
             )
-            return 
+            return
         except BaseException as exc:
             logger.error(
-                f'ERROR  -> data_heatmap_plot(color_pallette = {color_pallette}) -> '
-                f'MSG -> Could not create heatmap plot ! ->'
-                f'Exception -> {exc} .')
-            raise
+                str(traceback.format_exc()).replace('\n', ' | ')
+                )
+            raise RuntimeError(       
+                f"[ERROR -> data_heatmap_plot()] -> "
+                f"MSG -> Could not create heatmap ! -> Exception: {exc}!"
+            )
 
     def data_categoric_to_binary(
             self,
@@ -387,19 +400,27 @@ class MlModelling:
             >>> model.data_categoric_to_binary(target_name= 'z' ,col_name= 'X1' ,base_value= 'low')
         """
         try:
+            logger.info(
+                f'[SUCCESS -> data_categoric_to_binary(target_name={target_name},col_name={col_name},base_value={base_value})] -> '
+                f'MSG -> data_categoric_to_binary starting process ! -> '
+            )
             self.df[target_name] = self.df[col_name].apply(
                 lambda val: 0 if val == base_value else 1)
+            data_sample = self.df.head(n=2).to_json()
             logger.info(
-                f'SUCCESS -> data_categoric_to_binary(target_name= {target_name} ,col_name= {col_name} ,base_value= {base_value}) -> '
-                f'MSG -> Dataframe pre-processed successfully ! -> '
-                f'OUTPUT -> df cols: {self.df.columns} .')
-            return 
+                f'[SUCCESS -> data_categoric_to_binary(target_name={target_name},col_name={col_name},base_value={base_value}) ] -> '
+                f'MSG -> data_categoric_to_binary finishing process ! -> '
+                f'OUTPUT -> data sample: {data_sample} !'
+            )
+            return self.df
         except BaseException as exc:
             logger.error(
-                f'ERROR  -> data_categoric_to_binary(target_name= {target_name} ,col_name= {col_name} ,base_value= {base_value}) -> '
-                f'MSG -> Dataframe could not be pre-processed ! ->'
-                f'Exception -> {exc} .')
-            raise
+                str(traceback.format_exc()).replace('\n', ' | ')
+                )
+            raise RuntimeError(       
+                f'[ERROR -> data_categoric_to_binary(target_name={target_name},col_name={col_name},base_value={base_value}) ] -> '
+                f"MSG -> Could not convert the column ! -> Exception: {exc}!"
+            )
 
     def data_feature_encoder(
             self,
@@ -429,6 +450,11 @@ class MlModelling:
         """
         category_lst = []
         try:
+            logger.info(
+                f'[SUCCESS -> data_feature_encoder(col_name={col_name},target_col={target_col})] -> '
+                f'MSG -> data_feature_encoder starting process ! -> '
+                f'OUTPUT -> data sample: {data_sample} !'
+            )
             category_groups = self.df.groupby(col_name).mean()[target_col]
 
             for val in self.df[col_name]:
@@ -436,19 +462,23 @@ class MlModelling:
 
             self.df[f'{col_name}_{target_col}'] = category_lst
             
+            data_sample = self.df.head(n=2).to_json()
             logger.info(
-                f'SUCCESS -> data_feature_encoder(col_name= {col_name}, target_col= {target_col} ) -> '
-                f'MSG -> Dataframe pre-processed successfully ! -> '
-                f'OUTPUT -> df cols: {self.df.columns} ,df head: {self.df.head().to_json()} .')
-            return
+                f'[SUCCESS -> data_feature_encoder(col_name={col_name},target_col={target_col})] -> '
+                f'MSG -> data_feature_encoder finishing process ! -> '
+                f'OUTPUT -> data sample: {data_sample} !'
+            )
+            return self.df
         except BaseException as exc:
             logger.error(
-                f'ERROR  -> data_feature_encoder(col_name= {col_name}, target_col= {target_col} ) -> '
-                f'MSG -> Dataframe could not be pre-processed ! ->'
-                f'Exception -> {exc} .')
-            raise
+                str(traceback.format_exc()).replace('\n', ' | ')
+                )
+            raise RuntimeError(       
+                f'[SUCCESS -> data_feature_encoder(col_name={col_name},target_col={target_col})] -> '
+                f"MSG -> Could encode data ! -> Exception: {exc}!"
+            )
 
-    def data_build_ml_matrix(self, target_col: str, states_key: List):
+    def data_build_ml_matrix(self, target_col: str, states_key: List) -> Tuple[pd.dataframe,pd.dataframe]:
         """
         Builds a Machine learning matrix X(y)
 
@@ -472,20 +502,30 @@ class MlModelling:
             >>> model.data_build_ml_matrix(target_col= 'y', states_key= ['x1','x2',...])
         """
         try:
+            logger.info(
+                f'[SUCCESS -> data_build_ml_matrix(target_col={target_col}, states_key={states_key})] -> '
+                f'MSG -> data_build_ml_matrix starting process ! -> '
+            )
             self.y = self.df[target_col]
             self.X = pd.DataFrame()
             self.X = self.df.filter(items=states_key)
+            X_sample = self.X.head(n=2).to_json()
+            y_sample = self.y[:2].tolist()
+
             logger.info(
-                f'SUCCESS -> data_build_ml_matrix(target_col= {target_col}, states_key= {states_key}) -> '
-                f'MSG -> Machine learning matrix is created ! -> '
-                f'OUTPUT -> y: {self.y.tolist()[:10]} , \nX columns: {self.X.head().to_json()} .')
-            return 
+                f'[SUCCESS -> data_build_ml_matrix(target_col={target_col}, states_key={states_key})] -> '
+                f'MSG -> data_build_ml_matrix finishing process ! -> '
+                f'OUTPUT -> X sample: {X_sample}, y_sample: {y_sample} !'
+            )
+            return self.y, self.X
         except BaseException as exc:
             logger.error(
-                f'ERROR  -> data_build_ml_matrix(target_col= {target_col}, states_key= {states_key}) -> '
-                f'MSG -> Machine learning matrix could not be created ! ->'
-                f'Exception -> {exc} .')
-            raise
+                str(traceback.format_exc()).replace('\n', ' | ')
+                )
+            raise RuntimeError(       
+                f'[SUCCESS -> data_build_ml_matrix(target_col={target_col}, states_key={states_key})] -> '
+                f"MSG -> Could create ml data ! -> Exception: {exc}!"
+            )
 
     def split_test_train_data(
             self,
