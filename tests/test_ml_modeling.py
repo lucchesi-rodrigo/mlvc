@@ -1,10 +1,11 @@
 from lib2to3.pytree import Base
 from mlvc.modeling import MlModeling
 import os
+import random
 import pytest
 import pandas as pd
 import numpy as np
-
+import json
 from datetime import datetime,date
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
@@ -40,20 +41,27 @@ class TestMlModeling:
         assert mlm.df.columns.to_list() == ['x','y']
     #---data_analysis     
     def test_data_analysis(self):
-        model = MlModel('test')
-        model.data_loading('tests/data.csv')
-        assert model.data_analysis()
+        mlm = MlModeling(model_name='lrc', model_algorithm=LogisticRegression(), model_version='0.1')
+        mlm.data_loading('tests/data/data.csv')
+        stats_data = mlm.data_analysis()
+        assert json.loads(stats_data['numeric_stats']) == {
+            'x': {'count': 2.0, 'mean': 0.5, 'std': 0.7071067812, 'min': 0.0, '25%': 0.25, '50%': 0.5, '75%': 0.75, 'max': 1.0}, 
+            'y': {'count': 2.0, 'mean': 0.5, 'std': 0.7071067812, 'min': 0.0, '25%': 0.25, '50%': 0.5, '75%': 0.75, 'max': 1.0}
+            }
 
     def test_data_analysis_categorical_data(self):
-        model = MlModel('test')
-        model.data_loading('tests/data_cat.csv')
-        assert model.data_analysis()
+        random.seed(10)
+        mlm = MlModeling(model_name='lrc', model_algorithm=LogisticRegression(), model_version='0.1')
+        mlm.data_loading('tests/data/data_cat.csv')
+        stats_data = mlm.data_analysis()
+        assert stats_data['shape'] == (2,2)
+
 
     def test_data_analysis_exception(self):
         with pytest.raises(BaseException):
-            model = MlModel('test')
-            model.df = None
-            model.data_analysis()
+            mlm = MlModeling(model_name='lrc', model_algorithm=LogisticRegression(), model_version='0.1')
+            mlm.df = None
+            mlm.data_analysis()
     #---isolate_categ_and_num_cols
     def test_isolate_categ_and_num_cols(self):
         """Isolate categoric and numeric collumns from df"""
