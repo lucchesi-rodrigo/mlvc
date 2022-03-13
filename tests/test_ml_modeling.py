@@ -104,21 +104,19 @@ class TestMlModeling:
             mlm.data_hist_plot('x')
     #---normalized_data_plot    
     def test_normalized_data_plot(self):
-        model = MlModel('test')
-        model.data_loading('tests/data.csv')
-        fig = model.normalized_data_plot(
+        mlm = MlModeling(model_name='lrc', model_algorithm=LogisticRegression(), model_version='0.1')
+        mlm.data_loading('tests/data/data.csv')
+        assert mlm.normalized_barplots_data_plot(
             col_name = 'x', 
-            plot_type = 'bar'
-        )
-        assert fig == 'matplotlib.figure'
+        ) is None
+        
 
     def test_normalized_data_plot_exception(self):
         with pytest.raises(BaseException):
-            model = MlModel('test')
-            model.df = pd.DataFrame()
-            model.normalized_data_plot(
+            mlm = MlModeling(model_name='lrc', model_algorithm=LogisticRegression(), model_version='0.1')
+            mlm.df = None
+            mlm.normalized_barplots_data_plot(
                 col_name = 'x', 
-                plot_type = 'bar'
             )
     #---data_dist_plot
     def test_data_dist_plot(self):
