@@ -93,16 +93,15 @@ class TestMlModeling:
         assert cols_list == ['x','y']
     #---data_hist_plot
     def test_data_hist_plot(self):
-        model = MlModel('test')
-        model.data_loading('tests/data.csv')
-        output = model.data_hist_plot('x')
-        assert output == 'matplotlib.figure' 
+        mlm = MlModeling(model_name='lrc', model_algorithm=LogisticRegression(), model_version='0.1')
+        mlm.data_loading('tests/data/data.csv')
+        assert mlm.data_hist_plot('x') is None
 
     def test_data_hist_plot_exception(self):
         with pytest.raises(BaseException):
-            model = MlModel('test')
-            model.df = pd.DataFrame()
-            model.data_hist_plot('x')
+            mlm = MlModeling(model_name='lrc', model_algorithm=LogisticRegression(), model_version='0.1')
+            mlm.df = None
+            mlm.data_hist_plot('x')
     #---normalized_data_plot    
     def test_normalized_data_plot(self):
         model = MlModel('test')
