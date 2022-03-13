@@ -27,23 +27,34 @@ import traceback
 sns.set()
 
 
-class MlModelling:
+class MlModeling:
     """Class to process Machine Learning Models"""
 
     def __init__(self, model_name, model_algorithm,model_version,model_notes=[]) -> None:
         """Init method which has as input the model instance name"""
-        self.model_name = model_name
-        self.model_algorithm = model_algorithm
-        self.model_datetime = datetime.now()
-        self.model_version = model_version
-        self.model_notes = model_notes
-        self.model_data = {
-            'model_name':self.model_name,
-            'model_algorithm':self.model_algorithm,
-            'model_datetime':self.model_datetime ,
-            'model_version':self.model_version,
-            'model_notes':self.model_notes
-        }
+        try:
+            self.model_name = model_name
+            assert self.model_name is not None
+            self.model_algorithm = model_algorithm
+            assert self.model_algorithm is not None
+            self.model_datetime = datetime.now()
+            self.model_version = model_version
+            self.model_notes = model_notes
+            self.model_data = {
+                'model_name':self.model_name,
+                'model_algorithm':self.model_algorithm,
+                'model_datetime':self.model_datetime ,
+                'model_version':self.model_version,
+                'model_notes':self.model_notes
+            }
+        except BaseException as exc:
+            logger.error(
+                str(traceback.format_exc()).replace('\n', ' | ')
+                )
+            raise AssertionError(       
+                f"[ERROR -> __init__({self})] -> "
+                f"MSG -> Could not build MlModeling instance ! -> Exception: {exc}!"
+            )
 
     def data_loading(self, df_path: str) -> Dict:
         """
@@ -485,7 +496,7 @@ class MlModelling:
                 f"MSG -> Could encode data ! -> Exception: {exc}!"
             )
 
-    def data_build_ml_matrix(self, target_col: str, states_key: List) -> Tuple[pd.dataframe,pd.dataframe]:
+    def data_build_ml_matrix(self, target_col: str, states_key: List) -> Tuple[pd.DataFrame,pd.DataFrame]:
         """
         Builds a Machine learning matrix X(y)
 
@@ -514,7 +525,7 @@ class MlModelling:
                 f'MSG -> data_build_ml_matrix starting process ! -> '
             )
             self.y = self.df[target_col]
-            self.X = pd.DataFrame()
+            self.X = pd.DataFrame
             self.X = self.df.filter(items=states_key)
             X_sample = self.X.head(n=2).to_json()
             y_sample = self.y[:2].tolist()

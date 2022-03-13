@@ -1,5 +1,5 @@
 from lib2to3.pytree import Base
-from mlvc.modeling import MlModel
+from mlvc.modeling import MlModeling
 import os
 import pytest
 import pandas as pd
@@ -10,12 +10,23 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import tree
 
-class TestIntegration:
+class TestMlModeling:
 
     #---CreateMlModel 
     def test_init(self):
-        model = MlModel('test')
-        assert model.__name__ == 'test'
+        mlm = MlModeling(model_name='lrc', model_algorithm=LogisticRegression(), model_version='0.1')
+        assert mlm.model_data['model_name'] == 'lrc'
+        assert mlm.model_data['model_algorithm'].__class__.__name__ == 'LogisticRegression'
+        assert mlm.model_data['model_version'] == '0.1'
+
+    def test_init_exception_model_name_none(self):
+            with pytest.raises(AssertionError):
+                mlm = MlModeling(model_name= None, model_algorithm=LogisticRegression(), model_version='0.1')  
+
+    def test_init_exception_model_algorithm_none(self):
+        with pytest.raises(AssertionError):
+            mlm = MlModeling(model_name='lrc', model_algorithm=None, model_version='0.1')
+
     #---data_loading   
     def test_data_loading_exception(self):
         """Invalid path"""
