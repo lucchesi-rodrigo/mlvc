@@ -110,7 +110,6 @@ class TestMlModeling:
             col_name = 'x', 
         ) is None
         
-
     def test_normalized_data_plot_exception(self):
         with pytest.raises(BaseException):
             mlm = MlModeling(model_name='lrc', model_algorithm=LogisticRegression(), model_version='0.1')
@@ -120,18 +119,19 @@ class TestMlModeling:
             )
     #---data_dist_plot
     def test_data_dist_plot(self):
-        model = MlModel('test')
-        model.data_loading('tests/data.csv')
-        output = model.data_dist_plot(
+        mlm = MlModeling(model_name='lrc', model_algorithm=LogisticRegression(), model_version='0.1')
+        mlm.data_loading('tests/data/data.csv')
+        assert mlm.data_dist_plot(
             col_name = 'x'
-        )
-        assert output == 'matplotlib.figure'
+        ) is None
 
     def test_data_dist_plot_exception(self):
         with pytest.raises(BaseException):
-            model = MlModel('test')
-            model.df = pd.DataFrame()
-            model.data_dist_plot(col_name = 'x')
+            mlm = MlModeling(model_name='lrc', model_algorithm=LogisticRegression(), model_version='0.1')
+            mlm.df =None
+            mlm.data_dist_plot(
+                col_name = 'x'
+            )
     #---data_heatmap_plot
     def test_data_heatmap_plot(self):
         model = MlModel('test')
