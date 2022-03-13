@@ -88,8 +88,8 @@ class TestMlModeling:
             mlm.isolate_categ_and_num_cols()  
     #---remove_cols
     def test_remove_cols(self):
-        model = MlModel('test')
-        cols_list = model.remove_cols(['x','y','i'],['i','g'])
+        mlm = MlModeling(model_name='lrc', model_algorithm=LogisticRegression(), model_version='0.1')
+        cols_list = mlm.remove_cols(['x','y','i'],['i','g'])
         assert cols_list == ['x','y']
     #---data_hist_plot
     def test_data_hist_plot(self):
