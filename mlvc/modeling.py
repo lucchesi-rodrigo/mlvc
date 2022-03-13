@@ -80,8 +80,7 @@ class MlModeling:
         try:
             logger.info(
                 f'[SUCCESS -> data_loading({df_path})] -> '
-                f'MSG -> data_loading starting process ! -> '
-                f'OUTPUT -> df sample: {df_to_logging}'
+                f'MSG -> data_loading starting process !'
             )
             self.df = pd.read_csv(df_path)
             data_sample = self.df.head(n=2).to_json()

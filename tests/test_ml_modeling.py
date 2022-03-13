@@ -26,19 +26,18 @@ class TestMlModeling:
     def test_init_exception_model_algorithm_none(self):
         with pytest.raises(AssertionError):
             mlm = MlModeling(model_name='lrc', model_algorithm=None, model_version='0.1')
-
     #---data_loading   
     def test_data_loading_exception(self):
         """Invalid path"""
         with pytest.raises(FileNotFoundError):
-            model = MlModel('test')
-            model.data_loading('tests/extra/data.csv')
-
+            mlm = MlModeling(model_name='lrc', model_algorithm=LogisticRegression(), model_version='0.1')
+            mlm.data_loading('tests/data/data_error.csv')
+            
     def test_data_loading(self):
         """Loads csv file"""
-        model = MlModel('test')
-        df = model.data_loading('tests/data.csv')
-        assert df.columns.to_list() == ['x','y']
+        mlm = MlModeling(model_name='lrc', model_algorithm=LogisticRegression(), model_version='0.1')
+        mlm.data_loading('tests/data/data.csv')
+        assert mlm.df.columns.to_list() == ['x','y']
     #---data_analysis     
     def test_data_analysis(self):
         model = MlModel('test')
