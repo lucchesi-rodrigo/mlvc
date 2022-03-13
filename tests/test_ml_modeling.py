@@ -56,7 +56,6 @@ class TestMlModeling:
         stats_data = mlm.data_analysis()
         assert stats_data['shape'] == (2,2)
 
-
     def test_data_analysis_exception(self):
         with pytest.raises(BaseException):
             mlm = MlModeling(model_name='lrc', model_algorithm=LogisticRegression(), model_version='0.1')
@@ -64,7 +63,7 @@ class TestMlModeling:
             mlm.data_analysis()
     #---isolate_categ_and_num_cols
     def test_isolate_categ_and_num_cols(self):
-        """Isolate categoric and numeric collumns from df"""
+        """Isolate categoric and numeric columns from df"""
         df = pd.DataFrame(
             [
                 ("bird", "Falconiformes", 389.0),
@@ -76,17 +75,17 @@ class TestMlModeling:
             index=["falcon", "parrot", "lion", "monkey", "leopard"],
             columns=("class", "order", "max_speed"),
         )
-        model = MlModel('test')
-        model.df = df
-        numeric_cols, categoric_cols = model.isolate_categ_and_num_cols()
+        mlm = MlModeling(model_name='lrc', model_algorithm=LogisticRegression(), model_version='0.1')
+        mlm.df = df
+        numeric_cols, categoric_cols = mlm.isolate_categ_and_num_cols()
         assert numeric_cols == ['max_speed']
         assert categoric_cols == ['class', 'order']
 
     def test_isolate_categ_and_num_cols_exception(self):
         with pytest.raises(BaseException):
-            model = MlModel('test')
-            model.df = None
-            model.isolate_categ_and_num_cols()  
+            mlm = MlModeling(model_name='lrc', model_algorithm=LogisticRegression(), model_version='0.1')
+            mlm.df = None
+            mlm.isolate_categ_and_num_cols()  
     #---remove_cols
     def test_remove_cols(self):
         model = MlModel('test')
