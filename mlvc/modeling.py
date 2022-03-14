@@ -370,12 +370,11 @@ class MlModeling:
                 cmap=color_pallette,
                 linewidths=2)
             fig.get_figure()
-            fig.savefig(f'plots/heatmaps/heatmap_{self.__name__}.pdf')
-            plt.show()
+            fig.savefig(f'plots/heatmaps/heatmap_{self.model_name}.pdf')
             logger.info(
                 f'[SUCCESS -> data_heatmap_plot()] -> '
                 f'MSG -> data_heatmap_plot finishing process ! -> '
-                f'OUTPUT -> file saved at: plots/heatmaps/heatmap_{self.__name__}.pdf !'
+                f'OUTPUT -> file saved at: plots/heatmaps/heatmap_{self.model_name}.pdf !'
             )
             return
         except BaseException as exc:

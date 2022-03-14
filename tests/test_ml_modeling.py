@@ -134,21 +134,20 @@ class TestMlModeling:
             )
     #---data_heatmap_plot
     def test_data_heatmap_plot(self):
-        model = MlModel('test')
-        model.data_loading('tests/data.csv')
-        output = model.data_heatmap_plot()
-        assert output == 'matplotlib.figure'
+        mlm = MlModeling(model_name='lrc', model_algorithm=LogisticRegression(), model_version='0.1')
+        mlm.data_loading('tests/data/data.csv')
+        assert mlm.data_heatmap_plot() is None
 
     def test_data_heatmap_plot_exception(self):
         with pytest.raises(BaseException):
-            model = MlModel('test')
-            model.df = pd.DataFrame()
-            model.data_heatmap_plot()
+            mlm = MlModeling(model_name='lrc', model_algorithm=LogisticRegression(), model_version='0.1')
+            mlm.df = None
+            mlm.data_heatmap_plot()
     #---data_categoric_to_binary
     def test_data_categoric_to_binary(self):
-        model = MlModel('test')
-        model.data_loading('tests/data_mix.csv')
-        df = model.data_categoric_to_binary(
+        mlm = MlModeling(model_name='lrc', model_algorithm=LogisticRegression(), model_version='0.1')
+        mlm.data_loading('tests/data/data_mix.csv')
+        df = mlm.data_categoric_to_binary(
            target_name ='is_short',
            col_name = 'height',
            base_value = 'short'
@@ -157,13 +156,13 @@ class TestMlModeling:
 
     def test_data_categoric_to_binary_exception(self):
         with pytest.raises(BaseException):
-            model = MlModel('test')
-            model.data_loading('tests/data_mix.csv')
-            _= model.data_categoric_to_binary(
-                target_name ='is_heavy',
-                col_name = 'z',
-                base_value = 1
-                )
+            mlm = MlModeling(model_name='lrc', model_algorithm=LogisticRegression(), model_version='0.1')
+            mlm.df = None
+            mlm.data_categoric_to_binary(
+            target_name ='is_short',
+            col_name = 'height',
+            base_value = 'short'
+            )
     #---data_feature_encoder
     def test_data_feature_encoder(self):
         df = pd.DataFrame(
