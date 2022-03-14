@@ -542,45 +542,42 @@ class TestMlModeling:
             'criterion' :['gini', 'entropy']
         }
 
-        model = MlModel('test')
-        model.df = df
-        model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
-        model.split_test_train_data(test_size=0.3, random_state=11)
-        model.split_test_train_data(test_size=0.3, random_state=11)
-        model_data = model.fit_predict_to_best_estimator(
-                    model_name='rfc',
-                    model_algorithm=RandomForestClassifier(),
-                    param_grid=param_grid,
-                    folds=2,
-                )
-        response = model.feature_importance_plot_1(model_data=model_data)
-        assert response.__name__ == 'matplotlib.pyplot'
+        mlm = MlModeling(model_name='lrc', model_algorithm=RandomForestClassifier(), model_version='0.1')
+        mlm.df = df
+        mlm.data_build_ml_matrix(target_col=target_col,states_key=states_key)
+        mlm.split_test_train_data(test_size=0.3, random_state=11)
+        mlm.fit_predict_to_best_estimator(
+            param_grid=param_grid,
+            folds=2,
+        )
+        assert mlm.feature_importance_plot_1(model_data=mlm.model_data) is None
+        
 
     def test_feature_importance_plot_1_exception(self):
         with pytest.raises(BaseException):
             df = pd.DataFrame(
-                [
-                    (100, 188, 0),
-                    (70, 170, 1),
-                    (60, 170, 0),
-                    (80, 188, 1),
-                    (67, 166, 0),
-                    (66, 166, 1),
-                    (100, 188, 1),
-                    (70, 170, 0),
-                    (60, 170, 1),
-                    (80, 188, 0),
-                    (67, 166, 1),
-                    (66, 166, 0),
-                    (100, 188, 1),
-                    (70, 170, 0),
-                    (60, 170, 1),
-                    (80, 188, 0),
-                    (67, 166, 1),
-                    (66, 166, 0),
-                ],
-                columns=("over_weight", "height", "age"),
-            )
+                    [
+                        (100, 188, 0),
+                        (70, 170, 1),
+                        (60, 170, 0),
+                        (80, 188, 1),
+                        (67, 166, 0),
+                        (66, 166, 1),
+                        (100, 188, 1),
+                        (70, 170, 0),
+                        (60, 170, 1),
+                        (80, 188, 0),
+                        (67, 166, 1),
+                        (66, 166, 0),
+                        (100, 188, 1),
+                        (70, 170, 0),
+                        (60, 170, 1),
+                        (80, 188, 0),
+                        (67, 166, 1),
+                        (66, 166, 0),
+                    ],
+                    columns=("over_weight", "height", "age"),
+                )
             states_key=["height", "age"]
             target_col='over_weight'
             param_grid = { 
@@ -590,14 +587,16 @@ class TestMlModeling:
                 'criterion' :['gini', 'entropy']
             }
 
-            model = MlModel('test')
-            model.df = df
-            model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
-            model.split_test_train_data(test_size=0.3, random_state=11)
-            model.split_test_train_data(test_size=0.3, random_state=11)
-            model_data = None
-            model.feature_importance_plot_1(model_data=model_data)
-            
+            mlm = MlModeling(model_name='lrc', model_algorithm=RandomForestClassifier(), model_version='0.1')
+            mlm.df = df
+            mlm.data_build_ml_matrix(target_col=target_col,states_key=states_key)
+            mlm.split_test_train_data(test_size=0.3, random_state=11)
+            mlm.fit_predict_to_best_estimator(
+                param_grid=param_grid,
+                folds=2,
+            )
+            mlm.feature_importance_plot_1(model_data=None)
+        
 
     #---feature_importance_plot_2
     def test_feature_importance_plot_2(self):

@@ -825,17 +825,17 @@ class MlModeling:
             plt.ylabel('Importance')
             plt.bar(range(self.X.shape[1]), importance[indices])
             plt.xticks(range(self.X.shape[1]), names, rotation=90)
-            plt.savefig('plots/feature_importance/feature_importance_plot1_{self.__name__}.pdf')
+            plt.savefig('plots/feature_importance/feature_importance_plot1_{self.model_name}.pdf')
 
             logger.debug(
                 f'[SUCCESS -> feature_importance_plot_1(model_data= {model_data})] -> '
                 f'MSG -> feature_importance_plot_1 finishing process ! -> '
-                f'OUTPUT -> plots/feature_importance/feature_importance_plot1_{self.__name__}.pdf'
+                f'OUTPUT -> plots/feature_importance/feature_importance_plot1_{self.model_name}.pdf'
             )
             logger.info(
                 f'[SUCCESS -> feature_importance_plot_1(model_data)] -> '
                 f'MSG -> feature_importance_plot_1 starting process ! ->'
-                f'OUTPUT -> plots/feature_importance/feature_importance_plot1_{self.__name__}.pdf'
+                f'OUTPUT -> plots/feature_importance/feature_importance_plot1_{self.model_name}.pdf'
             )
             return
         except BaseException as exc:
