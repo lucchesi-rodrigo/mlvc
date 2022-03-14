@@ -643,7 +643,7 @@ class MlModeling:
             logger.debug(
                 f'[SUCCESS -> fit_predict()] -> '
                 f'MSG -> fit_predict finishing process !'
-                f'OUTPUT -> self.model_data: {self.model_data.__dict__}  !'
+                f'OUTPUT -> self.model_data: {self.model_data}  !'
             )
             return self.model_data
         except BaseException as exc:

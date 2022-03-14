@@ -207,11 +207,11 @@ class TestMlModeling:
         states_key=["class", "order"]
         target_col='max_speed'
 
-        model = MlModel('test')
-        model.df = df
-        ml_data = model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
-        assert model.y.to_list() == [389.0, 24.0, 80.2, 0, 58.0]
-        assert model.X.columns.to_list() == ["class", "order"]
+        mlm = MlModeling(model_name='lrc', model_algorithm=LogisticRegression(), model_version='0.1')
+        mlm.df = df
+        mlm.data_build_ml_matrix(target_col=target_col,states_key=states_key)
+        assert mlm.y.to_list() == [389.0, 24.0, 80.2, 0, 58.0]
+        assert mlm.X.columns.to_list() == ["class", "order"]
 
     def test_data_build_ml_matrix_exception(self):
         with pytest.raises(BaseException):
@@ -229,9 +229,9 @@ class TestMlModeling:
             states_key=["z", "x"]
             target_col='y'
 
-            model = MlModel('test')
-            model.df = df
-            model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
+            mlm = MlModeling(model_name='lrc', model_algorithm=LogisticRegression(), model_version='0.1')
+            mlm.df = df
+            mlm.data_build_ml_matrix(target_col=target_col,states_key=states_key)
     #---split_test_train_data
     def test_split_test_train_data(self):
 
@@ -249,11 +249,11 @@ class TestMlModeling:
         states_key=["class", "order"]
         target_col='max_speed'
 
-        model = MlModel('test')
-        model.df = df
-        model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
-        data_processed = model.split_test_train_data(test_size=0.3, random_state=11)
-        X_train, X_test, y_train, y_test = data_processed
+        mlm = MlModeling(model_name='lrc', model_algorithm=LogisticRegression(), model_version='0.1')
+        mlm.df = df
+        mlm.data_build_ml_matrix(target_col=target_col,states_key=states_key)
+        mlm.split_test_train_data(test_size=0.3, random_state=11)
+        X_train, X_test, y_train, y_test = mlm.data_processed
         assert X_train.shape[0] > 1
         assert X_test.shape[0] > 1
         assert y_train.shape[0] > 1
@@ -275,10 +275,10 @@ class TestMlModeling:
             states_key=["class", "order"]
             target_col='max_speed'
 
-            model = MlModel('test')
-            model.df = df
-            model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
-            data_processed = model.split_test_train_data(test_size=0.9, random_state=11)
+            mlm = MlModeling(model_name='lrc', model_algorithm=LogisticRegression(), model_version='0.1')
+            mlm.df = df
+            mlm.data_build_ml_matrix(target_col=target_col,states_key=states_key)
+            mlm.split_test_train_data(test_size=0.9, random_state=11)
     #---fit_predict
     def test_fit_predict(self):
         df = pd.DataFrame(
@@ -295,28 +295,25 @@ class TestMlModeling:
         states_key=["class", "order"]
         target_col='max_speed'
 
-        model = MlModel('test')
-        model.df = df
-        model.data_categoric_to_binary(
+        mlm = MlModeling(model_name='lrc', model_algorithm=LogisticRegression(), model_version='0.1')
+        mlm.df = df
+        mlm.data_categoric_to_binary(
            target_name ='class',
            col_name = 'class',
            base_value = 'mammal'
         )
-        model.data_categoric_to_binary(
+        mlm.data_categoric_to_binary(
            target_name ='order',
            col_name = 'order',
            base_value = 'Falconiformes'
         )
-        model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
-        model.split_test_train_data(test_size=0.3, random_state=11)
-        model_data = model.fit_predict(
-                model_name='lrc',
-                model_algorithm=LogisticRegression()
-            )
+        mlm.data_build_ml_matrix(target_col=target_col,states_key=states_key)
+        mlm.split_test_train_data(test_size=0.3, random_state=11)
+        mlm.fit_predict()
         
-        y_train_predicted = model_data['y_train_predicted']
+        y_train_predicted = mlm.model_data['y_train_predicted']
         y_train_predicted = y_train_predicted.tolist()
-        y_test_predicted = model_data['y_test_predicted']
+        y_test_predicted = mlm.model_data['y_test_predicted']
         y_test_predicted = y_test_predicted.tolist()
         assert y_test_predicted == [0.0, 0.0] 
         assert y_train_predicted == [389.0, 0.0, 24.0]        
@@ -337,24 +334,22 @@ class TestMlModeling:
             states_key=["class", "order"]
             target_col='max_speed'
 
-            model = MlModel('test')
-            model.df = df
-            model.data_categoric_to_binary(
+            mlm = MlModeling(model_name='lrc', model_algorithm=LogisticRegression(), model_version='0.1')
+            mlm.df = df
+            mlm.data_categoric_to_binary(
             target_name ='class',
             col_name = 'class',
             base_value = 'mammal'
             )
-            model.data_categoric_to_binary(
+            mlm.data_categoric_to_binary(
             target_name ='order',
             col_name = 'order',
             base_value = 'Falconiformes'
             )
-            model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
-            model.split_test_train_data(test_size=0.3, random_state=11)
-            model.fit_predict(
-                    model_data={'name':'lrc'},
-                    model_algorithm=None
-                )
+            mlm.data_build_ml_matrix(target_col=target_col,states_key=states_key)
+            mlm.split_test_train_data(test_size=0.3, random_state=11)
+            mlm.model_algorithm = None
+            mlm.fit_predict()
     #---fit_predict_to_best_estimator
     def test_fit_predict_to_best_estimator(self):
         df = pd.DataFrame(
