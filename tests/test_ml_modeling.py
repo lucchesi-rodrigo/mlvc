@@ -179,18 +179,18 @@ class TestMlModeling:
         col_name='order'
         target_col='max_speed'
 
-        model = MlModel('test')
-        model.df = df
-        model.data_feature_encoder(col_name=col_name, target_col=target_col)
-        assert sorted(model.df.columns.tolist()) == sorted(["class", "order", "max_speed",f"{col_name}_{target_col}"])
+        mlm = MlModeling(model_name='lrc', model_algorithm=LogisticRegression(), model_version='0.1')
+        mlm.df = df
+        mlm.data_feature_encoder(col_name=col_name, target_col=target_col)
+        assert sorted(mlm.df.columns.tolist()) == sorted(["class", "order", "max_speed",f"{col_name}_{target_col}"])
 
     def test_data_feature_encoder_exception(self):
         with pytest.raises(BaseException):
             col_name='order'
             target_col='max_speed'
-            model = MlModel('test')
-            model.df = None
-            model.data_feature_encoder(col_name=col_name, target_col=target_col)
+            mlm = MlModeling(model_name='lrc', model_algorithm=LogisticRegression(), model_version='0.1')
+            mlm.df = None
+            mlm.data_feature_encoder(col_name=col_name, target_col=target_col)
     #---data_build_ml_matrix
     def test_data_build_ml_matrix(self):
         df = pd.DataFrame(

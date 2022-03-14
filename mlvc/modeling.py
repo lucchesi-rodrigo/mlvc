@@ -468,8 +468,7 @@ class MlModeling:
         try:
             logger.info(
                 f'[SUCCESS -> data_feature_encoder(col_name={col_name},target_col={target_col})] -> '
-                f'MSG -> data_feature_encoder starting process ! -> '
-                f'OUTPUT -> data sample: {data_sample} !'
+                f'MSG -> data_feature_encoder starting process !'
             )
             category_groups = self.df.groupby(col_name).mean()[target_col]
 
