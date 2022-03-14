@@ -1,4 +1,3 @@
-from lib2to3.pytree import Base
 from mlvc.modeling import MlModeling
 import os
 import random
@@ -384,20 +383,18 @@ class TestMlModeling:
             'criterion' :['gini', 'entropy']
         }
 
-        model = MlModel('test')
-        model.df = df
-        model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
-        model.split_test_train_data(test_size=0.3, random_state=11)
-        model.split_test_train_data(test_size=0.3, random_state=11)
-        model_data = model.fit_predict_to_best_estimator(
-                    model_name='rfc',
-                    model_algorithm=RandomForestClassifier(),
-                    param_grid=param_grid,
-                    folds=2,
-                )
-        assert model_data['model_name'] == 'rfc'
-        np.testing.assert_allclose(model_data['y_train_predicted'].tolist(),[67, 100, 67, 67, 100, 70, 70, 70, 70, 100, 70, 67],atol=20)
-        np.testing.assert_allclose(model_data['y_test_predicted'].tolist(),[100, 100, 100, 67, 66, 70],atol=20)
+        mlm = MlModeling(model_name='rfc', model_algorithm=RandomForestClassifier(), model_version='0.1')
+        mlm.df = df
+        mlm.data_build_ml_matrix(target_col=target_col,states_key=states_key)
+        mlm.split_test_train_data(test_size=0.3, random_state=11)
+        mlm.split_test_train_data(test_size=0.3, random_state=11)
+        mlm.fit_predict_to_best_estimator(
+            param_grid=param_grid,
+            folds=2,
+        )
+        assert mlm.model_data['model_name'] == 'rfc'
+        np.testing.assert_allclose(mlm.model_data['y_train_predicted'].tolist(),[67, 100, 67, 67, 100, 70, 70, 70, 70, 100, 70, 67],atol=20)
+        np.testing.assert_allclose(mlm.model_data['y_test_predicted'].tolist(),[100, 100, 100, 67, 66, 70],atol=20)
 
     def test_fit_predict_to_best_estimator_exception(self):
         with pytest.raises(BaseException):
@@ -433,17 +430,16 @@ class TestMlModeling:
                 'criterion' :['gini', 'entropy']
             }
 
-            model = MlModel('test')
-            model.df = df
-            model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
-            model.split_test_train_data(test_size=0.3, random_state=11)
-            model.split_test_train_data(test_size=0.3, random_state=11)
-            model.fit_predict_to_best_estimator(
-                        model_name='rfc',
-                        model_algorithm=None,
-                        param_grid=param_grid,
-                        folds=2,
-                    )
+            mlm = MlModeling(model_name='rfc', model_algorithm=RandomForestClassifier(), model_version='0.1')
+            mlm.df = df
+            mlm.data_build_ml_matrix(target_col=target_col,states_key=states_key)
+            mlm.split_test_train_data(test_size=0.3, random_state=11)
+            mlm.split_test_train_data(test_size=0.3, random_state=11)
+            mlm.model_algorithm = None
+            mlm.fit_predict_to_best_estimator(
+                param_grid=param_grid,
+                folds=2,
+            )
     #---tp_rate_analysis TODO: Not working       
     def test_tp_rate_analysis(self):
         df = pd.DataFrame(
@@ -460,33 +456,25 @@ class TestMlModeling:
         states_key=["class", "order"]
         target_col='heavy'
 
-        model = MlModel('test')
-        model.df = df
-        model.data_categoric_to_binary(
+        mlm_1 = MlModeling(model_name='lrc', model_algorithm=LogisticRegression(), model_version='0.1')
+        mlm_1.df = df
+        mlm_1.data_categoric_to_binary(
            target_name ='class',
            col_name = 'class',
            base_value = 'mammal'
         )
-        model.data_categoric_to_binary(
+        mlm_1.data_categoric_to_binary(
            target_name ='order',
            col_name = 'order',
            base_value = 'Falconiformes'
         )
-        model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
-        model.split_test_train_data(test_size=0.3, random_state=11)
-        model_data_1 = model.fit_predict(
-                model_name='lrc',
-                model_algorithm=LogisticRegression()
-            )
-        model_data_2 = model.fit_predict(
-                model_name='dtc',
-                model_algorithm=tree.DecisionTreeClassifier()
-            )
-        models = [(model_data_1,False),(model_data_2,False)] # True to exception
-        output = model.tp_rate_analysis(ml_models=models)
-        assert output.__name__ == 'matplotlib.pyplot'
+        mlm_1.data_build_ml_matrix(target_col=target_col,states_key=states_key)
+        mlm_1.split_test_train_data(test_size=0.3, random_state=11)
+        mlm_1.fit_predict()
+        models = [(mlm_1.model_data,False)] # True to exception
+        assert mlm_1.tp_rate_analysis(ml_models=models) is None
 
-    """def test_tp_rate_analysis_exception(self):
+    def test_tp_rate_analysis_exception(self):
         with pytest.raises(BaseException):
             df = pd.DataFrame(
                 [
@@ -502,30 +490,24 @@ class TestMlModeling:
             states_key=["class", "order"]
             target_col='heavy'
 
-            model = CreateMlModel('test')
-            model.df = df
-            model.data_categoric_to_binary(
+            mlm_1 = MlModeling(model_name='lrc', model_algorithm=LogisticRegression(), model_version='0.1')
+            mlm_1.df = df
+            mlm_1.data_categoric_to_binary(
             target_name ='class',
             col_name = 'class',
             base_value = 'mammal'
             )
-            model.data_categoric_to_binary(
+            mlm_1.data_categoric_to_binary(
             target_name ='order',
             col_name = 'order',
             base_value = 'Falconiformes'
             )
-            model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
-            model.split_test_train_data(test_size=0.3, random_state=11)
-            model_data_1 = model.fit_predict(
-                    model_name='lrc',
-                    model_algorithm=LogisticRegression()
-                )
-            model_data_2 = model.fit_predict(
-                    model_name='dtc',
-                    model_algorithm=tree.DecisionTreeClassifier()
-                )
-            models = [] # True to exception
-            model.tp_rate_analysis(ml_models=models)""" 
+            mlm_1.data_build_ml_matrix(target_col=target_col,states_key=states_key)
+            mlm_1.split_test_train_data(test_size=0.3, random_state=11)
+            mlm_1.fit_predict()
+            models = [(mlm_1,False)] # True to exception
+            mlm_1.tp_rate_analysis(ml_models=models) is None
+
     #---feature_importance_plot_1
     def test_feature_importance_plot_1(self):
         df = pd.DataFrame(

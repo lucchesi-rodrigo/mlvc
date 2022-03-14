@@ -711,7 +711,7 @@ class MlModeling:
             logger.debug(
                 f'[SUCCESS -> fit_predict_to_best_estimator(param_grid= {param_grid},folds= {folds})] -> '
                 f'MSG -> fit_predict_to_best_estimator starting process !'
-                f'OUTPUT -> self.model_data: {self.model_data.__dict__}  !'
+                f'OUTPUT -> self.model_data: {self.model_data}  !'
             )
             return self.model_data
         except BaseException as exc:
@@ -762,14 +762,12 @@ class MlModeling:
                     model_plot = plot_roc_curve(
                         model_data['model'], self.X_test, self.y_test)
                     model_plot.plot(ax=ax, alpha=0.8)
-            model_plot.get_figure()
-            model_plot.savefig(f'plots/tp_plots/tp_{self.__name__}.pdf')
-            plt.show()
-
+            
+            plt.savefig(f'plots/tp_plots/tp_{self.model_name}.pdf')
             logger.info(
                 f'[SUCCESS -> tp_rate_analysis(ml_models= {ml_models})] -> '
                 f'MSG -> tp_rate_analysis finishing process !'
-                f'OUTPUT -> file saved at: plots/tp_plots/tp_{self.__name__}.pdf !'
+                f'OUTPUT -> file saved at: plots/tp_plots/tp_{self.model_name}.pdf !'
             )
             return
         except BaseException as exc:
