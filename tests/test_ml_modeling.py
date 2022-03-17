@@ -507,7 +507,6 @@ class TestMlModeling:
             mlm_1.fit_predict()
             models = [(mlm_1,False)] # True to exception
             mlm_1.tp_rate_analysis(ml_models=models) is None
-
     #---feature_importance_plot_1
     def test_feature_importance_plot_1(self):
         df = pd.DataFrame(
@@ -552,7 +551,6 @@ class TestMlModeling:
         )
         assert mlm.feature_importance_plot_1(model_data=mlm.model_data) is None
         
-
     def test_feature_importance_plot_1_exception(self):
         with pytest.raises(BaseException):
             df = pd.DataFrame(
@@ -597,7 +595,6 @@ class TestMlModeling:
             )
             mlm.feature_importance_plot_1(model_data=None)
         
-
     #---feature_importance_plot_2
     def test_feature_importance_plot_2(self):
         df = pd.DataFrame(
@@ -632,45 +629,41 @@ class TestMlModeling:
             'criterion' :['gini', 'entropy']
         }
 
-        model = MlModel('test')
-        model.df = df
-        model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
-        model.split_test_train_data(test_size=0.3, random_state=11)
-        model.split_test_train_data(test_size=0.3, random_state=11)
-        model_data = model.fit_predict_to_best_estimator(
-                    model_name='rfc',
-                    model_algorithm=RandomForestClassifier(),
-                    param_grid=param_grid,
-                    folds=2,
-                )
-        response = model.feature_importance_plot_2(model_data=model_data)
-        assert response.__name__ == 'shap'
+        mlm = MlModeling(model_name='lrc', model_algorithm=RandomForestClassifier(), model_version='0.1')
+        mlm.df = df
+        mlm.data_build_ml_matrix(target_col=target_col,states_key=states_key)
+        mlm.split_test_train_data(test_size=0.3, random_state=11)
+        mlm.fit_predict_to_best_estimator(
+            param_grid=param_grid,
+            folds=2,
+        )
+        assert mlm.feature_importance_plot_2(model_data=mlm.model_data) is None
 
     def test_feature_importance_plot_2_exception(self):
         with pytest.raises(BaseException):
             df = pd.DataFrame(
-                [
-                    (100, 188, 0),
-                    (70, 170, 1),
-                    (60, 170, 0),
-                    (80, 188, 1),
-                    (67, 166, 0),
-                    (66, 166, 1),
-                    (100, 188, 1),
-                    (70, 170, 0),
-                    (60, 170, 1),
-                    (80, 188, 0),
-                    (67, 166, 1),
-                    (66, 166, 0),
-                    (100, 188, 1),
-                    (70, 170, 0),
-                    (60, 170, 1),
-                    (80, 188, 0),
-                    (67, 166, 1),
-                    (66, 166, 0),
-                ],
-                columns=("over_weight", "height", "age"),
-            )
+                    [
+                        (100, 188, 0),
+                        (70, 170, 1),
+                        (60, 170, 0),
+                        (80, 188, 1),
+                        (67, 166, 0),
+                        (66, 166, 1),
+                        (100, 188, 1),
+                        (70, 170, 0),
+                        (60, 170, 1),
+                        (80, 188, 0),
+                        (67, 166, 1),
+                        (66, 166, 0),
+                        (100, 188, 1),
+                        (70, 170, 0),
+                        (60, 170, 1),
+                        (80, 188, 0),
+                        (67, 166, 1),
+                        (66, 166, 0),
+                    ],
+                    columns=("over_weight", "height", "age"),
+                )
             states_key=["height", "age"]
             target_col='over_weight'
             param_grid = { 
@@ -680,13 +673,15 @@ class TestMlModeling:
                 'criterion' :['gini', 'entropy']
             }
 
-            model = MlModel('test')
-            model.df = df
-            model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
-            model.split_test_train_data(test_size=0.3, random_state=11)
-            model.split_test_train_data(test_size=0.3, random_state=11)
-            model_data = None
-            model.feature_importance_plot_2(model_data=model_data)
+            mlm = MlModeling(model_name='lrc', model_algorithm=RandomForestClassifier(), model_version='0.1')
+            mlm.df = df
+            mlm.data_build_ml_matrix(target_col=target_col,states_key=states_key)
+            mlm.split_test_train_data(test_size=0.3, random_state=11)
+            mlm.fit_predict_to_best_estimator(
+                param_grid=param_grid,
+                folds=2,
+            )
+            mlm.feature_importance_plot_2(model_data=None)
     #---clf_report
     def test_clf_report(self):
         df = pd.DataFrame(
@@ -721,19 +716,16 @@ class TestMlModeling:
             'criterion' :['gini', 'entropy']
         }
 
-        model = MlModel('test')
-        model.df = df
-        model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
-        model.split_test_train_data(test_size=0.3, random_state=11)
-        model.split_test_train_data(test_size=0.3, random_state=11)
-        model_data = model.fit_predict_to_best_estimator(
-                    model_name='rfc',
-                    model_algorithm=RandomForestClassifier(),
-                    param_grid=param_grid,
-                    folds=2,
-                )
-        response = model.clf_report(model_data=model_data)
-        assert response.__name__ == 'matplotlib.pyplot'
+        mlm = MlModeling(model_name='lrc', model_algorithm=RandomForestClassifier(), model_version='0.1')
+        mlm.df = df
+        mlm.data_build_ml_matrix(target_col=target_col,states_key=states_key)
+        mlm.split_test_train_data(test_size=0.3, random_state=11)
+        mlm.fit_predict_to_best_estimator(
+            param_grid=param_grid,
+            folds=2,
+        )
+        assert mlm.clf_report(model_data=mlm.model_data) is None
+
     def test_clf_report_exception(self):
         with pytest.raises(BaseException):
             df = pd.DataFrame(
@@ -768,62 +760,72 @@ class TestMlModeling:
                 'criterion' :['gini', 'entropy']
             }
 
-            model = MlModel('test')
-            model.df = df
-            model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
-            model.split_test_train_data(test_size=0.3, random_state=11)
-            model.split_test_train_data(test_size=0.3, random_state=11)
-            model_data = None
-            model.clf_report(model_data=model_data)
+            mlm = MlModeling(model_name='lrc', model_algorithm=RandomForestClassifier(), model_version='0.1')
+            mlm.df = df
+            mlm.data_build_ml_matrix(target_col=target_col,states_key=states_key)
+            mlm.split_test_train_data(test_size=0.3, random_state=11)
+            mlm.fit_predict_to_best_estimator(
+                param_grid=param_grid,
+                folds=2,
+            )
+            mlm.clf_report(model_data=None)
     #---saving
     def test_saving(self):
         df = pd.DataFrame(
             [
-                ("bird", "Falconiformes", 389.0),
-                ("bird", "Psittaciformes", 24.0),
-                ("mammal", "Carnivora", 80.2),
-                ("mammal", "Primates", 0),
-                ("mammal", "Carnivora", 58),
+                (100, 188, 0),
+                (70, 170, 1),
+                (60, 170, 0),
+                (80, 188, 1),
+                (67, 166, 0),
+                (66, 166, 1),
+                (100, 188, 1),
+                (70, 170, 0),
+                (60, 170, 1),
+                (80, 188, 0),
+                (67, 166, 1),
+                (66, 166, 0),
+                (100, 188, 1),
+                (70, 170, 0),
+                (60, 170, 1),
+                (80, 188, 0),
+                (67, 166, 1),
+                (66, 166, 0),
             ],
-            index=["falcon", "parrot", "lion", "monkey", "leopard"],
-            columns=("class", "order", "max_speed"),
+            columns=("over_weight", "height", "age"),
         )
-        states_key=["class", "order"]
-        target_col='max_speed'
+        states_key=["height", "age"]
+        target_col='over_weight'
+        param_grid = { 
+            'n_estimators': [200, 500],
+            'max_features': ['auto', 'sqrt'],
+            'max_depth' : [4,5,100],
+            'criterion' :['gini', 'entropy']
+        }
 
-        model = MlModel('test')
-        model.df = df
-        model.data_categoric_to_binary(
-           target_name ='class',
-           col_name = 'class',
-           base_value = 'mammal'
+        mlm = MlModeling(model_name='lrc', model_algorithm=RandomForestClassifier(), model_version='0.1')
+        mlm.df = df
+        mlm.data_build_ml_matrix(target_col=target_col,states_key=states_key)
+        mlm.split_test_train_data(test_size=0.3, random_state=11)
+        model_data = mlm.fit_predict_to_best_estimator(
+            param_grid=param_grid,
+            folds=2,
         )
-        model.data_categoric_to_binary(
-           target_name ='order',
-           col_name = 'order',
-           base_value = 'Falconiformes'
-        )
-        model.data_build_ml_matrix(target_col=target_col,states_key=states_key)
-        model.split_test_train_data(test_size=0.3, random_state=11)
-        model_data = model.fit_predict(
-                model_algorithm=LogisticRegression()
-            )
-        model_data['model_name'] = 'random_forest_classifier'
-        output = model.saving(model_data)
-        assert output.__name__ == 'joblib'
+        assert mlm.saving(model_data=model_data) is None
 
     def test_saving_exception(self):
         with pytest.raises(BaseException):
-            model = MlModel('test')
+            mlm = MlModeling(model_name='lrc', model_algorithm=RandomForestClassifier(), model_version='0.1')
             model_data = None
-            model.saving(model_data)
+            mlm.saving(model_data)
     #---loading
     def test_loading(self):
-        model = MlModel('test')
-        model_data = model.loading('models/random_forest_classifier_2022')
+        mlm = MlModeling(model_name='lrc', model_algorithm=RandomForestClassifier(), model_version='0.1')
+        model_data = mlm.loading('models/random_forest_classifier_2022')
         assert model_data['model_name'] == 'random_forest_classifier'
+    
     def test_loading_exception(self):
         with pytest.raises(BaseException):
-            model = MlModel('test')
+            mlm = MlModeling(model_name='lrc', model_algorithm=RandomForestClassifier(), model_version='0.1')
             model.loading('models/random_forest_classifier_2021')
         

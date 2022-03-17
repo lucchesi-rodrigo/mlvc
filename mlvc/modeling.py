@@ -885,16 +885,17 @@ class MlModeling:
             explainer = shap.TreeExplainer(model.best_estimator_)
             shap_values = explainer.shap_values(self.X_test)
             shap.summary_plot(shap_values, self.X_test, plot_type="bar")
-            shap.savefig('plots/feature_importance/feature_importance_plot2_{self.__name__}.pdf')
+            plt.show()
+            # shap.savefig('plots/feature_importance/feature_importance_plot2_{self.__name__}.pdf')
             logger.debug(
                 f'[SUCCESS -> feature_importance_plot_2(model_data= {model_data})] -> '
                 f'MSG -> feature_importance_plot_2 finishing process ! -> '
-                f'OUTPUT -> plots/feature_importance/feature_importance_plot1_{self.__name__}.pdf'
+                f'OUTPUT -> plots/feature_importance/feature_importance_plot1_{self.model_name}.pdf'
             )
             logger.info(
                 f'[SUCCESS -> feature_importance_plot_1(model_data)] -> '
                 f'MSG -> feature_importance_plot_2 starting process ! ->'
-                f'OUTPUT -> plots/feature_importance/feature_importance_plot1_{self.__name__}.pdf'
+                f'OUTPUT -> plots/feature_importance/feature_importance_plot1_{self.model_name}.pdf'
             )
             return
         except BaseException as exc:
@@ -933,7 +934,7 @@ class MlModeling:
         """
         try:
             logger.debug(
-                f'[SUCCESS -> clf_report(model_data= {model_data.__dict__})] -> '
+                f'[SUCCESS -> clf_report(model_data= {model_data})] -> '
                 f'MSG -> clf_report starting process ! -> '
             )
             logger.info(
@@ -965,7 +966,7 @@ class MlModeling:
             plt.show()
 
             logger.debug(
-                f'[SUCCESS -> clf_report(model_data= {model_data.__dict__})] -> '
+                f'[SUCCESS -> clf_report(model_data= {model_data})] -> '
                 f'MSG -> clf_report starting process ! -> '
                 f'OUTPUT -> reports/{model_name}_report.pdf'
             )
@@ -980,7 +981,7 @@ class MlModeling:
                 str(traceback.format_exc()).replace('\n', ' | ')
                 )
             raise RuntimeError(       
-                f'[ERROR -> clf_report(model_data= {model_data.__dict__})] -> '
+                f'[ERROR -> clf_report(model_data= {model_data})] -> '
                 f"MSG -> Could execute clf_report ! -> Exception: {exc}!"
             )
 
@@ -1013,7 +1014,7 @@ class MlModeling:
         """
         try:
             logger.debug(
-                f'[SUCCESS -> saving(model_data= {model_data.__dict__})] -> '
+                f'[SUCCESS -> saving(model_data= {model_data})] -> '
                 f'MSG -> saving starting process ! -> '
             )
             logger.info(
@@ -1027,7 +1028,7 @@ class MlModeling:
             model = model_data['model']
             joblib.dump(model_data, f'./models/{name}_{timestamp}.pkl')
             logger.debug(
-                f'[SUCCESS -> saving(model_data= {model_data.__dict__})] -> '
+                f'[SUCCESS -> saving(model_data= {model_data})] -> '
                 f'MSG -> saving starting process ! -> '
                 f'OUTPUT -> ./models/{name}_{timestamp}.pkl'
             )
@@ -1042,7 +1043,7 @@ class MlModeling:
                 str(traceback.format_exc()).replace('\n', ' | ')
                 )
             raise RuntimeError(       
-                f'[ERROR -> saving(model_data= {model_data.__dict__})] -> '
+                f'[ERROR -> saving(model_data= {model_data})] -> '
                 f"MSG -> Could execute saving ! -> Exception: {exc}!"
             )
 
@@ -1080,7 +1081,7 @@ class MlModeling:
             logger.info(
                 f'[SUCCESS -> loading({path_to_model})] -> '
                 f'MSG -> loading starting process ! -> '
-                f'OUTPUT -> model: {model.__dict__}'
+                f'OUTPUT -> model: {model}'
             )
             return model
         except BaseException as exc:
