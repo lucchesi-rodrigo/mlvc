@@ -314,7 +314,6 @@ class MlModeling:
             )
             x_list = self.df[col_name].tolist()
             x = pd.Series(x_list, name=f"{col_name}")
-            logger.info(f'x:{x}')
             fig = plt.figure(figsize=(20,10))
             sns.distplot(x)
             fig.get_figure()
@@ -422,7 +421,7 @@ class MlModeling:
             )
             self.df[target_name] = self.df[col_name].apply(
                 lambda val: 0 if val == base_value else 1)
-            data_sample = self.df.head(n=2).to_json()
+            data_sample = self.df.head(n=2).to_dict()
             logger.info(
                 f'[SUCCESS -> data_categoric_to_binary(target_name={target_name},col_name={col_name},base_value={base_value}) ] -> '
                 f'MSG -> data_categoric_to_binary finishing process ! -> '
@@ -583,8 +582,8 @@ class MlModeling:
             self.X_train, self.X_test, self.y_train, self.y_test = self.data_processed
             x_train = self.X_train.head().to_json()
             X_test = self.X_test.head().to_json()
-            y_train = self.y_train.to_list()[:2]
-            y_test = self.y_test.to_list()[:2]
+            y_train = self.y_train.tolist()[:2]
+            y_test = self.y_test.tolist()[:2]
 
             logger.info(
                 f'[SUCCESS -> split_test_train_data(test_size={test_size},random_state={random_state})] -> '
